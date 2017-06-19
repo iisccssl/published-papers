@@ -1,0 +1,36 @@
+===========================================================================
+                     USENIX Security '15 Review #303B
+---------------------------------------------------------------------------
+Paper #303: Regulating the Use of Smart Personal Devices in Restricted
+            Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 1. Serious problems. I will fight for
+                                        this paper to be rejected.
+                 Reviewer expertise: 4. Expert
+                            Novelty: 3. Incremental improvement
+
+                         ===== Paper summary =====
+
+The paper proposes a memory introspection-based approach to regulate mobile devices' functionalities in "restricted spaces" (i.e., physical locations where such regulations are needed). The proposed system, based on ARM TrustZone, allows a remote authority (e.g., the regulator) to read and write raw memory on regulated mobile devices, and in turn, enforce security policies, such as disabling camera etc.
+
+                        ===== Paper strengths =====
+
++ The paper addresses an important and interesting problem, which falls into the general topic of location-based security enforcement. 
+
++ The idea of using memory introspection for enforcing location-based security is new.
+
+                       ===== Paper weaknesses =====
+
+- The paper, for the most part, remains at a very conceptual level, which reads more like a proposal of a unexecuted idea, rather than a report of a fully designed and built system. 
+
+- It doesn't really provide any details on the design and implementation of the system. For example, how to perform sound malware scanning on raw memory; how to reliably locate, read, and overwrite device states and configurations in raw memory without trusting the OS or bridging the semantic gap; how do the policies look like? etc.
+
+- Judging from the paper, it seems that the authors are not fully aware of the key technical challenges associated with realizing this idea. For example, ARM TrustZone by design doesn't fully support memory introspection (e.g., no traps on sensitive memory accesses). It's unclear how the proposed system protects memory data (e.g., overwritten system configurations). In addition, I can't find any discussion about how the system can bridge the semantic gap. 
+
+- The related work section fails to cover the rich body of research on memory introspection.
+
+                      ===== Comments for author =====
+
+How scalable the proposed system can be when used in reality, given that all authorized regulators (or "hosts" in the paper's terminology) need to provision their credentials/certificates in device hardware?
+

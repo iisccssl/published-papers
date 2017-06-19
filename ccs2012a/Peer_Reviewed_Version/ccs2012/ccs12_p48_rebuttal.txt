@@ -1,0 +1,83 @@
+We thank all four reviewers for their insightful questions/comments. We first
+answer concerns raised by Review3 and Review2, and then address specific
+questions by Review1 and Review4.
+
+
+[Review3::Question1]:
+  We feel that SSC's privilege model-based approach is a novel contribution
+  that enables both security and flexibility WITHOUT using nesting. Prior
+  research cannot achieve these goals simultaneously, and it is not obvious
+  how to combine these goals without incurring performance overheads of nested
+  virtualization. Moreover, SSC's privilege model enables MTSDs, which prior
+  work does not support.
+
+[Review3::Question2]: 
+  The main security benefit of giving clients a separate "Udom0" VM instead of
+  relying on the "root/admin" accounts their guest OSes is that it allows the
+  construction of tamper-proof VM-introspection tools. Udom0 is immune to and
+  can detect attacks directed against guest OSes (rootkits). Such attacks
+  cannot be detected with user-space tools running as "root/admin" within an
+  infected guest.
+
+[Review3::Question3]: 
+  While using nested virtualization provides clients an additional level of
+  virtualization and administrative flexibility, it does NOT protect client
+  VMs from a compromised/malicious dom0. In contrast to XenBlanket and
+  traditional nesting, SSC protects client VM state from compromised/malicious
+  Sdom0.
+
+
+[Review2::Question1]: 
+  While Reviewer 2 is correct in that the TCB is still big (e.g.,in comparison
+  to CloudVisor), SSC's contribution is in dividing this TCB into system-wide
+  and client-specific components. We can provide LOC measurements of the TCB
+  in the revision. Sdom0 and its drivers are no longer in the TCB. Prior
+  research (cf.,NoHype) indicates that most vulnerabilities are concentrated
+  in dom0's software stack. While a compromised/malicious Sdom0 can launch DoS
+  attacks, clients can still protect their data using encrypted I/O,
+  e.g.,using an encrypted storage SD, cf.,Section 4.1.
+
+[Review2::Question2]: 
+  We do quantify the performance overheads induced by SSC due to multiple VMs
+  in the I/O path (in the context of storage). See Table 4 and Table 8.
+
+
+[Review1::Question1]: 
+  Once an MTSD has been launched, the SSC hypervisor ensures that neither the
+  client nor the provider can alter its state, thereby providing a runtime
+  guarantee.
+
+[Review1::Question2]: 
+  The question about antivirus performance was unclear to us. If by 
+  "centalized", the reviewer meant running the antivirus in dom0, and
+  comparing its performance against antivirus running in the client VM,
+  the former is likely to be slower because of the added overhead of
+  virtualization. However, in SSC, we compare the performance of dom0-based
+  tools with SD-based tools, and the performance is identical, as shown
+  in the paper.
+
+[Review1::Question3]: 
+  The CPU cycles, memory and network bandwidth consumed by a client's SDs and
+  Udom0 are added into its overall resource consumption budget.
+
+[Review1::Question4]: 
+  The performance of MTSDs is identical to the performance of SDs. Except for
+  the startup protocol and the privilege model, MTSDs are identical in all
+  aspects to SDs.
+
+
+[Review4::Question1]: 
+  Inexperienced clients can indeed misconfigure their own services: this is a
+  fundamental tradeoff imposed by SSC. However, one client's misconfigurations
+  only affects his own VMs, and not those of other clients. We will discuss
+  this in our revision.
+
+[Review4::Question2]: 
+  The principal motivation behind our experimental study was to demonstrate
+  the flexibility of SSC in enabling various services as SDs, and to compare
+  the performance of these SD-based services against their (traditional)
+  dom0-based counterparts. We will modify Section 4 to state these goals
+  upfront.
+
+
+===============================================================================

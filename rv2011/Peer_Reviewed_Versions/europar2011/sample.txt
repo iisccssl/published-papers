@@ -1,0 +1,18 @@
+\begin{wrapfigure}[6]{r}[0cm]{7cm}
+% \includegraphics...
+\begin{center}
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+  $k$ & 
+    \# questions & 
+    \# correct & 
+    Probability\\ 
+  \hline
+    $4$ & $75$ & $20$ & $0.26$\\
+    $6$ & $75$ & $14$ & $0.19$\\\hline
+  \end{tabular}
+\end{center}
+\caption{Results of a user study with 15 volunteers.}
+\label{figure:results:userstudy}
+\end{wrapfigure}
+

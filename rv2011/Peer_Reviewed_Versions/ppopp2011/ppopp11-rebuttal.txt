@@ -1,0 +1,75 @@
+We address common concerns followed by specific questions.
+
+COMMON-1.NOVELTY: In contrast to Peyton-Jones and Harris' work, which used 
+  an STM for a strongly-typed language, our approach uses a word-based HTM 
+  and is applicable to low-level languages. We therefore had to address the
+  challenges associated with reasoning about high-level data structures using
+  memory addresses (Contribution: address maps and how they are updated
+  automatically).
+   
+  The watchpoint mechanism in [30] uses Bloom filters and requires hardware
+  modifications As reported in the paper, a preliminary design of TxMon that
+  used Bloom filters had an overheads > 8x.  False positives also increased
+  with the length of transactions and sizes of data structures. Our design
+  addresses these issues.
+ 
+
+COMMON-2.EFFECTIVENESS: TxMon's programming interface is similar to iWatcher's
+  (though they use different hardware support), so TxMon can detect the same
+  kinds of bugs as iWatcher. For Memcached, we implemented the checking
+  function to detect the rare leak, but this leak did not manifest in our
+  simulations.  We will add more examples of properties that can be monitored
+  in a revision of our paper.
+
+
+COMMON-3.PERFORMANCE/SCALABILITY: TxMon's performance overhead has two parts: 
+  (1)~the time to identify the data structures being modified, and 
+  (2)~the time to execute programmer-specified checks on these data structures.
+
+  Overhead(1) depends on the length of the transaction while Overhead(2)
+  depends on the domain-specific checks encoded by the programmer.  The 1.73x
+  overhead for 500 pairs includes Overhead(1) and Overhead(2).  Overhead(2)
+  can possibly be amortized by probabilistically executing checks; we have
+  done experiments to investigate this but did not report them in the paper
+  because of space issues.
+
+ 
+SPECIFIC-1.EAGER VERSION MANAGEMENT~(R2): LogTM-SE uses eager version
+  management, which we reused. By design, TxMon only requires version
+  management info to be software accessible.
+ 
+
+SPECIFIC-2.MANUAL CHECK INSERTION~(R3): In manual insertion of checks,
+  the programmer would need to know what data structures are accessed 
+  at various points in the program's execution. In our approach, such 
+  knowledge is not needed: instead, the data structures that are accessed
+  are identified using the TM machinery. Checking code is decoupled from
+  program logic, and can be developed and maintained separately, similar
+  to how aspect-oriented programming operates.
+
+
+SPECIFIC-3.METRICS~(R3): Each of these benchmarks had different performance
+  metrics, and we presented our results with the respective metrics.
+
+
+SPECIFIC-4.EIGHT-CORE FOR MEMCACHED~(R3): For Memcached experiments, we ran
+  the server and client on the same machine. The server has four threads, and
+  we bound each thread to a core. The extra cores are used by the clients.
+
+
+SPECIFIC-5.MALFUNCTION AFTER ATTACKS~(R3): Pages containing ClamScan's code
+  are write-protected. The only way that malware can evade transactional
+  execution is by modifying control data structures (such as function
+  pointers) in ClamScan's memory. However, if such modifications happen within
+  a transaction, they will be detected by TxMon when the transaction
+  completes.
+
+
+SPECIFIC-6.PSEUDOCODE IN FIG-2~(R4): TxMon does not traverse all monitored
+  data structures: it identifies which data structures are modified (via the
+  undo log) and only traverses those.
+
+
+SPECIFIC-7.SIMULATION PARAMETERS~(R4): The choice of 75MHz was for convenience
+  of experimentation. Even minor increases (e.g.,80MHz) increased simulation
+  time by days.

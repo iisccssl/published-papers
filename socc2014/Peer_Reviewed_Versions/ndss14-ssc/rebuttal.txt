@@ -1,0 +1,48 @@
+Uniformly, there is a consensus among our reviewers that our paper is heavy on
+engineering and light on research contributions. Our response is that we view
+this engineering effort as being the main research contribution of this work!
+
+The original SSC paper proposed a new privilege model that enabled several
+system services, but for the reasons described in this paper, it cannot
+directly be used to build a cloud infrastructure. This paper considers
+holistically all the components that would be required to build such a cloud
+infrastructure. In building such a system, it is inevitable to use a "kitchen
+sink" of techniques---some old and some new. The new techniques that we had to
+develop---inter-VM dependency specification and migration protocols---we have
+highlighted prominently in the paper.  These pieces are necessary for a
+workable cloud alternative based on SSC, and the main contribution of this
+work is in showing how these pieces fit together.
+
+Reviewer #193A "failed to see how this overall architecture ties into the SSC
+apsects of things" and questions the "unique threats/attacks that we are
+tackling that the prior work did not handle". We have answered these questions
+in Section II.C, where we show why existing control planes cannot be used
+together with SSC in a secure fashion. We do agree with Reviewer #193A that we
+have not demonstrated "scaling" adequately---doing so would require quite a
+large deployment of this framework with real workloads, which are challenging
+to obtain. However, we have evaluated an important aspect of scaling---see the
+experiments on how the length of a VM dependency chain impacts migration down
+time (Figure 17).
+
+Reviewer #193B notes "the core design of the control plane and the service
+domains are mostly discussed in the original SSC paper." While the design of
+the service domains was discussed in the original SSC paper, the control plane
+was not. System services were discussed in the original paper, networked
+services were not. Reviewer #193B also notes that "the paper does not present
+any further evaluation results to identify and study the portion of the
+overhead that arises from the system itself" (for the DIFFHOST configuration).
+The high overheads we noted were due to Xen, as our discussion with the Xen
+developers revealed.  Despite this, we did attempt to measure the overhead of
+our system, though we agree that there are aspects of the system that could
+have been better evaluated had we not run into the problem with Xen.
+
+Reviewer #193C and Reviewer #193D question our choice of applications, and
+state that they should be chosen to better highlight SSC. We note that the
+advantage of SSC is in allowing clients to deploy their own services in the
+cloud (defense against operators being the other). Some current clouds do this
+for specific services, e.g., Amazon VPC allows clients to configure the
+network.  The main value of SSC's control plane is that it provides a unified
+framework to configure arbitrary services, and does so in a manner that also
+protects the cloud provider's infrastructure by using a dashboard interface to
+the client. The client is never aware of VM placement and migration, and SSC's
+control plane handles these details transparently.

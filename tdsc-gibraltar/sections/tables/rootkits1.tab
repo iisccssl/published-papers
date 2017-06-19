@@ -1,0 +1,25 @@
+\begin{center}
+\begin{tabular}[htb]{|l|l|l|}
+\hline
+{\bf{Rootkit/Attack}} &  {\bf{Data structures affected}}\\ 
+\hline\hline
+\multicolumn{2}{|c|}{\textbf{\textit{Rootkits from Packet Storm~\cite{rootkitsite}}}} \\\hline
+{Adore-0.42, All-root, Kbd, Synapsys-0.4} & {System call table}\\ 
+{Linspy2, Modhide, Phide, Rial, Kis 0.9} & {} \\
+{Rkit 1.01, Shtroj2, THC Backdoor} & {} \\\hline
+{Adore-ng} & {Vfs hooks, udp recvmsg} \\\hline
+%{} & {Udp recvmsg} \\\hline 
+{Knark 2.4.3} & {System call table, proc hooks} \\\hline\hline
+%{} & {Proc hooks}\\ \hline\hline
+\multicolumn{2}{|c|}{\textbf{\textit{Rootkits from research literature~\cite{stealthattacks}}}} \\\hline
+{Disabling firewall (\S\ref{section:invariant:firewall})} & {Netfilter hooks}\\\hline
+{Disabling PRNG} (\S\ref{section:invariant:prng-disable}) & {Vfs hooks}\\\hline
+{Altering real-time clock} (\S\ref{section:invariant:rtclock}) & {Vfs hooks}\\\hline
+{Defeating signature scans} (\S\ref{section:invariant:sigscan}) & {Vfs hooks}\\\hline
+\end{tabular}
+\end{center}
+%
+\mycaption{Linux-based rootkits that modify control data. This table shows the
+data structures modified by the rootkit. \tool\ successfully detects all the
+above rootkits. The invariants violated are all Object invariants, detected by
+the Membership(constant) template.} {\label{rootkitlist}}

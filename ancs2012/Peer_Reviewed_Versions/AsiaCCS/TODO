@@ -1,0 +1,19 @@
+
+Address the following comments:
+Prasad - "The abstract seems to imply that NIDS and SIEM systems implemented the submatch construct.  " Both NIDS and SIEM systems implement their pattern languages by extending regular expressions. One such extension, the submatch construct, is the focus of this paper; the extension allows the extraction of substrings from a string matching a pattern."  However submatches predate their use in NIDS/SIEM. I prefer the wording in the introduction."
+
+
+ "Do we say anywhere in the paper, how we know which of the disjuncts in a giant disjunction matched?" 
+ - Addressed by adding a sentence at the end of "Conf.C (Combination)" in Sec 5.2.
+
+* Confirm the the proof of Therom 4.1.
+
+
+
+
+
+
+
+
+
+

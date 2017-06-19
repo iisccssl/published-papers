@@ -1,0 +1,315 @@
+This paper presents a novel and interesting marriage between the hot area
+of transactional memory and security.   Basically, the benefit of TMI is to
+take the burden of the developer to try and determine whether a given block
+of code will access any sensitive data.  In this way, the method can remove
+certain classes of incomplete mediation to sensitive memory vulnerabilities.
+
+The proposed solution appears to have potential, though it is heavily
+dependent on the integration with Transactional memory hardware to be
+practical eventually.  I have a couple of suggestions to improve the
+paper.
+
+R1.1. The authors could motivate it better by demonstrating that it is easier
+to avoid incomplete mediation vulnerabilities.  For example, figure 1 does
+not really make transactions seem any easier since any place where a
+reference check needed to be before still needs a transaction start and
+commit.  In addition, figure 1 does not show where the actual check logic
+that would be run should a conflict occur is located and how it should be
+specified.
+
+	** 1. Need to reorganize figure 1 to say that transaction{} annotations
+	**    need not be placed locally, and can be at the API-level of granularity.
+	** 2. Add a comment at the end of the transaction showing how the check is
+	** invoked implicitly.
+	**
+	** To be fixed by VG.
+	**
+	** 10/4/08: Both points done.
+
+
+R1.2. The authors could do a better job stating the limitations of the
+approach.  The approach does not solve all incomplete mediation
+vulnerabilities, only ones where data access is permitted or it is not. 
+Trying to enforce a policy whose predicates involve data values or
+semantics is not possible with TMI.  An example of a policy that TMI would
+not be able to enforce would be one where a sensitive variable can only be
+set to 0 if a certain predicate is true, and may be set to any other value
+otherwise.
+	
+	** We probably need to address the scope of this work better, possibly in
+	** Section 3.
+
+	** UE: I see this comment as incorrect: TMI can enforce any safety property, as 
+	** long as security-relevant events are triggered by data access.  In particular,
+	** since TMI effectively "stops the world" whenever security-relevant data 
+	** is accessed, it is easy to evaluate any predicate in the stopped world, and
+	** include in that predicate both the old and new data values.  (Our DSTM2
+	** implementation doesn't add proposed new data values to the log, but it 
+	** could, and other STMs do do so, e.g., the Haskell one.)
+	** 
+	** There is a pretty big point here: trying to define TMI as a mechanism with
+	** strange, complicated limitations on what policies it can enforce is a no-win
+	** situation.  We should instead define TMI in such a way that it can enforce
+	** any runtime-enforceable security policy on the access to sensitive data.
+	** (On the other hand, since it is probably difficult to mark code as also
+	** being security-relevant data; hence TMI will have difficulty enforcing 
+	** policies on what code can be executed.)
+	**
+	** VG: You have a good point, but I think that this is a point that we must
+	** definitely address clearly in the paper (i.e., the scope of our work, even
+	** though TMI is more powerful than our current implementation).
+	** I say so especially because even Reviewer 3 was confused
+	** about this point (he mentions that access control is user defined and has
+	** to be specified somewhere explicitly). 
+
+
+R1.3. The authors could give a better example of a case where it is difficult
+to statically determine whether a given block of code will access sensitive
+memory.  I am sure there are lots of example or even a contrived example
+with pointers should not be too hard to come up with.
+	
+	** Need to find a good example from the Linux kernel.
+	**
+	** To be fixed by VG.
+	**
+	** 10/4/08: Done. Cited examples from prior work though I did not explicitly
+	** include a figure with a code gragment.
+
+R1.4. The evaluation section could be more objective.  The intent behind
+Transactional Memory and TMI would be for the developer to liberally use
+transactions whenever they think there may be a chance of sensitive
+variable access, and allow the run-time to determine if such an access does
+indeed occur.  It would be good to simulate this by inserting transaction
+sections that never access sensitive data as this would give a more
+realistic indication of what the run-time overhead might be.
+
+	** The real overhead is in creating @atomic classes, which will impose
+	** an overhead whether or not we do enforcement. We need to clarify this.
+
+	** UE: Yes, we should point out that the TMI overhead scales with the 
+	** number of accesses to security-relevant objects
+
+
+=======================================================================
+
+The conceptual novelty in this paper is a reference monitor called
+"Transactional Memory Introspection" (TMI) for systems employing software
+transactional memory (STM) of certain types.  The TMI architecture can be
+summed up in the following excerpt:  
+
+"The TMI-based reference monitor augments the STM runtime by ensuring that
+if a transaction validates, then the resource accesses performed in the
+transaction will be authorized. ... To perform authorization, the TMI-based
+reference monitor must therefore identify the resources accessed, and the
+security-relevant operations during the transaction (as mentioned earlier,
+the principal must either be identified manually, or could be part of the
+implicit system state).  It identifies the resources accessed by examining
+the STM runtime's read/write sets. ... If all security-relevant operations
+on the resources accessed are authorized, the TMI-based reference monitor
+invokes the STM logic to commit changes to memory.  If a resource access
+fails, it instead invokes the transaction abort logic." 
+
+On the whole, this is a simple idea that the authors implemented in an
+existing STM system with about 500 lines of code, plus about 100-200 lines
+of policy logic per application.
+
+There are two good points about this paper: The paper describes a real
+implementation, and software transactional memory is getting a lot of
+attention these days.  
+
+There are more weaknesses with this paper, however.  
+
+R2.1. First, as alluded to
+above, the conceptual novelty here is pretty thin.  
+
+       ** UE: It may be a bit stepping on thin ice---but I think we could change
+       ** the discussion early on to emphasize that we are really proposing that
+       ** authorization be an implicit, non-functional aspect of execution.
+       ** This is a pretty drastic, novel proposal; I don't think anybody can
+       ** say otherwise.  As for STMs, we just happen to make use of those 
+       ** mechanisms to implement the idea (e.g., as one needs some relatively
+       ** heavy-weight mechanisms to implement the idea).
+
+R2.2. Second, the class of
+systems amenable to this approach is small, due to the substantial list of
+restrictions on page 8.  
+
+	** We did not place any restrictions, but perhaps one way to address this
+	** comment will be to change the word "Condition x" to something else.
+
+	** UE: Yes, we should at least change the spin on these...
+
+R2.3. Third, the promise of this technique, in my
+opinion, is somewhat oversold; e.g., wrapping every access in "transaction
+{}" is not much easier or less error-prone than wrapping it in some other
+structure (e.g., if-then-else).  
+	
+	** Again, relates to Figure 1; hopefully should be fixed by the changes made
+	** to address review 1's comments.
+
+	** UE: We are overselling a bit.  Being a more humble and understated is 
+	** a good thing, imho.  For instance, we should change "TMI avoids all of 
+	** these difficulties" into something more reasonable, such as "TMI can 
+	** eliminate much of these difficulties".
+
+	** VG: Agree. Done 10/4/08 by modifying some text in the introduction.
+
+R2.4. Fourth, the performance overheads of STM
+(ranging up to >10x for the applications considered here) are sufficiently
+bad that hardware techniques will almost certainly win out, but TMI
+requires software support.  
+	
+	** Clearly mention hardware-accelerated STMs.
+
+R2.5. Fifth, the security of lazy and overlapped
+policy checking, in which accesses are allowed to data objects in violation
+of policy but the transaction will later be aborted, is less than
+advertised.  This approach presents opportunities for the transaction to
+leak data it should not have read, for example, via covert channels, and as
+such is less secure.
+
+	** Hmm...this needs to be addressed carefully. This isindeed a problem,
+	** especially with eager versioning STMs. How to address this?
+
+	** UE: We had discussed this in the past.  Nobody deals with covert channels,
+	** really, but TMI in fact can make the problem *worse*.  Also, the STM 
+	** mechanisms can add side channels as per the CSF paper, (although there are
+	** ways to eliminate some of those side channels, as done in that paper).  I 
+	** think we have to own up to the problem somewhere, e.g., either in a discussion 
+	** section near the end, or in an early "applicability" section.
+
+=======================================================================
+
+The paper describes an approach to add reference monitoring for
+enforcing authorization policies in a STM implementation.  The authors
+make several simplifying assumptions about transaction memory models
+and it is not clear whether these assumptions greatly simplify the TMI
+and authorization enforcement.
+
+R3.1. Consider Figure 1 (a) and (b). The authors argue that Figure (a) is
+a bad idea and so we should use Figure (b). I have problem with Figure
+(b), it does not specify policy (on the other hand Figure (a) makes
+this explicit. Later in the paper (Figure 3) there is a [principal]
+parameter to transaction construct. I believe Figure (b) should be
+rewritten as
+
+transaction(resource,access) {
+    access_resource() ;
+}
+
+This gives a clean semantics on what policy is enforced to access
+resource. Unlike transaction (read/write) dependences, access control
+are user defined and it has to be specified somewhere explicitly
+within a transaction.
+
+	** This is wrong. But it is our fault for not explaining this clearly.
+	** Perhaps a better explanation of Figure 1 will help here.
+
+R3.2. Some of the simplifying assumptions bothers me. For instance, how
+do you deal with nested transactions.
+
+transaction() {
+....
+    transaction(res1, acc1) {
+        ...
+         access_resource()  ;
+  ...
+         transaction(res2,acc2){
+            access_resource() ;
+        }
+   ....
+  }
+
+}
+
+Since you do not retry on a authorization failure, what is the
+roll-back semantics for the above example where more than one
+resources are accessed and in different transactions.  How do you
+define open versus close transactions.
+
+       ** UE: This reviewer seems to be quite confused...
+
+R3.3. Also what about strong versus weak transactions. I suspect you are
+assuming weak transactions.
+
+	** We need to refer to both weak/strong xacts, as well as nesting in our
+	** implementation section.
+
+	** UE: We may need to do so earlier...
+
+R3.4. Figure 2 bothers me. In Figure 2(a) you are using nested locks
+... on the other hand Figure 2(b) does not use nested transaction.
+
+I could have done the following in Figure2(a)
+    
+   Critical() {
+     data = S1.pop() ;
+     S2.push(data)
+}
+
+and I will let the compiler deal with lock assignment. (I agree this
+is orthogonal to material but you have to be careful how you present
+your argument for using STM)
+
+	** ?? I don't know how to address this comment. Automatic lock allocation 
+	** is indeed an option, but it's besides the point of this paper.
+
+	** UE: This reviewer is quite confused.  I would assume he is 
+	** hoping for a Critical() language construct that amounts to a
+	** lock-based implementation of "atomic" sections.
+
+R3.5. Section 3.1 The paper is not very clear in explaining how exactly
+TMI was implemented, especially addressing (2) and (3) ... It seems to
+me that the key notion here is that you have somehow transformed
+authorization policy enforcement to transactional dependencies and
+when conflict arises you roll back (although you do not retry aborted
+transaction).
+
+	** Section 3 needs work.
+
+	** UE: Actually, the reviewer has a point.  One way that we could 
+	** ensure that we always get "callbacks" when security-relevant 
+	** objects are touched, is to add them to the dependency set.
+	** Right now we don't do this, since we get callbacks whenever 
+	** *any* object is touched.  However, this idea is a potentially
+	** key technique for dealing with hardware-accelarated STMs.
+
+R3.6. I do not like the notion of NOT retrying the aborted transaction
+(due to authorization failures), Can you extend the implementation so
+that we can retry but now with an updated authorization policy. The
+updated policy can come from some one else. A simple scenario for this
+case is as follows: You go to supermarket and buy a whole set of
+things. Assume one of the items has a marked down price that is not
+reflected when checking out. You argue with the checkout person that
+the item is marked down. Unfortunately she does not have authority to
+give a discount. Now if you abort the whole transaction, you are in
+trouble since you have to scan all the groceries that you bought!
+Typically the manager comes and authorizes the marked down price. Now
+you are happy, and move on!
+
+	** Can we put these in enhancements?
+
+	** UE: Yes, perhaps, but I don't think this is something that
+	** many other people will complain about--so no need to make 
+	** a big deal of it.
+
+R3.7. Page 8: Condition 1 to 3: Condition 1 is contradictory to the
+assumption you are making with respect to dealing with I/O
+operations. Authorization policies are usually used to deal with
+access to sensitive files and I/O operations. Now if you forbid I/O
+inside a transaction how can you do authorization. I am bit confused
+here.
+
+	** This reviewer is clearly mistaken, since we do not say anything of 
+	** the sort here.
+
+	** UE: Actually, we do make a point just before stating condition 1
+	** that one way of dealing with I/O is to forbid it completely.
+	** We should turn that discussion around, and not emphasize that 
+	** option (but rather the option we took in the implementation, 
+	** of making the I/O itself transactional).
+
+=======================================================================
+
+
+***END OF COMMENTS***

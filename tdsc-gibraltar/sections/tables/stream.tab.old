@@ -1,0 +1,30 @@
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+\multicolumn{6}{|l|}{With monitoring turned OFF} \\
+\hline
+{\small Func.} & {\small Rate (MB/s)} &  \multicolumn{3}{|c|}{Time} & {\small Overhead} \\
+{} & {} & {\small Avg}  &   {\small Min}  &   {\small Max}  & {} \\
+\hline
+{\small Copy} & {\small $1,\!416.7636$} & {\small $0.2260$} & {\small $0.2259$} & {\small $0.2271$} & 0\% \\
+{\small Scale} & {\small $1,\!430.3724$} & {\small $0.2239$} & {\small $0.2237$} & {\small $0.2242$} & 0\% \\
+{\small Add} & {\small $14,\!48.8463$} & {\small $0.3316$} & {\small $0.3313$} & {\small $0.3321$} & 0\% \\
+{\small Triad} & {\small $1,\!458.1027$} & {\small $0.3295$} & {\small $0.3292$} & {\small $0.3298$} & 0\% \\
+\hline
+\hline
+\multicolumn{6}{|l|}{With monitoring turned ON} \\
+\hline
+%{\small Func.} & {\small Rate (MB/s)} &  {\small Avg time}  &   {\small Min time}  &   {\small Max time} & {\small Penalty} \\
+{\small Func.} & {\small Rate (MB/s)} &  \multicolumn{3}{|c|}{Time} & {\small Overhead} \\
+{} & {} & {\small Avg}  &   {\small Min}  &   {\small Max}  & {} \\
+\hline
+{\small Copy}  & {\small $1,\!410.0150$} & {\small $0.2272$} & {\small $0.2269$} & {\small $0.2277$} & $0.48$\% \\
+{\small Scale} & {\small $1,\!423.3862$} & {\small $0.2251$} & {\small $0.2248$} & {\small $0.2254$} & $0.49$\% \\
+{\small Add}   & {\small $1,\!443.2352$} & {\small $0.3329$} & {\small $0.3326$} & {\small $0.3336$} & $0.39$\% \\
+{\small Triad} & {\small $1,\!452.6922$} & {\small $0.3308$} & {\small $0.3304$} & {\small $0.3314$} & $0.37$\% \\
+\hline
+\end{tabular}
+\begin{center}
+\mycaption{The table shows the results from the Stream microbenchmark after 100 runs. The target system incurs 
+a maximum performance overhead of 0.49\% due to contention for the memory bus}{\label{stream}}
+\end{center}
+

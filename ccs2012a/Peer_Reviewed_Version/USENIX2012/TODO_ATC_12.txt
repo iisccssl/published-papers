@@ -1,0 +1,8 @@
+Suggestions for ATC'12
+
+* SLOC modified.
+* Hypercall performance.
+* IOMMU.
+* Service domains section revision.
+* Threat model revision.
+* Cloud service provider -> cloud administrator, as appropriate.

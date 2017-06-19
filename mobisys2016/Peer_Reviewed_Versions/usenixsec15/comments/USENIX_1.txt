@@ -1,0 +1,50 @@
+===========================================================================
+                     USENIX Security '15 Review #303A
+---------------------------------------------------------------------------
+Paper #303: Regulating the Use of Smart Personal Devices in Restricted
+            Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak paper. This paper should be
+                                        rejected but I will not fight
+                                        strongly against it.
+                 Reviewer expertise: 3. Knowledgeable
+                            Novelty: 3. Incremental improvement
+
+                         ===== Paper summary =====
+
+This paper describes a model for regulating the use of personal devices (e.g., smart watches, glasses, phones) in spaces based on policies specified by the owners of those spaces. Those policies might include verifying that the device doesn’t contain malware or restricting the use of certain peripherals. In order to ensure compliance by the personal devices, the authors leverage ARM’s TrustZone architecture, and include features like mutual authentication between the guest and the host and a vetting service to verify that the host isn’t attempting to exploit the guest.
+
+                        ===== Paper strengths =====
+
+- This paper is extremely well written, well motivated, and enjoyable to read.
+
+- The model for regulating the use of personal devices presented in this paper is very interesting and likely to generate a lot of discussion and potentially follow-on work. The primary difference here to prior related work (not actually cited by the authors but included in my review below) is the use of the ARM TrustZone, which allows the host to verify/trust the guest device. This threat model is much harder to deal with than the thread models of prior work which assume compliant devices, and attempting to handle it is admirable.
+
+- This model indeed raises the bar for the regulation of personal devices in the targeted contexts. The example scenarios given by the authors -- devices in a school, in a government facility, and in a workplace -- are common, important, and reasonable scenarios in which one could imagine this actually being deployed. 
+
+- The authors have clearly thought through this design carefully and deeply. I found that whenever I had a question while reading, it was soon addressed by the paper. (Unfortunately, these solutions were not always convincing, see below.)
+
+                       ===== Paper weaknesses =====
+
+Though I enjoyed reading this paper and appreciate the authors’ thoroughness, overall I feel that the design and the threat model are too complicated and require too much suspension of disbelief. As a result, I don’t believe that this design could be securely deployed in practice, that any users of guest devices would (or should) agree to using this system, or that it really addresses the problem. Issues that I’m concerned about include:
+
+- Users could always use legacy devices that are not compliant. Those devices might not even connect to the network (e.g., cameras) so they would be undetectable by the host. I understand that the authors consider this issue out of scope, but in practice it nullifies the benefits of the proposed solution (particularly given a threat model in which device users are not trusted by the host). Though the authors attempt to make an argument that this model would also benefit users, it isn’t convincing.
+
+- The access that the host has to devices in the area is concerning: hosts can read and write nearly arbitrary memory, allowing hosts to potentially exfiltrate private information from guests (including learning what applications they have installed), to install malware, to modify device drivers, to brick their devices (denial of service), and so on. (In fact, the host can use its introspection capabilities to best target its attack!) The authors address this with two design points: authentication based on public key certifications, and the cloud-based vetting service. Neither of these convincingly addresses the problem. First, we know from the web that the CA model is broken. I’m not suggesting that the authors should reinvent the CA model as part of this paper, but in relying on it, this design essentially allows any entity with a certificate to access and modify devices in its vicinity. While this sounds reasonable for relatively trusted entities like employers, what pre
+ vents rogue hosts from getting legitimate certificates and acting maliciously? The second part, the vetting service, does not address this convincingly either -- there is possibly an unlimited number of malicious things that a host might attempt to do, and keeping up with all of these would be challenging. I suppose that one could whitelist functions hosts may do, though this suggests a tension between the ability to verify the safety of host operations and the flexibility of policies.
+
+- Even if the vetting service provides the necessary safety, how would a cloud vetting service be accessed if the host has disabled network access for the guest before attempting to carry out additional functions?
+
+- The evaluation actually suggests that this might not be practical, at least in its current form. The authors find that checking for rootkits using their implemented method takes about a minute. Assuming that the host would actually like to check many other properties as well, the amount of time required before the user is “checked in” might become impractical.
+
+                      ===== Comments for author =====
+
+- The authors don’t discuss or cite (at least) the following very related works:
+
+Patel et al. “BlindSpot: Creating Capture-Resistant Spaces” 2009
+Raval et al. “MarkIt: Privacy Markers for Protecting Visual Secrets” UPSIDE 2014
+Roesner et al. “World-Driven Access Control for Continuous Sensing” CCS 2014
+
+- Just a minor issue, but the paper is pretty repetitive in places. For example, the fact that the host communicates with the secure world through the normal world but uses integrity checking (which is a basic security technique) is explained at least twice. I think the authors could reduce some of this repetition and thereby make room for things like the content of Appendix A (which is quite interesting).
+

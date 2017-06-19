@@ -1,0 +1,10 @@
+\begin{center}
+{\footnotesize
+\begin{tabular}{|l|l|l|}
+\hline
+{\footnotesize{\input{\verbatiminput{sections/tables/trace1.txt}}}} & {\footnotesize{\input{sections/tables/trace2.txt}}} & {\footnotesize{\input{sections/tables/trace3.txt}}} \\ \hline
+\end{tabular}}
+\end{center}
+\caption{Daikon declaration and trace generated for object of type file\_system}
+\label{traces}
+

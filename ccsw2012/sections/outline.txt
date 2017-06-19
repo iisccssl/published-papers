@@ -1,0 +1,55 @@
+
+The current cloud appliances are standalone VMs. Amazon and VMware have started a
+cloudapp market place where third-party developers can submit their VMs and cloud users can
+download and use them.
+
+These VMs are stand-alone appliances: for example: a ubuntu VM or oracle VM etc.
+
+Customers are supposed to use these VMs as a unit and retrieve results from them.
+
+First of all, current cloud apps do not offer richer services such as IDS, introspection etc.
+
+
+1. These marketplace VMs do not allow customers to use VM services on other client VMs. For
+example: an IDS/introspection VM will not be useful for customers as it won’t allow customers to
+perform introspection on their VMs. Current cloud model do not allow sub-domain or privileged
+VMs.
+
+2. The current app store only contains various images, it does not contain services.
+
+3. We propose a cloud environment that is friendly to cloudapp market.
+
+4. In this model, customers can download app VMs, and our cloud model will allow those VMs
+to perform operations on other cloud VMs. This design would support a richer notion of cloud
+app market.
+
+5. Our privileged model will allow customers to delegate privileges to other VMs.
+
+7. This design will allow services like storage app, memory introspection app, system-call
+monitor apps/anomaly detector apps, VMwall app etc. All such apps that do not require code
+changes inside the hypervisor other than the privileged model and interface for privilege
+delegation.
+
+8. Apps that require changes inside the hypervisor such as patagonix, we propose a new app
+model that utilizes nested virtualization.
+
+9. So patagonix app will run a nested hypervisor, and allow client VMs to use this service.
+
+10. What are the good use cases for this kind of app model that use nested virtualization?
+
+11. Any tool that is invoked periodically, but require hypervisor level services?
+
+12. We can clone the client VM and send it to nested app VM for the checking.
+
+13. We will control the nested VM’s operation so that nothing can be leaked.
+
+14. We can also discard the cloned VM.
+
+15. This design will not introduce any performance overhead on client VMs as they can run as
+usual.
+
+16. The only problem with this design is to show the usefulness of nested virtualization VM.
+
+17. We can also device an standard interface so that client VMs can talk to SDs for the results.
+
+

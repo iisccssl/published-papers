@@ -1,0 +1,10 @@
+If we need space for the submission, employ, in order, the following hacks:
+1. Reduce the size of the figures.
+2. Remove lists, and use manual numbering instead.
+3. Try to hack into the ACM SIG format, and remove the copyright paragraph.
+4. Remove "widows" from the text.
+
+If we have too much space on our hands, use the following tricks:
+1. Make the bibliography size bigger.
+2. Switch to regular font, do not use times font.
+3. Do not use your mylist environment, switch to regular list environment.

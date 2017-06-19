@@ -1,0 +1,35 @@
+* Add related work that was previously missing (FSE reviews?)
+* Precision/recall.
+
+* EVAL:
+	- Revise numbers.
+	- Remove top-10 success stuff.
+	- Effect of individual factors.
+	- Number of factors and runtime performance.
+
+---
+
+Desirable additions to the FSE'12 submission:
+
+1. Probabilistic inference of method argument mappings. We need to formulate a
+   factor (or factors) for this. Right now, the fact that we only infer method
+   mappings is a big, gaping shortcoming of the technique.
+
+2. Modifying the tool to use the probability parameters used in the paper and
+   seeing how the results differ (if they do), e.g., using 0.5 for UNDECIDED.
+
+3. Sensitivity analysis of probability parameters. We have used a single
+   parameter for our probabilities. How sensitive are the results that we
+   obtained to changes in the parameters? This is very important to ensure
+   that our results are not simply an artifact of setting specific parameters
+   in our algorithms.
+
+4. Extending the mapping to work with sequences of method calls rather than
+   just working with individual methods. Will require a major overhaul of the
+   factors that we use.
+
+Easy additions:
+1. Add performance data: size of factor graphs, time required for inference,
+   etc.
+2. Add some examples of real mappings inferred by Rosetta.
+3. Add a limitations section.

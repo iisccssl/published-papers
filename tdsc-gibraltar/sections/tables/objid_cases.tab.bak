@@ -1,0 +1,9 @@
+\begin{tabular}{cc}
+{\includegraphics[keepaspectratio=true,width=0.4\linewidth]{sections/figs/objid_case1.pdf}} &
+{\includegraphics[keepaspectratio=true,width=0.5\linewidth]{sections/figs/objid_case2.pdf}} \\
+\scriptsize{(a) Case 1} & \scriptsize{(b) Scenario 2} \\
+\\
+{\includegraphics[keepaspectratio=true,width=0.4\linewidth]{sections/figs/objid_case3.pdf}} &
+{\includegraphics[keepaspectratio=true,width=0.4\linewidth]{sections/figs/objid_case4.pdf}} \\
+\scriptsize{(c) Scenario 3} & \scriptsize{(d) Scenario 4} \\
+\end{tabular}

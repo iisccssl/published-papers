@@ -1,0 +1,465 @@
+Dear Mr. Vinod Ganapathy:
+
+On behalf of the ASPLOS 06 Program Committee, I am delighted 
+to inform you that the following submission has been accepted 
+to appear at the conference:
+
+     HeapMD: Identifying heap-based bugs using anomaly
+           detection
+
+The Program Committee and external reviewers
+worked very hard to prepare thorough reviews for
+all the submitted papers.  The reviews and comments
+are attached below. Please repay their efforts, by 
+following their suggestions when you revise your paper.
+
+We will follow up shortly with information about formatting
+guidelines and submission deadlines/procedures.
+
+Congratulations on your fine work.  If you have any additional 
+questions, please feel free to get in touch.
+
+
+Best Regards,
+Prof. Margaret Martonosi 
+ASPLOS 06 Program Chair
+
+============================================================================ 
+ASPLOS 06 Reviews for Submission #11
+============================================================================ 
+
+Title: HeapMD: Identifying heap-based bugs using anomaly detection
+
+Authors: Trishul Chilimbi and Vinod Ganapathy
+============================================================================
+                            REVIEWER #1
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+                           Reviewer's Scores
+---------------------------------------------------------------------------
+
+        Confidence level in your review?: 9
+                        Writing quality?: 8
+     Relevance to ASPLOS (Arch, PL, OS)?: 8
+      Quality of evaluation methodology?: 8
+                 Overall Recommendation?: 9
+                      Paper's potential?: 8
+Will this paper open new research areas?: 9
+          Would you champion this paper?: 9
+
+
+---------------------------------------------------------------------------
+                         Description of paper
+---------------------------------------------------------------------------
+
+This paper proposes heap metrics on incoming and outgoing object
+pointers, profiles these metrics, finds stable ones on a per-program
+basis, and then uses them to find anomalies.
+
+---------------------------------------------------------------------------
+                            Main Strengths
+---------------------------------------------------------------------------
+
+The paper has a novel idea (some pointer characteristics are stable on
+specific programs), implements it in a real system, and uses it to
+find previously unreported bugs.
+
+---------------------------------------------------------------------------
+                           Main Weaknesses
+---------------------------------------------------------------------------
+
+The paper is a little off topic since there is no architecture
+component, but it is in the vein of SWAT and other recent well-cited
+ASPLOS papers for bug detection, and a topic of broad interest.  The
+paper does not present example error reports, but the final paper can
+easily address this short coming.
+
+---------------------------------------------------------------------------
+                         Questions for Authors
+---------------------------------------------------------------------------
+
+I would like to see some sensitivity studies wrt to bugs reported
+based on the thresholds in the final paper.  Would you do that?
+
+Would you please comment on the format and type of bug reports you
+give, when they are generated, and how they guide users to bugs?
+
+Expand on the differences between your metrics and Liblit et al.
+
+---------------------------------------------------------------------------
+                          Detailed Comments
+---------------------------------------------------------------------------
+
+The writing can be improved.  Many, many times the paper uses very
+general terms e.g., "violates an invariant" or "metric" when more
+specific wording is warranted. Figure 1 for example.  
+
+All the ending figures of the paper are out of order. 
+
+There needs to be a discussion of the error reports. Do you report
+the method that does the violation, or what?
+
+What are other example metrics besides pointer counts?
+
+The last paragraph of page 3 is very confusing. Figure 3 should
+include the counts by object and reference. What is the qualitative
+difference of which objects versus references?        How would it vary in
+other languages, e.g., C# or Java?
+
+Figure legends are way too tiny.  Figure 3 and 4 should use the same
+y-axis.
+
+Why is it interesting or do we care that program versions maintain
+this invariant?  Some metrics are of course not robust to some
+changes, e.g., going from a balanced binary tree to a b-tree.
+
+I suggest moving 2.2 until after section 3.  
+
+Text I found confusing: last paragraph of 2.2; End of column 1, page
+7. Shared-state bugs are not defined. 
+
+Per-data structure metrics versus total heap metrics claims are 
+completely unsubstantiated.  Why not test them? ;-)
+
+What about arrays in the heap?
+
+I would omit claim 3 or be more specific.
+
+============================================================================
+                            REVIEWER #2
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+                           Reviewer's Scores
+---------------------------------------------------------------------------
+
+        Confidence level in your review?: 8
+                        Writing quality?: 7
+     Relevance to ASPLOS (Arch, PL, OS)?: 3
+      Quality of evaluation methodology?: 6
+                 Overall Recommendation?: 4
+                      Paper's potential?: 6
+Will this paper open new research areas?: 5
+          Would you champion this paper?: 4
+
+
+---------------------------------------------------------------------------
+                         Description of paper
+---------------------------------------------------------------------------
+
+The paper proposes a heap bug detection algorithm that relies on detecting behavior anomalies. The algorithm is trained by a set of input sets that do not have the anomalies, and deviation of behavior are detected as bugs. Anomalies are detected when the fraction of nodes with different indegrees or outdegrees, or with indegree = outdegree changes.
+
+---------------------------------------------------------------------------
+                            Main Strengths
+---------------------------------------------------------------------------
+
+- Improving programmers' productivity is important
+- What metrics are "relatively stable" across input sets
+- The use of commercial applications (although their state in the software life cycle is unknown)
+
+---------------------------------------------------------------------------
+                           Main Weaknesses
+---------------------------------------------------------------------------
+
+- Questionable relevance to ASPLOS (no architecture schemes or interplay of hardware/software)
+- No performance evaluation
+- Lack of comparison with alternative techniques
+
+---------------------------------------------------------------------------
+                         Questions for Authors
+---------------------------------------------------------------------------
+
+Why is this paper relevant to ASPLOS instead of a software engineering conference?  
+
+Exactly which bugs are not detectable by state-of-the-art tools such as Purify, Valgrind, Daikon, and DIDUCE?
+
+---------------------------------------------------------------------------
+                          Detailed Comments
+---------------------------------------------------------------------------
+
+Improving progremmers' productivity is an important goal, and one way to
+achieve that is through improving the capability of tools in detecting bugs.
+This paper tries to detect heap bugs using an algorithm that relies on
+detecting behavior anomalies. The algorithm is trained by a set of input sets
+that do not have the anomalies, and deviation of behavior are detected as bugs.
+Anomalies are detected when the fraction of nodes with different indegrees or
+outdegrees, or with indegree = outdegree changes. 
+
+Unfortunately, there is no architecture scheme, interplay of hardware/software,
+or even performance evaluation. Hence, its relevance to ASPLOS is highly
+questionable. The paper is much more appropriate for a software engineering
+conference. 
+
+What is the contribution of the paper? 
+
+- Is it improved bug detection? If so, it needs to clearly state which bugs
+cannot be detected by current tools such as Daikon, DIDUCE, Purify, Valgrind,
+etc. Section 4.3 seems to indicate that existing tools (Purify and Valgrind)
+can detect the same sets of bugs. I also recommend more explicit comparison
+with other anomaly detection schemes. 
+
+- Is it the ability to pinpoint the bug source? I'm not convinced that it is a
+fundamental advantage of HeapMD, since other tools can also be programmed to
+emit the call stack. Emitting call stack is not a new technique, either. 
+
+What is the state of the commercial applications in the software life cycle?
+Are they stable released versions? When the paper says "bugs that were
+previously unknown", it would help if it specifies the context, such as unknown
+during the development before or after regression testing, etc. Will they
+remain unknown if the same applications are already debugged with
+state-of-the-art existing tools? 
+
+How does the work compare to static/runtime techniques such as alias analysis
+(PLDI '06), or low-overhead bug detection technique such as HeapMon (IBM JRD
+'06)?
+
+The set of stable metrics are generated by training the program with training
+input sets. If the program already has bugs, how can we be sure that the stable
+metrics do not represent the behavior due to the bugs? The paper shows several
+threasholds, but how are these thresholds obtained and how can we know they are
+widely applicable even for buggy programs? 
+
+What is the relationship between anomalous operations and illegal heap
+operations (such as write to unallocated region, or allocation that does not
+have a matching free)?
+
+If bugs happen during the phases where no stable metrics are found (such as
+initialization, program phase transition, or near the end of the program), what
+is the impact on your tool?
+
+============================================================================
+                            REVIEWER #3
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+                           Reviewer's Scores
+---------------------------------------------------------------------------
+
+        Confidence level in your review?: 7
+                        Writing quality?: 9
+     Relevance to ASPLOS (Arch, PL, OS)?: 5
+      Quality of evaluation methodology?: 7
+                 Overall Recommendation?: 6
+                      Paper's potential?: 6
+Will this paper open new research areas?: 4
+          Would you champion this paper?: 5
+
+
+---------------------------------------------------------------------------
+                         Description of paper
+---------------------------------------------------------------------------
+
+HeapMD uses training inputs to benchmarks to derive globally stable
+heap metrics, like in and out degrees of heap objects. Using these
+heap metrics, the paper then observes if the program, while running
+other, real inputs, violates these metrics.  These violations are
+flagged as possible heap-related bugs.
+
+---------------------------------------------------------------------------
+                            Main Strengths
+---------------------------------------------------------------------------
+
+Well written. Different, empirical approach to debugging.
+
+---------------------------------------------------------------------------
+                           Main Weaknesses
+---------------------------------------------------------------------------
+
+Although the paper presented examples of heap bugs detected, the
+reader still questions what magnitude the bug needs to be in order for
+HeapMD to detect it.
+
+---------------------------------------------------------------------------
+                         Questions for Authors
+---------------------------------------------------------------------------
+
+Is this really an ASPLOS paper?
+
+How should HeapMD be used? The globally stable metrics cut away
+startup and shutdown statistics, yet in Section 4.3 paragraph 3 there
+was reference to finding bugs that occurred during startup. How is it
+justified to use the stable metrics during startup and shutdown?  Why
+isn't it ok for startup and shutdown behavior to violate stable
+metrics?
+
+Are there any assumptions on the training inputs? Are the programs
+guaranteed to be clean for the training inputs? If training inputs
+also embody heap-related bugs, then those bugs may become masked.
+
+Training inputs for which metrics are not stable are treated as buggy.
+Is this really appropriate? What if the program has radically
+difficult behaviors given different inputs? Like compress and
+decompress?
+
+In Section 4.5, it mentions that the programs are not heap dominated
+by a single large data structure. What if the program is dominated by
+a single structure? Since fields are collapsed, wouldn't HeapMD be
+inable to detect bugs amongst the fields?
+
+---------------------------------------------------------------------------
+                          Detailed Comments
+---------------------------------------------------------------------------
+
+I think the exercises in identifying artificially injected bugs would
+have been very educational. What kind of bugs are more likely to be
+detected? Of what magnitude does the disturbance need to be to show up
+for HeapMD? These are questions I would have liked answered.
+
+Call stack logging is a good report since the metric computations
+points are at function entry points. However, what if the bugs are at
+a finer granularity? What if the function is a large one with multiple
+instructions manipulating heap objects?
+
+What is the performance impact of HeapMD? Is there a feel for it at
+least? Linear, exponential, etc. Although people may be willing to
+spend time isolating heap bugs, it would still be nice to have some
+sense of how much time is required and the scalability of HeapMD.
+
+Do the min and max values in Figure 7 include startup and shutdown
+values? Please clarify.
+
+Typo in Section 2, first paragraph. "analrm" should be "an alarm".
+
+Figure 9. Are these really bugs or are they just undesired behaviors?
+
+Page 8, Section 4.2, last paragraph. "artifically" should be
+
+============================================================================
+                            REVIEWER #4
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+                           Reviewer's Scores
+---------------------------------------------------------------------------
+
+        Confidence level in your review?: 7
+                        Writing quality?: 7
+     Relevance to ASPLOS (Arch, PL, OS)?: 6
+      Quality of evaluation methodology?: 4
+                 Overall Recommendation?: 5
+                      Paper's potential?: 7
+Will this paper open new research areas?: 7
+          Would you champion this paper?: 5
+
+
+---------------------------------------------------------------------------
+                         Description of paper
+---------------------------------------------------------------------------
+
+This paper uses the insight that there are many invariants in the heap that are stable across multiple executions in order to identify bugs.
+
+---------------------------------------------------------------------------
+                            Main Strengths
+---------------------------------------------------------------------------
+
+The insight that there are stable properties in a heap is very interesting.
+
+---------------------------------------------------------------------------
+                           Main Weaknesses
+---------------------------------------------------------------------------
+
+The application of this technique is limited.
+
+---------------------------------------------------------------------------
+                         Questions for Authors
+---------------------------------------------------------------------------
+
+Is this the first publication that reports on the existence of stable properties of the heap?
+
+---------------------------------------------------------------------------
+                          Detailed Comments
+---------------------------------------------------------------------------
+
+The insight that there are stable properties in a program’s heap is I think an
+important one. The authors provide show the existence of these stable
+properties using SPECINT applications. It would be more interesting to show
+these properties hold for long-running server-type applications, where
+isolating a heap problem is much more difficult. Furthermore, it is difficult
+to infer that these stable properties hold across all the execution patterns of
+the program. The authors need to provide data to convince that these properties
+will hold across different phases of execution, different input loads and in
+different control paths of the program. For example, if the gcc benchmark uses
+a scientific program with simple loops or an object oriented program with
+complex control flow and dynamic dispatching will create very different CFG’s,
+which are all heap structures. In this example, can your system still find
+stable properties in the heap of gcc? 
+
+I see two weaknesses of using this technique for bug finding. First of all, the
+profile run needs a correct program. Thus, I don’t see how you can find any bug
+other than a regression in the development process. Second, what the system
+provides is a global property. How do you map it to a specific bug, which is a
+very local change? In a large program this can be very difficult to do. You
+need to provide more convincing evidence that the workflow from detecting a
+change in a stable property to a bug is doable.
+
+============================================================================
+                            REVIEWER #5
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+                           Reviewer's Scores
+---------------------------------------------------------------------------
+
+        Confidence level in your review?: 7
+                        Writing quality?: 7
+     Relevance to ASPLOS (Arch, PL, OS)?: 7
+      Quality of evaluation methodology?: 5
+                 Overall Recommendation?: 6
+                      Paper's potential?: 7
+Will this paper open new research areas?: 7
+          Would you champion this paper?: 5
+
+
+---------------------------------------------------------------------------
+                         Description of paper
+---------------------------------------------------------------------------
+
+This paper proposes HeapMD: collect 'normal range' of some stable heap property metrics by calculating at some sample points, and use this 'normal range' to detect heap abnormalty, i.e. detect heap bugs. These metrics include: percentage of heap vertexes with indegree=0, 1,2; outdegree = 0, 1, 2; and indegree = outdegree.
+
+---------------------------------------------------------------------------
+                            Main Strengths
+---------------------------------------------------------------------------
+
+1. Using the graphic property to measure the correctness of heap is an interesting idea.
+
+2. The paper has applied its idea to some commercial applications and successfully detected some bugs, especially some semantic bugs.
+
+---------------------------------------------------------------------------
+                           Main Weaknesses
+---------------------------------------------------------------------------
+
+1. The idea seems ad-hoc in many places. 
+
+2. The validation of the observation and the evaluation of the idea are not very scientific and biased.
+
+---------------------------------------------------------------------------
+                         Questions for Authors
+---------------------------------------------------------------------------
+
+1. The idea seems ad-hoc in many places. First of all, why the author picks in/out-degree 0,1,2 is not very clear. Will in/out-degree=3 be useful? The insight is not clear. 
+
+2. The author uses some example to validate their idea, however, I think the validation part is not scientific, and sometiems even misleading.
+  First, the main idea validation results are presented in figure 7, which indicates for every benchmark application, there exists at least one global metric that has very good stability across inputs. (presented in section 3). However, later on in section 4, page 7), the author says, actually, for a metric to be stable they only require this holds on 40% of training inputs. "This number (40%) was an arbitrary choice...". Later on, they said the validation data in figure 7 is drawn based on those stable inputs they identified. If my understanding is correct, this validation methodology is wrong. If 60% of your inputs is not stable and would violate your metric, this is not 'invariance' and you can not use it to detect 'abnormal'.
+  
+Second, there are also other places where the description seems ad-hoc. Given the metric value curve, the authors claim that they would always ignore the first 10% and last 10% of program execution. Why they choose 10%. The first 10% is warmup and is reasonable to be filtered out, what about the second 10%? How would they know where the 10% is in real execution? Will this 10% vary for different application?
+  
+3. Evaluation is not very convincing.
+  First, HeapMD can detect various types of heap bug, as claimed in one table and also I believe it can. However, it is only compared with SWAT, a memory leak detector. The comparison results are actually not so good. 
+
+Additionally, the author did not compare it with other widely-used detector, such as Valgrind and Purify so it is unclear how many new types of bugs can be 
+detected by this method.
+
+ The reported false positives are 0 in all test cases. Such result sounds too good to be true, especially for a statistic based approach. It gives me an impression that the authors handpicked their bugs and did a lot of twicking on the parameters to make the results look so good.
+
+
+---------------------------------------------------------------------------
+                          Detailed Comments
+---------------------------------------------------------------------------
+
+See above

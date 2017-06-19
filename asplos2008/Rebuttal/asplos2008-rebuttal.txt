@@ -1,0 +1,145 @@
+Dear Program Committee -
+
+We appreciate the positive comments in the review: "This study is definitely an
+advance in the engineering of drivers" (Review B) and "Idea is well presented,
+lots of detailed careful work" (Review A). However, we wish to address concerns
+raised by the reviewers, beginning with concerns common to several reviews.
+
+[1]: Why evaluation on only four drivers?
+
+We appreciate that there are thousands of drivers for Linux and we only
+evaluated DriverSlicer against four drivers. However, we wanted to test our
+split code, and therefore only considered drivers for which devices were
+available on our platform.  In addition, DriverSlicer is not yet completely
+automatic because it must be supplied with marshaling annotations (as do other
+RPC libraries such as MSIDL), so the work to do all or even a majority of
+drivers would be prohibitive.  
+
+[2]: Why test in a virtual machine (VM)?
+
+VMs were a convenient platform during the development and debugging of
+DriverSlicer. Though we report results using a VM, we have since tested
+UHCI-HCD with native hardware with identical results. We believe that our
+measurements of low overhead within a VM are representative of what would occur
+on native hardware because the cost of kernel-user transitions are typically
+much higher within a VM, and that is the bulk of the overhead induced by
+microdrivers.
+
+[3]: Why are the drivers that we chose representative?
+
+We sought drivers with widely differing interfaces to the kernel to verify that
+the technique is applicable to different kinds of drivers. Our four drivers are
+drawn from three major classes of drivers (network, sound, USB). While the
+drivers we chose are largely representative of other drivers in their
+corresponding classes, we however cannot conclude that these drivers are
+representative of all Linux drivers, as there are many other classes.
+
+[4]: Fault injection: why only null-ptr-deref?
+
+We agree that null pointer dereferences are not representative of all (or even
+most) driver failures. However, our goal for this experiment was to demonstrate
+that microdrivers can isolate faults.  We chose a class of bugs that would not
+require a failure detector or recovery module. However, incorporating failure
+detection and recovery in our architecture will allow microdrivers to isolate a
+wider variety of faults, such as locking problems and data structure
+corruptions. While we discuss recovery with shadow drivers in the paper,
+because the u-driver is largely stateless (its state is stored in the object
+tracker), we can potentially perform recovery without shadow drivers: the
+object tracker can be used to restore u-driver state after it is restarted.
+
+
+INDIVIDUAL CONCERNS
+
+DIFFERENCES FROM OTHER SYSTEMS: Several reviewers questioned the differences
+between microdrivers and other systems, such as Coign and Cosy, and whether it
+improves reliability better than static analysis tools such as MC or CCured.
+Foremost, we are addressing a different problem area than past work on
+splitting code. Second, Cosy requires bottleneck regions to be identified
+manually; DriverSlicer employs the splitter to identify code to execute in the
+user/kernel. Third, from the Cosy description in the HotOS paper, it is unclear
+whether Cosy needs object tracking/synchronization, which are key components of
+microdrivers because the u-driver and k-driver share data structures.
+
+Static analysis tools find bugs in drivers but do not make it easier to write
+driver code. In contrast, Microdrivers simplify driver development and improve
+programmability, e.g.,by allowing the use of memory leak detectors. These tools
+complement microdrivers and would be helpful in improving the quality of the
+k-driver and u-driver.
+
+
+DIFFICULTY OF ANNOTATING: Annotations require human input, and therefore may be
+incorrect. As Section 5.2.3 describes, DriverSlicer employs static analysis to
+infer where annotations must be supplied. However, this analysis is currently
+not complete and can miss possible annotations. We plan to address completeness
+in future work. Like other tools that depend on user-supplied annotations,
+DriverSlicer is sensitive to the completeness and correctness of annotations.
+Missed annotations will indeed lead to incorrect marshaling of data structures.
+
+Compared to splitting a driver by hand (as questioned by review C), our
+approach simplifies splitting for three reasons. First, given interface
+specifications, it automatically infers a split. Second, it automatically
+generates code corresponding to this split.  Third, it also generates RPC
+communication code guided by marshaling annotations.
+
+RACE CONDITION: There is indeed a bug in this algorithm when run on a
+multiprocessor. However, we originally designed this system for a uniprocessor,
+and in that system the protocol is safe because the Linux kernel will not
+preempt one kernel thread to run another. This prevents the race condition
+pointed out by the reviewer. We have since converted the protocol to work on
+multiprocessors; the new protocol is:
+
+   typedef struct combolock {
+      int sem_required;
+      spinlock lock;
+      semaphore sem;
+   }
+
+   Kernel mode:
+
+   acquire_combolock(l) {
+      lock(l.lock);
+      if (l.sem_required != 0) {
+         l.sem_required++;
+         unlock(l.lock);
+         acquire(l.sem);
+      }
+
+   release_combolock(l) {
+      if (l.sem_required == 0) {
+         unlock(l.lock);
+      } else {
+      lock(l.lock);
+      l.sem_required--;
+      release(l.sem);
+      unlock(l.lock);
+   }
+
+   User mode:
+
+   acquire_combolock(l) {
+      lock(l.lock);
+      l.sem_required++;
+      unlock(l.lock);
+      acquire(l.sem);
+   }
+
+   release_combolock(l) {
+      lock(l.lock);
+      l.sem_required--;
+      release(l.sem);
+      unlock(l.lock);
+   }
+
+SOUNDNESS: Though we haven't rigorously proved soundness, the code generator
+performs a sequence of simple transformations. Therefore, we believe that its
+correctness can either be proved or bugs fixed as it is widely applied.  Timing
+issues can potentially pose problems in the microdriver if the original driver
+has timing issues as well. E.g., subtle race conditions may not manifest in the
+unmodified driver but manifest in the microdriver because of increased
+latencies.
+
+NEW CODE IN KERNEL: Marshaling code introduced into the kernel is automatically
+generated and highly stylized. While marshaling code may constitute a large
+number of lines, bugs in this code are due to bugs in the marshaling tool.  As
+a result, the one-time cost of verifying/testing the marshaling tool is
+amortized over the drivers it is applied to.

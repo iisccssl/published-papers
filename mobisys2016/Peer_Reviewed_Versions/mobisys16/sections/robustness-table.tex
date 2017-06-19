@@ -1,0 +1,91 @@
+\newcommand{\apperr}{\textsc{\scriptsize AppErrMsg}}
+\newcommand{\lostconn}{\textsc{\scriptsize LostConn}}
+\newcommand{\anderr}{\textsc{\scriptsize AndroidErrMsg}}
+\newcommand{\emptyfile}{\textsc{\scriptsize EmptyFile}}
+\newcommand{\blnkscrn}{\textsc{\scriptsize BlankScreen}}
+\newcommand{\im}{\it\bfseries\scriptsize}
+
+\begin{figure*}[htbp!]
+\footnotesize
+\renewcommand{\arraystretch}{0.5}
+\begin{center}
+%
+%\begin{tabular}{|c|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+{\bf USB} & {\im MobileWebCam} & {\im Camera ZOOM FX} & {\im Retrica} & {\im Candy Camera} & {\im HD Camera Ultra}\\ 
+\hline
+\textit{Passive}    & \apperr      & \apperr        & \anderr & \apperr      & \anderr\\
+\textit{Active}     & \apperr      & \apperr        & \apperr & \apperr      & \apperr\\
+\hline
+\hline
+{\bf Camera} & {\im Camera for Android} & {\im Camera MX} & {\im Camera ZOOM FX} & {\im HD Camera for Android} & {\im HD Camera Ultra} \\
+\hline
+\textit{Passive}       & \anderr            & \apperr   & \apperr        & \anderr               & \anderr\\
+\textit{Active}        & \blnkscrn          & \apperr   & \anderr        & \blnkscrn             & \blnkscrn\\
+\hline
+\hline
+{\bf WiFi} & {\im Spotify} & {\im Play Store} & {\im YouTube} & {\im Chrome Browser} & {\im Facebook}\\
+\hline
+\textit{Passive} & \lostconn & \lostconn & \lostconn & \lostconn & \lostconn\\
+\textit{Active}  & \lostconn & \lostconn & \lostconn & \lostconn & \lostconn\\
+\hline
+\hline
+{\bf 3G (Data)} & {\im Spotify} & {\im Play Store} & {\im YouTube} & {\im Chrome Browser} & {\im Facebook}\\
+\hline
+\textit{Passive} & \lostconn & \lostconn & \lostconn & \lostconn & \lostconn\\
+\textit{Active}  & \lostconn & \lostconn & \lostconn & \lostconn & \lostconn\\
+\hline
+\hline
+{\bf 3G (Voice)} & \multicolumn{5}{c|}{\im Default call application}\\
+\hline
+\textit{Passive} & \multicolumn{5}{c|}{\apperr: Unable to place a call}\\
+\textit{Active}  & \multicolumn{5}{c|}{\apperr: Unable to place a call}\\
+% {\bf 3G (Voice)} & \multicolumn{5}{p{0.8\textwidth}|}{\im Default call application}\\
+% \hline
+% \textit{Passive} & \multicolumn{5}{p{0.8\textwidth}|}{\apperr: Unable to place a call}\\
+% \textit{Active}  & \multicolumn{5}{p{0.8\textwidth}|}{\apperr: Unable to place a call}\\
+\hline
+\hline
+{\bf Microphone} & {\im Audio Recorder} & {\im Easy Voice Recorder} & {\im Smart Voice Recorder} & {\im Sound and Voice Recorder} & {\im Voice Recorder}\\
+\hline
+\textit{Passive}           & \apperr        & \apperr             & \apperr              & \apperr    & \apperr\\
+\textit{Active}            & \emptyfile     & \emptyfile          & \emptyfile           & \emptyfile & \emptyfile\\
+\hline
+\end{tabular}
+\indent\vspace{-0.3cm}
+\end{center}
+%
+\begin{center}
+\begin{tabular}{p{0.95\textwidth}}
+{\small We use \textit{Passive} to  denote experiments in which the user app
+was not running when the peripheral's driver was replaced with a dummy, and the
+app was started after this replacement. We use \textit{Active} to denote
+experiments in which the peripheral's driver was replaced with a dummy even as
+the client app was executing. 
+%
+\circone~\apperr\ denotes the situation where the user app starts normally, but
+an error message box is displayed within the app after it starts up; 
+%
+\circtwo~\blnkscrn\ denotes a situation where the user app displayed a blank
+screen; 
+%
+\circthree~\lostconn\ denotes a situation where the user app loses network
+connection; 
+%
+\circfour~\emptyfile\ denotes a sitution where no error message is displayed,
+but the sound file that is created is empty; 
+%
+\circfive~\anderr\ denotes the situation where the user app fails to start (in
+the passive setting) or a running app crashes (in the active setting), and the
+Android runtime system displays an error.}\\
+\hline
+\end{tabular}
+\end{center}
+\indent\vspace{-0.5cm}
+\mycaption{Results of robustness experiments for user apps.}
+{\label{table:robustness}}
+%\indent\vspace{-0.5cm}
+%
+\end{figure*}
+

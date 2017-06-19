@@ -1,0 +1,90 @@
+1. Introduction
+2. Background
+3. Protocol description and analysis.
+4. Experimental evaluation
+5. Related work
+6. Conclusions
+
+---
+
+1. Introduction
+
+Paragraph 1: Mashups becoming popular. Evidence suggests that mashups may soon
+be used with applications that require authentication.  (can we give real
+examples here? The current introduction does not contain any real examples). 
+
+Paragraph 2: One popular way to solve this in traditional scenarios is
+Federated Identity Management, e.g., OpenID. Brief description of OpenID.
+
+Paragraph 3: However, several aspects of OpenID make it unsuitable for use with
+mashup applications. List of drawbacks from Saman's writeup will go here.
+
+Paragraph 4: What is our key insight? New protocol that does not require
+redirection and that works with mashups. Builds upon a new framework for mashup
+communication that provides mutually authenticated channel for communication
+(hitherto impossible with existing mashup applications).
+
+Paragraph 5: Summary of benefits of our approach. List all the benefits.
+basically showing how our technique can overcome all the limitations listed in
+paragraph 3.
+
+Paragraph 6: Summary of experimental evaluation.
+
+---
+
+2. Background
+
+2.1 Background on Identity Management
+	- More detailed example (e.g., from the Introduction) to go here.
+	  This example should be simple enough for a reader to appreciate,
+		and yet complex enough to serve as a running example for the 
+		rest of the paper. The example of Airline.com and CarRental.com
+		serves just fine for this purpose. All the figures in the protocol
+		that Saman sent should be modified to suit this running example.
+
+2.2 Background on OpenID
+	- Brief overview of how OpenID works, and the problems that it solves.
+	- What are the problems with OpenID in mashup environments??
+		-> Redirection based approach.
+		-> Too many network round trips.
+		-> Statefulness
+
+2.3 Background on OMOS
+	- Overview of the security guarantees that it provides.
+	- Overview of how we use OMOS to provide Identity management using 
+	  our protocols.
+
+---
+
+3. Protocol description and analysis
+
+3.1 Assumptions and terminology (e.g., define the terms Identity provider, 
+    consumer, mashlet, etc. here)
+
+    List Security and System requirements: Secure authentication.
+		Must not require user to enter password each time with consumer (SSO).
+		Must be stateless (explain why). Must not require loading/unloading
+		the page.
+    
+		Two protocols: one that uses IdP, one that does not. What are the
+		pros/cons of each approach, and which one is applicable where?
+
+3.2 Dependent protocol:
+
+    describe the dependent protocol
+
+		3.2.1 Analysis of protocol.
+		Why does the protocol meet the system and security requirements listed
+		in section 3.1
+
+3.3 Independent protocol
+		
+		describe the independent protocol.
+
+		3.3.1 Analysis of the protocol.
+		Why does the protocol meet system and security requirements?
+
+---
+
+4. Experimental evaluation: What are we planning to do about this?
+

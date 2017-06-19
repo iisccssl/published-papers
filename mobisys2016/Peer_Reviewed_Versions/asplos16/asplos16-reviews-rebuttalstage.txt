@@ -1,0 +1,270 @@
+===========================================================================
+                          ASPLOS 2016 Review #55A
+---------------------------------------------------------------------------
+     Paper #55: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+      Reviewer Expertise/Confidence: 3. Knowledgeable in the area/high
+                                        confidence in the review
+
+                         ===== Paper summary =====
+
+The paper describes a method for regulating mobile devices in restricted spaces, such as corporate or government offices.  It uses TrustZone, ARM's trusted hardware extension, to let a host (company or gvt. body)
+
+                        ===== Paper Strengths =====
+
+- New use for ARM TrustZone.
+- Companies/Governments may want this capability.
+
+                       ===== Paper Weaknesses =====
+
+- Gigantic privacy concerns, which are not discussed.  To me, these are a deal breaker.
+
+                      ===== Comments to authors =====
+
+To my knowledge, this is a new use of ARM's TrustZone.  Technically, it's a pretty interesting system, and it's quite possible that companies and governments may actually like this.  However, one aspect stops me from considering a favorable recommendation for this paper: privacy.
+
+What does it mean to have my device "checked in" when I enter a building to have its memory being poked around by the company or government? Over what kinds of aspects of my device will your system give control to hosts (aside from disabling cameras/mics)?  What are the privacy implications of enabling such controls? How do you prevent the companies/governments from getting access to information about me through your mechanism?  Even something as trivial as my type of camera may be sensitive in such circumstances (e.g., it can reveal that I don't have a whole lot of money if my phone has a cheap one).  It is clear that some things will just not provided control over, and other things will just be accepted to leak, but what I want to know is what are these things going to be?  And how can regular end-users make informed choices about what kinds of controls to give to their hosts, and to what expense?
+
+Without answers to these questions, I cannot provide a proper assessment for this technology.
+
+                            Novelty: 3. New contribution
+                    Writing quality: 3. Adequate
+
+===========================================================================
+                          ASPLOS 2016 Review #55B
+---------------------------------------------------------------------------
+     Paper #55: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+      Reviewer Expertise/Confidence: 2. Some familiarity with the
+                                        area/medium confidence in the
+                                        review
+
+                         ===== Paper summary =====
+
+The paper presented an approach to regulate usages of ARM TrustZone-based smart devices in restricted space without assuming that guest device is benign.  The key differentiating technique involves having the host device directly update the guest device memory to selectively disabling certain capability of the guest device (in order to enforce safe-zone restrictions). It also  proposes a vetting service to allow guest device control the changes that the host device can affect. A prototype system is implemented and evaluated on certain aspect of the system.
+
+                        ===== Paper Strengths =====
+
+• The target problem (of usage control for smart device in restricted area) is interesting and seems to have much room for innovation
+• The proposed approach (of directly modifying guest device memory) is very different from existing methods and can be an interesting direction to explore.
+
+                       ===== Paper Weaknesses =====
+
+• Not very convinced that this approach (of having host device writing directly to remote guest device memory to enforce safety policy) really works.
+• Lack important technical details, such as how to identify the memory addresses that need to be modified; what is the overhead involved in analyzing memory map; the safety of raw memory address modification (e.g., whether guest device may experience crash behaviors)
+
+                      ===== Comments to authors =====
+
+The paper is addressing an interesting and practical new issue in smart phone usage in restricted setting. While the proposed approach seems to be novel, I feel uneasy about this approach of letting another device to deliberately write to the raw memory page of a guest device. While the vetting service helps to ease this concern, it is unclear who will provide the vetting service, why the guest device would trust the vetting service, and whether the vetting service will be able to guard against “unsafe memory writes” while still allow legitimate “safe memory writes” of the host service to get through. 
+
+Another concern is the safety of overwriting guest device memory, whether there could be unexpected behaviors or crashes when writing NULL or install dummy drivers.
+
+Would also like to know what is the rough overhead of doing such analysis to compare and scan kernel pages for verification or marking memory addresses.
+
+               ===== Questions for authors’ response =====
+
+See above
+
+                            Novelty: 3. New contribution
+                    Writing quality: 3. Adequate
+
+===========================================================================
+                          ASPLOS 2016 Review #55C
+---------------------------------------------------------------------------
+     Paper #55: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+      Reviewer Expertise/Confidence: 3. Knowledgeable in the area/high
+                                        confidence in the review
+
+                         ===== Paper summary =====
+
+The paper builds a restricted spaces model where the trusted zone on your ARM personal device enforces a security property when you enter a particular region, like a Federal building.
+
+                        ===== Paper Strengths =====
+
+This is an important problem and the authors have the beginning of a real solution.
+
+                       ===== Paper Weaknesses =====
+
+I do not believe the model presented by the authors where the host enforces complex security policies based on the raw memory contents of the guest is a valid model.  And I fear validating that model with an ASPLOS publication.
+
+The paper is somewhat unclear on its threat model.  It claims to not trust the guest, but baked into the system at various points is the assumption that the guest is well behaved.
+
+                      ===== Comments to authors =====
+
+While I can't recommend it for publication, I really like your paper.  I think y'all have a workable approach to an important and difficult problem.  I want to see your project succeed.
+
+A priori, I cannot endorse the model of raw kernel memory dumps as a workable basis for a security monitor.  Even if I were presented with compelling evidence that with the diversity of build tools, execution environments, and vendor specialization raw kernel memory page hash values were useful for security, I would have a difficult time accepting it.  And this paper makes no effort to convince me.  It does not measure the kernel layout of the same OS from different manufacturers (for example), or even the same OS from the same manufacturer.  I suspect there is no way to make a secure system based on page hash values because binary code layout and embedded data are so brittle.
+
+The author's brief argument that having access to all guest code enables a host to determine security properties is highly reminiscent of the (obviously flawed) argument, so long as I give you the complete Turing Machine program, of course you can tell if it halts on a given input.
+
+While the stated threat model is that the guest is malicious, the system often does not confine the guest but seeks to minimize damage.  The prime example is the reboot.  A reboot can be detected by the host, but at what cost to having a rogue device in the restricted zone?  Another example is the polling interface for verification tokens, which minimizes the time a guest could go rogue, but does not eliminate it. Using pids to validate a user-level anti-virus checker assumes a non-malicious guest (section 3).  The discussion (4.2) about how a memory update won't abort forever assumes a malicious guest is not trying to make it abort forever.  Your non-atomic guest memory page reads (4.2) do not guard against a malicious guest changing the page tables as virtual memory is read.  In general, most of your protections are virtually addressed and your system doesn't seem to pay particular attention to the page table.
+
+The device driver unregistration protocol you describe is far behind the state of the art of shadow drivers.
+
+Smaller points.
+
+Why design your own protocol in Figure 4?  I don't see a problem with your protocol, but these things are notoriously subtle, why not use a protocol debugged by experts?
+
+Your suspend protocol (section 4.4) seems vulnerable to rollback attack because nothing seems to safeguard restore from the _latest_ valid checkpoint.
+
+The actual measured overheads for data copy and cryptographic operations are high.
+
+Patroni and Hicks ([37]) have a great kernel malware detection system.  There is follow-on work to that paper, published in ASPLOS 2011 called Ensuring Operating System Kernel Integrity with OSck.  Both approaches require the checking code to have extensive compiler metadata about the guest it checks.
+
+The figures are well done, and the setup for the paper is great.
+
+               ===== Questions for authors’ response =====
+
+Have you validated the assumption that raw access to kernel memory pages is a good security API?
+
+                            Novelty: 3. New contribution
+                    Writing quality: 3. Adequate
+
+===========================================================================
+            Response by Vinod Ganapathy <vinodg@cs.rutgers.edu>
+---------------------------------------------------------------------------
+We three Weak-Rejects, we know we face an uphill battle. 
+Nevertheless, we will try.
+
+__________________________[Reviewer-1]__________________________
+
+Privacy is just as much of a show-stopper for us as it is for you. 
+Hence, the vetting-service to safeguard guest privacy.
+
+[R1.Q1]-What does "checked-in" mean?
+
+    Checking-in means mutual authentication of the device/host, 
+    the host requesting snapshots of certain memory addresses, 
+    and the guest responding after suitably vetting this request. 
+    The host then sends updates to modify device memory, which 
+    the guest applies after vetting it.  All this is in Sections 
+    2-5. What additional information are you seeking?
+
+[R1.Q2]-Aspects of device we control? Privacy implications?
+
+    We control peripherals. Other applications enabled by memory
+    modifications are possible, but we haven't explored them. The
+    host can read the memory locations that it requests access to 
+    and also modify memory. Arbitrary reads/writes obviously put
+    client privacy at risk. Precisely why our vetting-service only
+    allows hosts to access kernel code and data, and only allows
+    conservative modifications to insert dummy drivers.
+
+[R1.Q3]-Preventing hosts from obtaining information about me?
+
+    The vetting-service restricts memory accesses from hosts. Yet,
+    hosts may certainly "fingerprint" devices (e.g.,by inferring 
+    the camera's model). This is the price guests have to pay to 
+    use the device within the restricted space. If this feels
+    intrusive, guests can opt to leave devices out of restricted
+    spaces.
+
+    You ask whether there is a clear characterization of what is 
+    acceptable as a leak. Our work does not answer this question, 
+    which requires further investigation. Our vetting-service
+    prevents the most obvious leaks.
+
+[R1.Q4]-How can end-users make informed choices?
+
+    In our model, end-users setup and trust the vetting-service. 
+    But one can imagine a third-party setting up a vetting-service
+    that guests subscribe to. Much like you trust your antivirus
+    software, purchased from a third-party, to protect your 
+    machine from untrusted downloads.
+
+__________________________[Reviewer-2]__________________________
+
+[R2.Q1]-Unclear who provides vetting-service?
+
+    See [R1.Q4].
+
+[R2.Q2]-Unexpected behaviors/crashes?
+
+    We extensively evaluated this. See Figure-7.
+
+[R2.Q3]-Overheads?
+
+    Section-6 presents the performance of transferring memory to the
+    host. The host's analysis time depends on how deep the analysis
+    is. For simple analyses (e.g.,inspecting the system call table),
+    the analysis will take just a few microseconds. More complex
+    analyses that involve data-structure traversal will take longer
+    (on the order of a few minutes for the kinds of analyses in
+    references [9,14,18,37]). But this is done on the host's servers,
+    not on guest devices.
+
+__________________________[Reviewer-3]__________________________
+
+[R3.Q1]-"Is raw access....a good security API?"
+
+    We take this assumption as given. It has been validated in prior
+    work with some success, especially for kernel integrity checks:
+    references [9,14,18,37,47], and work on VM introspection. With
+    memory pages, system integrity checks do not have to be
+    restricted to page hashes. A memory dump can enable traversal 
+    of kernel data-structures to ensure compliance with a variety 
+    of complex data-structure invariants.  Doing such a traversal
+    would obviously require some information on the normal-world's
+    build, but this information can be supplied to the host by the
+    device's secure-world (trusted and locked-down by TrustZone).
+
+[R3.Q2]-Device unregistration far behind shadow drivers.
+
+    We know, and state as such in the paper. Our mechanism can easily
+    incorporate shadow drivers with an associated increase in TCB 
+    size.
+
+[R3.Q3]-Figure-4?
+
+    Figure-4 is a simplified TLS-handshake. We could have just as
+    well used a regular TLS-handshake. The point of Figure-4 is to 
+    demonstrate how various device keys are used in authentication.
+
+[R3.Q4]-Rollback-attack in REM-suspend?
+
+    As stated, yes, the guest can rollback to a previous snapshot. 
+    However, note that even that snapshot will be compliant with the
+    host's policies! If the host changes its policies dynamically, 
+    it can simply invalidate any active session-keys, ensuring that
+    old snapshots (with the old session-keys) no longer correspond 
+    to valid check-ins. Thanks for this observation. Our next 
+    iteration will include versioning within the secure-world to 
+    fix this rollback attack.
+
+[R3.Q5]-"...does not confine guests but seeks to minimize damage..."
+
+    Spot-on. During check-in, the host does ensure that the guest
+    device isn't malicious (using memory snapshots). The restricted 
+    space regulates external network connections to minimize the 
+    chances of the device inadvertently getting infected from the
+    outside world. But malicious users obviously can infect their
+    devices. Our current approach is to confine guest devices, but 
+    it would certainly be interesting to investigate attack
+    prevention.
+
+[R3.Q6]-"...protections are virtually addressed..."
+
+    The host can check the page table from the memory snapshot. 
+    During remote memory writes, the host can ensure that certain
+    page table entries are not modified. That operation *is* atomic
+    since the normal-world is paused when the secure-world executes.
+
+Finally...
+
+[R3.Q7]-"I fear....with an ASPLOS publication."
+
+    Yes, our somewhat-controversial approach raises many questions,
+    as identified in these reviews. Admittedly, some of these
+    questions are deeper than can be explored within a single paper.
+    But if academic conferences such as ASPLOS are not the place to
+    publish controversial ideas, ask such questions, and open the
+    door for further exploration, then what is the right venue?
+
+

@@ -1,0 +1,53 @@
+\mysection{Concluding Remarks}
+\label{section:conclusions}
+
+% To date, restricted space hosts have largely employed \adhoc\ methods to ensure
+% that guest devices are policy-compliant. Going forward, it is not clear that
+% \adhoc\ methods alone will suffice. From the guest's perspective, simple
+% solutions such as opting not to use devices within restricted spaces are also
+% not an option, given our increasing reliance on smart devices. 
+
+This paper develops mechanisms that allow hosts to analyze and regulate ARM
+TrustZone-based guest devices using remote memory operations.  These mechanisms
+can be implemented with only a small amount of trusted code running on guest
+devices. The use of the TrustZone allows our approach to provide strong
+guarantees of guest policy-compliance to hosts. Our vetting service allows
+guests to identify conflicts between their privacy goals and the hosts' usage
+policies. 
+
+While this paper demonstrates technical feasibility of our approach, questions
+about its adoptability in real-world settings remain to be answered. For
+example, we can imagine our solution to be readily applicable in settings such
+as federal or corporate offices and examination halls, where restricted spaces
+are clearly demarcated and the expectations on guest device usage are clearly
+outlined.  Will it be equally palatable in less stringent settings, such as
+social gatherings, malls or restaurants? A meaningful answer to this question
+will require a study of issues such as user-perception and willingness to allow
+their devices to be remotely analyzed and controlled by hosts. We hope to 
+investigate these and other issues in follow-on research.
+
+
+% We see this paper as making two main conceptual advances. The first is the
+% notion of restricted spaces. As argued in the paper, the increasing ubiquity
+% and capability of smart devices has driven society to create such restricted
+% spaces. To promote the regulated use of smart devices in such spaces, we need
+% systematic ways to enforce host-defined policies on guest devices.
+% 
+% The second conceptual contribution of this paper is the design of a mechanism
+% for hosts to remotely inspect and control guest devices.  We showed that this
+% can be achieved via a narrow interface that permits two simple operations,
+% remote memory reads and writes. These operations provide an effective way for
+% hosts to analyze and configure guest devices in accordance with their
+% policies.  We also showed that with hardware support from the ARM TrustZone,
+% we can bootstrap the security of remote memory operations.
+%
+% Again, we feel that this is largely a matter of user-perception. For example,
+% users already place implicit trust in app writers and market vendors when they
+% download apps on their smart devices, even though it is well-known that apps
+% routinely violate this implicit trust and compromise user privacy by sending
+% sensitive user data to unauthorized third parties.  
+%
+% Thus, a practical deployment of our solution would also likely require
+% supporting trust infrastructure, \eg~analysis tools that can vet the host's
+% operations or present them to the end-user in a human-readable format for
+% approval.

@@ -1,0 +1,128 @@
+\mysection{Design Alternatives}
+\label{section:discussion}
+
+% In this section, we discuss alternative ways to implement the
+% framework, especially on guest devices that may not support the ARM TrustZone.
+% We also consider other applications of our policy enforcement framework. 
+
+% \subsection{Design Alternatives} 
+
+\label{section:discussion:alternatives}
+%
+The design of our enforcement mechanism relies on the ARM TrustZone to isolate
+the TCB and to provide a root of trust on the guest device. While devices
+featuring the ARM TrustZone hardware are becoming increasingly available
+(millions of deployed devices, according to the Samsung Knox
+team~\cite{knox:ccs14}), we consider alternatives that can be used by
+hosts to regulate guest devices.
+
+\myparagraph{Virtualization} 
+%
+On x86 machines, virtualization is the most popular technique to perform
+introspection~\cite{chennoble:hotos01,vmi:ndss03}.  There have been recent
+efforts to build virtualization infrastructure for smart
+phones~\cite{cells:sosp11,cox:hotmobile07,vmwareverizon} and other ARM
+devices~\cite{kvmarm:asplos14}.
+
+It is possible to regulate the use of peripherals on virtualized smart devices
+using virtual machines (VMs) to implement various persona. For example, for an
+employee to use his personal device at work, he may be required to download a
+work VM from enterprise. The virtual peripherals in this work VM can be
+pre-configured to reflect the enterprise policy. Thus, if the enterprise
+disallows the use of the camera, the work VM is simply configured to not export
+a virtual camera peripheral to apps executing within the VM. Virtualized
+platforms also support remote memory operations---the hypervisor simply
+reads/modifies the pages belonging to a VM to perform the operations. Thus, the
+enterprise can even dynamically reconfigure its work VM via such operations.
+
+However, in virtualized solutions, the TCB typically includes the hypervisor.
+Although prior research has developed small hypervisors~\cite{nova:eurosys09},
+modern production hypervisors are large and complex because they must support
+different virtualization modes, guest quirks, and hardware features; this
+bloats the TCB. Moreover, without a hardware root of trust, it is hard to
+establish whether the guest has maliciously bypassed the host's enforcement. In
+the above example, the employee could suspend the work VM, and switch to a
+different VM that allows the use of the camera. The hypervisor must include
+additional functionality to prevent the employee from suspending the work VM,
+thus bloating TCB size.
+
+We also feel that virtualization may not be applicable to large majority of
+personal computing devices. Many classes of smart devices are personal,
+single-user devices and specialized in their function. Judging by their typical
+use-cases, virtualization may be an overkill for most of these devices except
+those at the highest end of the form factor (\eg~enterprise-class smart
+devices). This reduces the motivation to virtualize these devices.
+
+\myparagraph{Hardware Interfaces}
+%
+It may be possible to use hardware interfaces to perform remote memory
+operations on a guest system. Such interfaces were investigated for the server
+world to perform remote DMA as a means to bypass the performance overheads of
+the TCP/IP stack~\cite{mellanox,infiniband}. This work has since been
+repurposed to perform kernel malware detection~\cite{copilot:sec04} and remote
+repair~\cite{backdoor:icac04}. These systems use a PCI-based co-processor on
+the guest system via which the host can remotely transfer and modify memory
+pages on the guest.
+
+On personal devices, the closest equivalent to such a hardware interface is the
+IEEE 1394, popularly called the Firewire. The host can leverage the Firewire
+interface on a guest device to directly read and modify its memory pages.
+However, a large majority of small form-factor mobile devices available today
+are not equipped with the Firewire interface. For instance, to our knowledge,
+except for some laptop computers, most other mobile devices do not have a
+Firewire port. Another possibility is to use the JTAG interface, defined by the
+Joint Test Action Group (IEEE 1149.1). Via a few dedicated pins on the chip,
+the JTAG allows testing functions such as reading and writing to the memory and
+registers of the chip. However, the JTAG is primarily used for debugging and is
+not easily accessible on consumer devices.
+
+The main drawback of hardware interfaces is that they typically
+cannot authenticate the credentials of the host that initiates the memory
+operation. This shortcoming can be exploited by a malicious host to compromise
+guest security. Moreover, to configure guest devices via these hardware
+interfaces, the host must physically plug into the network interfaces of these
+devices. Thus, these interfaces are best used when the guest can physically
+authenticate the host and trust it to be benign.
+
+\myparagraph{OS-based Mechanisms}
+%
+Operating systems can be modified to dump the contents of their memory. For
+example, on Android, LiME~\cite{lime} and similar
+tools~\cite{dmd,ddms,recoverymode} can be used to acquire memory from a running
+system. However, without trusted hardware, the host has no way to check the
+integrity of memory dumps.
+
+Finally, it is possible to regulate the use of guest devices by requiring the
+user's work environment to run a security-enhanced operating system. For
+instance, ASM~\cite{asm:sec14} introduces a set of security hooks in Android,
+which consult a security policy (installed as an app) to enforce fine-grained
+control over the device. ASM policies can be used to create persona that can
+determine the set of apps, files, and peripherals that are visible to the
+end-user. This approach has the benefit of offering greater visibility and
+control than remote memory operations into app-level context and behavior.
+With this visibility, it may be possible to enforce much finer-grained policies
+than our work. For example, prior work~\cite{worlddriven:ccs14} has leveraged
+the visibility from within the operating system (using the recognizer
+abstraction~\cite{ar:sec13}) to selectively block sensitive audio, blur faces
+and block RGB events to the corresponding apps. Without suitable techniques to
+bridge the semantic gap between raw memory and application state, this level of
+visibility is difficult to achieve at the granularity of raw memory reads and
+writes.
+
+But as with virtualization, the approach presents a large TCB because the
+security mechanism is closely integrated with the operating system. In
+contrast, in approaches that use remote memory operations, the mechanism is
+agnostic to the operating system executing on the guest device. The burden of
+analyzing memory and determining which locations to modify is left to the host,
+while the guest runs a minimal, platform-agnostic TCB.
+
+
+% \subsection{Other Applications}
+% \label{section:discussion:otherapps}
+
+% \todo{VG}{To be done}
+% Other applications of mechanism/policy besides the restricted space model.
+% For example, personalized malware detectors using USB. Talk about the "host"
+% in this case being controlled by the guest itself, and ways to implement the
+% host, e.g., USB, cloud, etc.
+

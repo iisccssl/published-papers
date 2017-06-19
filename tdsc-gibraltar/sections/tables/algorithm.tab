@@ -1,0 +1,15 @@
+\begin{algorithm}[H]
+\SetLine 
+\KwIn{Queue of Roots} 
+\KwOur{Daikon Trace Files or Alerts} 
+\While{Roots.size() > 0 and Max_Objects_Traversed < MAX_COUNT}{ 
+Get_Page(Roots.address)\;
+Type = Get_Type_Definition(Root)\; 
+Fields = Generate_Data_Layout(Root,Type)\;
+    \ForEach{$i$ within Fields}{ 
+        \If(Ptr_to_Object($i$)){
+            Add $i$ to Roots\;
+        }
+        Store field values;            
+    } 
+}

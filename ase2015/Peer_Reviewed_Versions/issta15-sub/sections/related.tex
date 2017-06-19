@@ -1,0 +1,74 @@
+\section{Related Work}
+\label{section:related}
+
+\myparagraph{Testing Cross-platform Apps}
+%
+To our knowledge, our work is the first on testing cross-platform mobile app
+development frameworks. However, there has been prior work on testing
+cross-platform apps themselves. The most relevant projects in this area are
+X-PERT~\cite{xpert:icse13} and FMAP~\cite{fmap:issta14}. Both projects start
+with the observation that an increasing number of Web applications create
+customized views of Web pages, each optimized for different platforms, \eg~form
+factors, mobile platforms, and Web browsers. Yet, end-users expect Web
+applications to behave consistently across these platforms.  The X-PERT project
+aims to detect inconsistencies in the way that Web apps are displayed by these
+platforms. Dually, FMAP attempts to identify similar elements on Web pages that
+may be rendered differently on different platforms.
+
+Our work differs from these projects in that it uses inconsistencies in apps to
+identify problems in the app development frameworks. While our work has
+primarily targeted APIs used to support application logic, future work on
+testing mobile apps created using Web-based frameworks
+(\eg~\cite{phonegap,sencha,worklight}) can possibly use the techniques from
+X-PERT and FMAP to identify inconsistencies in the way UI elements are
+displayed across platforms.
+
+Aside from testing techniques for cross-platform apps, a number of recent
+projects~\cite{dynodroid:fse13,concolicandroid:fse12,eventbreak:oopsla14,azim:oopsla13,memon:ase07,guitar:memon}
+have been developing techniques to test mobile apps. The main goal of these
+techniques is to devise effective input generation techniques for mobile apps,
+which is challenging because mobile apps are UI-based and event-driven.
+Although these projects are not directly related to our work, the input
+generation methods that they develop can potentially be used to identify
+inconsistencies in the UIs and UI-handling code of cross-platform apps.
+
+\myparagraph{Random and Differential Testing}
+%
+There is a rich literature on both random testing and differential testing, and
+both methods have extensively been used for bug-finding. Fuzz-random testing,
+for example, feeds random inputs to applications under test. Crashing
+applications are most likely buggy because they do not handle ill-formed random
+inputs properly. This method has been used to find bugs in UNIX
+utilities~\cite{fuzz:unix} and GUI-based Windows applications~\cite{fuzz:nt}.
+For object-oriented code, JCrasher~\cite{jcrasher} generates random unit tests,
+and uses crashes to identify buggy class implementations. Differential testing,
+originally introduced by McKeeman~\cite{mckeeman:difftest:1998}  has recently
+found a number of interesting applications in security
+(\eg~\cite{brumley:sec07,franken:oak14,oracle:pldi11}).
+
+Random and differential testing can be usefully combined as is evident from our
+results. This method has previously been used successfully, for instance, to
+find bugs in compilers~\cite{csmith:pldi11}. The authors of Randoop also used
+this method to test two versions of the Java development kit, finding a number
+of bugs along the way.
+
+
+\myparagraph{Implementing Cross-platform App Frameworks}
+%
+As already discussed in \sectref{section:introduction}, there is significant
+recent interest in techniques to develop cross-platform mobile apps. For this
+task, the dominant methods are the use of Web-based frameworks, which support
+app development in Web-based languages, and native frameworks, which create
+apps that can natively execute on the platform. These frameworks do much of the
+leg-work necessary to translate API calls across platforms. To our knowledge,
+these translations are created manually by domain experts. The software
+engineering research community has proposed methods to automatically harvest
+cross-platform API mappings by mining existing code bases
+(\eg~\cite{mam:icse10,rosetta:icse13,robillard:tse}). Such techniques could
+potentially be used to improve the way that cross-platform app development
+frameworks are built.
+
+
+% See also the related work of the MD2 paper for additional related work on
+% implementing cross-platform apps.
+

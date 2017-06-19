@@ -1,0 +1,64 @@
+Even though I am glad that we finally submitted this work to Eurosys,
+the evaluation section is quite weak, and realistically speaking, we
+should expect to re-submit the work elsewhere, hopefully to USENIX
+Annual Technical, on January 11th.
+
+I compiled a wish list of tasks, which we should try to accomplish in
+time for the USENIX ATC deadline. I've divided tasks into short-term
+tasks, which are infrastructure related tasks that we should really
+have done for this paper but could not, and long-term tasks, which
+will help strengthen the basic message of the paper.
+
+1. [Short-term] Get results with memcached working on a multi-processor
+   machine. This is really crucial, since memcached is our only multi
+   threaded benchmark. It was an anti-climax that we could only report
+   numbers with memcached on a uni-processor machine.
+
+2. [Short-term] Change the simulation environment parameters to work on
+   a more realistic machine. Our experiments were on an ancient machine,
+   that simulated a 75Mhz processor.
+
+3. [Short-term] We need to set things up so that we can get false
+   positive and false negative numbers for each of the benchmarks that
+   we're using. The paper currently does not have false positive and
+   false negative numbers for ClamAV or Memcached, which is why we had
+   to resort to our microbenchmark to report these numbers. You should
+   set things up so that you can determine false positive and negative
+   numbers by walking the undo log to find what memory locations were
+   accessed by the transaction. We need to use this setup to evaluate
+   the impact of the optimizations of our work on the benchmarks.
+
+4. [Long-term] We really need to evaluate the performance impact of our
+   work using a standard set of benchmarks, such as Splash benchmarks,
+   instead of having to resort to developing microbenchmarks. Showing
+   the performance impact of our system on a standard set of benchmarks
+   not only improves our credibility, but also gives people a standard
+   to compare the performance overheads of our work against.
+
+5. [Long-term] We found no real bugs using our system! The ideal case
+   would have been to deploy our system on a bunch of real benchmarks
+   and show that we found real bugs. This can sometimes get tricky, so
+   the alternative would have been to do a thorough set of fault
+   injection experiments. We had neither. Either one (or both!) of
+   these is *necessary* if we want to have a realistic shot at meeting
+   the USENIX ATC deadline.
+
+6. [Long-term] We need to have a good story about I/O and interaction
+   of transactional code with non-transactional code. These are issues
+   that are germane to HTM systems, and there's not much new stuff that
+   we can say here, but we should at least incorporate the standard
+   solutions used by HTM systems in our own work.
+
+7. [Paper-writing] We really need to strip out the all-tasks/run-list
+   example, and instead motivate the paper using a real example drawn
+   from one of our benchmarks, perhaps memcached, highlighting a real
+   bug (that hopefully is found by our system). It was quite an anti
+   climax to motivate the work using an example from Linux, but not
+   demonstrating our system using the operating system.
+
+8. [Paper-writing] We need to better classify the kinds of properties
+   that we checked, and actually demonstrate examples of each kind of
+   property. For example, we need to be able to demonstrate the cost of
+   SFI to monitor the TxInt monitor itself. Similarly, we need to show
+   an example of at least one context-sensitive invariant. We talked
+   about all this stuff, but ended up doing nothing. 

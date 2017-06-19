@@ -1,0 +1,23 @@
+Researchers have long argued that the best way to construct a 
+secure system is to proactively integrate security into the 
+design of the system. However, this tenet is rarely followed 
+because of economic and practical considerations. Instead, 
+security mechanisms are added as the need arises, by retrofitting 
+legacy code. Unfortunately, existing techniques to do so are
+manual and adhoc, and often result in security holes in the 
+retrofitted code.
+
+We show that program analysis techniques can be used to securely, 
+and largely automatically, retrofit legacy code for authorization 
+policy enforcement. Our techniques are applicable to a large class 
+of legacy servers, namely those that simultaneously manage multiple
+clients, possibly with different security labels. It is important
+for such servers to ensure that client interaction is governed by
+an authorization policy.
+
+We demonstrate our ideas using two program analysis tools we built, 
+Aid and Alpen, which work together to automate the process of 
+retrofitting legacy servers with mechanisms for authorization policy 
+enforcement. We show that an X server retrofitted using these tools 
+securely enforces authorization policies on its X clients.
+

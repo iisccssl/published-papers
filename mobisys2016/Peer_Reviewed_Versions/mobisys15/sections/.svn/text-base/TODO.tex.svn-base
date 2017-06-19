@@ -1,0 +1,103 @@
+\section{TODO List}
+
+In this section, I am listing the TODOs as discussed in our telecon on
+September 12th. 
+
+The tasks marked under {\bf TU} and {\bf RU} are the immediate tasks for our
+respective teams, and I foresee that we should complete these in a couple of
+weeks at the most. The tasks marked under {\bf Both} are things that I added on
+my own, since I feel that these are the next things to discuss and implement
+for an end-to-end system. I also feel we {\bf Both} need to discuss additional
+tasks to strengthen the paper.
+
+\begin{mylist}
+
+\item{\bf TU:} Detecting kernel malware using remote memory reads.
+%
+\begin{itemize}
+%
+\item Fetch memory pages and demonstrate and end-to-end case study that shows
+the power of remote memory fetches to detect kernel malware.
+\begin{itemize}
+    \item Develop kernel malware: 3 days
+    \item Apply memory forensic: 4 days
+\end{itemize}
+%
+\item Also develop the components of the cross-view detection approach needed
+to detect towelroot. This would use a kernel module together with a user-space
+malware detector to detect malicious disk or process-level activity, for
+instance.
+\begin{itemize}
+    \item Develop SW part: 3 days
+    \item Develop kernel module: 5 days
+    \item Develop user module: 4 days
+\end{itemize}
+%
+\end{itemize}
+
+\item{\bf RU:} Uninstalling peripherals using remote memory writes.
+%
+\begin{itemize}
+%
+\item Show an end-to-end case study (on the evaluation board) of uninstalling a
+peripheral such as the camera or the microphone using remote memory writes.
+\begin{itemize}
+ \item Uninstalling the camera: - 9/23
+\end{itemize}
+
+%
+\item Develop the protocol/technique to ensure that this uninstalling operation
+cannot be undone by a simple reboot of the phone. Or if it is undone, it should
+be detectable to the enterprise.
+\begin{itemize}
+ \item Develop the enterprise part: 9/24 - 09/29
+ \item Develop the SW part: 09/30 - 10/03
+\end{itemize}
+
+%
+\end{itemize}
+
+\item{\bf Both:} End-to-end system integration.
+%
+\begin{itemize}
+%
+\item \textit{Handshake and Bootstrap.} Build the components in the SW and NW
+to engage in the ``handshake'' that will perform mutual authentication of the
+device and the enterprise, and bootstrap the SSL connection with the
+enterprise. This is the first step before any remote memory operations are
+performed. The SW must be involved in any authentication of the device (since
+the entire BYOD authentication begins with a button press that puts the SW in
+control), but the SSL connection is established from the NW. Protocol must
+prevent man-in-the-middle attacks (even when the NW acts as the ``man in the
+middle'', since the NW could be malicious).
+%
+\item \textit{Enterprise back-end.} Build the back-end (e.g., on the cloud) to
+do security policy checking on the memory pages that we read from the device.
+We can do as complex checking as we want, and many prior papers have done this.
+Perhaps our prototype can keep the policies simple (e.g., just checking hashes
+for code pages, and some simple invariants for data pages).
+%
+\item \textit{Handling important corner cases.} Remote memory reads and writes
+to the NW must account for the fact that NW may have changed during the remote
+memory read operations. This \textit{will} happen since the NW is involved in
+the transfer of the signed pages. Thus, pages transmitted by the NW may not
+match the signatures created for them by the SW.  The enterprise may contact
+the NW to send the pages that have changed. Figure out and implement the
+end-to-end protocol for the enterprise and NW in this setting. We assume that
+if the NW does not cooperate (e.g., because it is malicious), the enterprise
+will not allow the device to connect. Thus, it is in the best interest of the
+NW to cooperate. Thus, for example, the NW could give ``hints'' to the SW and
+the enterprise that certain pages are likely to change during transmission, and
+that it is okay for the enterprise to contact the device to obtain fresh copies
+of these pages (or ignore them if it does not matter for the security policy
+being enforced). Figure out the mechanisms to handle this corner case.
+%
+\end{itemize}
+
+\item{\bf Both:} Think of additional ideas to strengthen paper. What else can
+we do (e.g., additional case studies) to add meat to the paper and support our
+case? I briefly thought about repair of a kernel infected by malware, but Liviu
+has done this in the past and it is extremely tricky to do correctly, so I
+dropped it from this list.
+
+\end{mylist}

@@ -1,0 +1,181 @@
+PLAS10 reviewer notes and action items. Reviewer notes are marked with a 
+"**" and action items with a "->"
+
+** "Turning this into a language construct is more interesting, but there isn't
+  much detail here; I'd have liked to better understand the consequences of
+  this design.  (A prototype implementation, which you then played with, would
+  have been far more useful than your straightforward semantics.)
+-> Added a future work section saying that an implementation is in progress.
+[Status: DONE]
+
+** "The related work discussion is rather myopic.  The authors spend a lot of
+  space on not-very-related JavaScript efforts, ignoring prior PL-extension
+  efforts that tried to perform resource containment (eg, the resource
+  container work of Banga and Druschel, the custodian work of Flatt et al, the
+  thin-red-line work for Java by von Eicken et al).  Likewise, software fault
+  isolation seems useful to discuss here."
+-> Expand discussion of related work with the above papers.
+[Status: IGNORED]
+
+** "As an aside, the authors' comments on the weakness of the Maffeis' work is
+  accurate, in turn the authors do not show that their proposed semantics for
+  JavaScript has anything to do with the language!  I suggest they look at the
+  work on \JS by Guha et al (available as a TR and to appear in ECOOP), which
+  provides a Felleisen-Hieb semantics like yours but has been mechanized and
+  been tested against real implementations.  This semantics comes with an
+  interpreter, so you could easily add your transaction constructs and
+  explore."
+-> We can't do much about this point in this version of the paper, so we should
+   put this in future work.
+[Status: DONE]
+
+
+
+** "There is a mismatch between the calculus and the JavaScript examples.  In
+   the calculus, guarded transactions much explicitly transfer control with
+   SUSPEND. However, the JavaScript examples use implicit control-transfer. We
+   could elaborate JavaScript to include explicit SUSPEND calls. However,
+   elaborate is precisely the problem that language-based solutions face: is
+   elaboration correct? Perhaps your system is "secure by default"?"
+[Status: DONE (explained in a new paragraph in Section 3.1)]
+
+
+** You should discuss introspection of RW sets, because it is *crucial* to the
+   commit/abort decision. I can only imagine a trivial whitelist/blacklist of
+   known locations. I'm concerned that you cannot express isolation of
+   independent widgets on a page. e.g. "transactions A and B do not share any
+   locations".
+-> Addressed as one of the points in the "Benefits" section.
+[Status: DONE]
+
+** I believe your RW sets subsume all mutable state. How does semantic garbage
+   collection interact with introspection? A realistic transaction-context
+   must examine RW sets to make a commit decision.  Will transaction contexts
+   see "local locations"? If so, they will be extraordinarily difficult to
+   write and suffer space leaks.
+[Status: DONE (clarified in Section 3.2 about garbage collection)]
+
+** I'd like to see an example in the calculus of a transaction that uses
+   local state.
+[Status: DONE (added to Section 3.2)]
+
+
+** Section 4: The <|script|> modification is a trivial detail. Your paper
+   proposes a radical change to JavaScript. Package it with another: all code
+   must be statically specified and no code is ever loaded at runtime. Perhaps:
+   <|html code="foo.compiled.js"|>
+   So, no more onload, <|script|>, innerHTML, eval, etc.
+-> We discussed this comment and decided to ignore it.
+[Status: DONE].
+
+
+** You need to further discuss Caja/FBJS-style solutions that do not extend the
+   language to substantiate the claim in your abstract, "This paper makes the
+   case that JavaScript must be extended."
+-> I added a new subsection to Section 2, called "Summary of Benefits", where I
+   explain the main benefits of our approach.
+[Status: DONE]
+
+
+** Sec 1 : "making third-party code easier to analyze", but the analysis burden
+   has simply shifted to the FBJS/Caja/ADsafe libraries, which are not
+   validated!
+-> There doesn't seem to be any action item here; it's just a remark, so I am
+   leaving it as-is.
+[Status: DONE].
+
+
+** Sec 2: The bit about prioritizing requests is tangential. You could use the
+   extra paragraph to explicate your main thesis.
+-> Since we are not short of space, I decided to leave this in the paper, and
+   instead support the main thesis using the "Summary of Benefits" section.
+[Status: DONE].
+
+
+** Figs 2 & 3 : In an equational theory of JavaScript, we would have:
+   do { if (X) { B } } while (X) } --> if (X) { B }; while (X) { if (X) {
+   B } } <-- while (X) { B }
+   when X is effect-free. z.isSuspended() is probably effect-free.
+-> Is there an action item here?
+[Status: DONE (no action item)]
+
+
+** Sec 3.1 : These are evaluation contexts, which are usually called "E"
+   and not "C".
+-> As we discussed, this is a matter of choice. We could leave this as-is.
+[Status: DONE (left as-is)]
+
+
+** Sec 3.2: In the last reduction sequence on Pg. 4, it is easy to get
+   confused between italic-L and script-L.
+[Status: DONE (renamed italic-L to x)]
+
+
+** Sec 3.2: "crucial property" is fixpoint / Y-combinator. It would be
+   better to just say it.
+[Status: DONE]
+
+
+**  Sec 4 : Mootools? How is this relevant? (Also, how is WSJ relevant?)
+-> Since no other reviewers raised this point, I decided to leave both 
+   Mootools and WSJ as-is. They are just illustrative examples, and if
+   a reader finds the real examples annoying, he could just ignore the
+   names of specific benchmarks.
+[Status: DONE].
+
+
+** Fig 5: Reading 3.1, I was surprised when I did not find SUSPEND on the
+   RHS of the reduction relation. It only became clear in section 3.2. 
+[Status: DONE (clarified in Section 3.1)]
+
+
+** What is possibly missing is a discussion of evasion attacks. JavaScript is
+   notorious for providing numerous ways of getting around language-level
+   security mechanisms (unless a strict language subset is used from the
+   outset). Since the scenario is that of malicious code, what prevents the
+   attacker of tampering with the protection mechanism by, say, redefining the
+   key utilities of the transaction library?  Is the assumption that all
+   tampering channels are intercepted, too? This does not appear to be
+   discussed in the paper.
+-> Added a para at the end of the subsection on read/write sets.
+[Status: DONE]
+
+
+** A fair bit of attention is devoted to inclusion by <script>. In contrast,
+   other possibilities for introducing new code (such as adding a DOM node with
+   code) do not seem to be covered.
+-> We discussed this comment and decided to ignore it.
+[Status: DONE]
+
+
+** However, the link between the proposed calculus and the other sections is
+   far from clear. The authors do not explain how their code could be used to
+   model e.g. the examples presented in the first section.  For example, the
+   introspect primitive, which can only detect whether a piece of code is
+   suspended, does not seem sufficient in practice for enforcing policies.
+[Status: DONE (clarified in Section 3.1, pointing out additional
+introspection facilities used in Figures 2-4)]
+
+
+** The sections on how to isolate code in practice are interesting but the
+   lines of codes that are added to enforce security seem ad hoc to the
+   examples in each case. The author do not explain how a general security
+   policy could be specified and how any incoming code could be generically
+   executed within an application that would enforce the policy. Moreover, the
+   authors do not comment on the cost of the approach, i.e., how practical it
+   is to speculatively executes code and then check the changes against a
+   policy.
+-> Added a bullet in the future work section on security analysis. I think
+   that the CCS submission addresses this point to a large extent in the
+	 discussion on designing iblocks.
+[Status: DONE].
+
+** Section 3.1: R seems to be a function rather than a relation. What would be
+   the meaning of a relation R that relates the same location to two different
+   values?
+[Status: DONE (explained in a new footnote)]
+
+
+** Section 3.1, in the example, after the write/read action, I guess the read
+   set should also contains l2 -> 25. 
+[Status: DONE (explained in a new footnote)]

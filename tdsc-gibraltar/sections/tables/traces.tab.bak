@@ -1,0 +1,6 @@
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+{\scriptsize{\input{\verbatiminput{sections/tables/trace1.txt}}}} & {\scriptsize{\input{sections/tables/trace2.txt}}} & {\scriptsize{\input{sections/tables/trace3.txt}}} \\ \hline
+\end{tabular}
+\end{center}

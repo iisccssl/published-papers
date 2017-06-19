@@ -1,0 +1,25 @@
+I am confused by a few sentences in the last paragraph of Section 4.3. 
+Please see these changes and let me know if I'm wrong.
+
+Figure 3 confirms our intuition. It presents a strong
+
+% SR (thought): again "strong", should we remove it? Now, I vote to leave it
+% in place.
+positive correlation ($p$-value less than $0.02$~\cite{Ricestat})
+between the seller's \emph{AMB} and \emph{ANB}. We found that a
+polynomial fit best describes this correlation (the dashed line in
+Figure~\ref{FigPricediff}). We define any seller whose \emph{ANB} is
+not in the $95$\% confidence interval (the solid line) of this model
+as abnormal with respect to the \emph{AMB}. Note that some sellers,
+for example $10260$ from Section~\ref{SubSec10260Intuition}, have
+high \emph{AMB} and
+% SR (fix): Again, AMB is a two-parameters model. So, I feel that
+% "high" AMB is not well-defined. What we mean is "abnormal": it is not
+% predicted by the AMB model.
+high \emph{ANB}. Still, they are defined as abnormal. This indicates
+that their high number of bids cannot be attributed solely to their
+low minimum starting bid, and another explanation is necessary.
+%SR (thought): add "the third model, described next, attempts to provide this
+% explanation
+
+

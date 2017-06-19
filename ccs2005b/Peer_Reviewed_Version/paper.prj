@@ -1,0 +1,105 @@
+221 Patch Control
+
+0
+0
+0
+C:\shai\ebay_spyder\paper\paper.tex
+22
+21
+16
+
+
+
+
+
+
+C:\shai\ebay_spyder\paper\paper.tex
+TeX:UNIX
+135376891 0 9 8 22 21 156 156 1070 678 0 222 463 -1 -1 0 0 23 0 0 23 1 0 21 22   0
+C:\shai\ebay_spyder\paper\threatVinod.tex
+TeX
+1060859 0 164 23 165 38 130 130 1044 652 0 392 694 -1 -1 0 0 64 0 0 64 1 0 38 165   0
+C:\shai\ebay_spyder\paper\formalization.tex
+TeX
+1060859 0 104 51 137 1 156 156 1070 678 0 22 736 -1 -1 0 0 1 0 0 1 1 0 1 137   0
+C:\shai\ebay_spyder\paper\AverageBid.tex
+TeX:UNIX
+1159163 0 0 12 0 41 208 208 1148 737 0 422 1 -1 -1 0 0 59 0 0 59 1 0 41 0   0
+C:\shai\ebay_spyder\paper\StartBid.tex
+TeX:UNIX
+1159163 0 20 21 0 34 234 234 1174 763 0 352 1 -1 -1 0 0 59 0 0 59 1 0 34 0   0
+C:\shai\ebay_spyder\paper\bibliography.bib
+BibTeX:UNIX
+1147826 0 82 20 74 15 26 26 940 548 0 162 127 -1 -1 0 0 28 0 0 28 1 0 15 74   0
+C:\shai\ebay_spyder\paper\rw.tex
+TeX:UNIX
+1060859 0 330 1 158 1 182 182 1096 704 0 22 581 -1 -1 0 0 23 0 0 23 1 0 1 158   0
+C:\shai\ebay_spyder\paper\threat.tex
+TeX
+1060859 0 97 1 0 14 208 208 1122 730 0 152 1 -1 -1 0 0 1 152 152 1 1 0 14 0   0
+C:\shai\ebay_spyder\paper\TableInterpetation.tex
+TeX
+1060842 0 7 82 6 46 104 104 1018 626 0 472 127 -1 -1 0 0 14 0 0 14 1 0 46 6   0
+C:\shai\ebay_spyder\paper\CaseStudies.tex
+TeX:UNIX
+1159163 0 34 220 22 1 26 26 940 548 0 22 463 -1 -1 0 0 1 9 9 1 1 0 1 22   0
+C:\shai\ebay_spyder\paper\bidderProfile.tex
+TeX
+1060859 0 25 207 25 1 260 260 1174 782 0 22 526 -1 -1 0 0 37 0 0 37 1 0 1 25   0
+C:\shai\ebay_spyder\paper\TableEbayData.tex
+TeX
+1060859 0 0 13 4 45 52 52 966 574 0 462 85 -1 -1 0 0 1 1 1 1 1 0 45 4   0
+C:\shai\ebay_spyder\paper\Intro.tex
+TeX
+1060859 0 179 42 180 1 130 130 1044 652 0 22 652 -1 -1 0 0 23 0 0 23 1 0 1 180   0
+C:\shai\ebay_spyder\paper\paper.bbl
+DATA:UNIX
+5243826 0 0 200 2 1 78 78 992 600 0 22 43 -1 -1 0 0 27 0 0 27 1 0 1 2   0
+C:\shai\ebay_spyder\paper\paper.log
+DATA:UNIX
+38798258 0 0 1 0 1 52 52 966 574 0 22 1 -1 -1 0 0 103 0 0 103 1 0 1 0   0
+C:\shai\ebay_spyder\paper\0.preambleIEEE.tex
+TeX:UNIX
+1159163 1 13 10 14 39 78 78 1070 502 0 402 295 -1 -1 0 0 36 0 0 36 1 0 39 14   0
+C:\shai\ebay_spyder\paper\abstract.tex
+TeX:UNIX
+269594619 1 2 1 30 40 0 0 940 529 0 412 631 -1 -1 0 0 17 0 0 17 1 0 40 30   0
+C:\texmf\tex\latex\multirow\multirow.sty
+TeX:DTX:UNIX
+5353467 0 56 198 56 1 104 104 1096 528 0 22 295 -1 -1 0 0 3 0 0 3 1 0 1 56   0
+C:\texmf\tex\latex\footmisc\footmisc.sty
+TeX:DTX
+5255163 0 87 198 87 1 130 130 1122 554 0 22 295 -1 -1 0 0 3 0 0 3 1 0 1 87   0
+C:\texmf\tex\latex\preprint\fullpage.sty
+TeX:DTX:UNIX
+5353467 0 78 195 78 1 104 104 1096 528 0 22 568 -1 -1 0 0 3 0 0 3 1 0 1 78   0
+C:\texmf\tex\latex\titlesec\titlesec.sty
+TeX:DTX:UNIX
+5353467 0 118 197 0 19 52 52 1044 476 0 202 1 -1 -1 0 0 55 0 0 55 1 0 19 0   0
+C:\shai\prelim\bib\bibliography.bib
+BibTeX:UNIX
+269583282 1 42 1 1426 1 0 0 914 522 0 22 736 -1 -1 0 0 -1 -1 -1 -1 1 0 1 1426   0
+
+*C:\shai\ebay_spyder\paper\paper.tex
+>
+*0.preambleIEEE
+*abstract
+*IntroVinod
+*rw
+*threatVinod
+>
+*TableInterpetation
+<
+*formalization
+>
+*AverageBid
+*StartBid
+*bidderProfile
+<
+*CaseStudies
+*threatmodel
+*conclusions
+*bibliography.bib
+*Paper.bbl
+*bprFormalism
+<

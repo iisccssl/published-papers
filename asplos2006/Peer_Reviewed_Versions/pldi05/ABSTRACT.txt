@@ -1,0 +1,13 @@
+We present the design, implementation, and evaluation of HIFI, a dynamic
+analysis tool that finds heap-based bugs using anomaly detection. HIFI is based
+upon the observation that, in spite of the evolving nature of the heap, several
+of its properties remain stable.  HIFI uses this observation in a novel way:
+periodically, during the execution of the program, it computes a suite of
+metrics which are sensitive to the state of the heap. These metrics track heap
+behaviour, and the stability of the heap reflects quantitatively in the values
+of these metrics. The ranges of stable metrics, obtained by running a program
+on multiple inputs, are then treated as indicators of correct behaviour, and
+are used in conjunction with an anomaly detector to find heap-based bugs. We
+demonstrate, using several examples, that HIFI is an effective bug finder.
+
+

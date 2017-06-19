@@ -1,0 +1,60 @@
+#97B,#97C,#97D questioned the kinds of threats that SSC guards against. 
+SSC protects clients from attacks launched via a privileged administrative 
+stack (i.e.,dom0 stack). Dom0 is routinely used by cloud administrators, 
+who can leverage it to compromise client security and privacy. SSC provides 
+a practical way to exclude the administrative stack from the TCB. SSC can 
+protect clients from a malicious or compromised stack, even if it is modified 
+by inserting malicious modules or device drivers. 
+
+SSC does assume that hardware is trusted. We use TPMs to attest the integrity 
+of the TCB at boot time. Our reviewers are correct that SSC cannot protect 
+client VMs if the hardware is compromised. However, our paper also does not 
+claim to protect against malicious cloud providers who tamper with hardware 
+to circumvent the protection afforded by the TPM or IOMMU. We share #97D's 
+concern about hardware provenance. However, discussing the influence of 
+judiciary/political pressures on hardware integrity is beyond the scope of 
+this paper. 
+
+SSC also assumes standard properties of hypervisors, such as no runtime 
+extensibility (i.e.,modules), narrow interface (hypercalls), no driver 
+execution in the hypervisor address-space (as in Xen), and a small codebase. 
+Those properties make hypervisors trustworthy substrates for SSC.
+
+#97A,#97B,#97C questioned our use of the TPM. SSC currently uses the vTPM model 
+in the standard way (i.e.,one vTPM instance per VM) and relies on standard 
+attestation protocols described in the TPM literature. The TPM only attests 
+load-time integrity, and cannot offer lifetime integrity guarantees.
+
+There were questions about the motivation behind our SDs.  Although we 
+illustrated the example of storage encryption, our storage SD is generally 
+applicable for other tasks such as off-site replication and disaster recovery.
+Checkpointing services (which use the same codebase as live migration) 
+traditionally offered by cloud providers compromise client privacy. SSC's 
+MTSDs allow providers to offer a checkpointing service that will assure client 
+privacy. Clients can perform arbitrary checkpoints to preserve computational 
+state, rather than depending on the provider's checkpointing policies. With
+MTSDs, providers do not lose the ability to perform migrations for maintenance 
+(#97-D). Rather, they lose the ability to look into the contents of the 
+migrated state.
+
+Some individual concerns:
+  
+#97A: Our paper does provide several implementation details requested, 
+  albeit spread in various parts of the paper. We will restructure the 
+  paper to consolidate and provide additional details.
+
+#97A: Persistent client state is stored encrypted on disk to protect 
+  it from dom0.
+
+#97A: Upon receiving a request to start a domain, a client's Udom0 contacts 
+  the client using his public key to establish a secure communication channel.  
+  Our prototype does not currently have a recovery protocol for Udom0 crashes.
+
+#97C: User domains within a meta-domain are not implemented using nested 
+  virtualization. Each of these domains is simply another VM atop the SSC 
+  hypervisor. SSC's privilege model governs the resources that each of
+  these VMs can access.
+
+#97D is concerned about the management downside. However, reference [16] 
+  indicates that the main deterrent to adoption of cloud computing is 
+  privacy concerns. 

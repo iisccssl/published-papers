@@ -1,0 +1,67 @@
+I) Iblock security policies
+
+*  Development effort of iblock policies can be reduced if hosts opt for
+  whitelist-based protection against all guests. Hosts can use a common iblock
+  policy for all transactions in the entire web application, since host
+  protection is agnostic to the guest. For example, to achieve protection
+  against ads served from any domain, developers could write
+  application-specific iblock to disallow an ad's commits to the host's DOM
+  and also deny it access to sensitive resources like the host's cookies.
+
+* Iblock policies can be reused across applications if applications share
+  similar protection criteria. As a deployment model, we envision a vendor
+  or community-driven curated database of commonly-used iblock policies, which
+  hosts can use to secure untrusted guests.
+
+
+II) Suspend/resume
+
+* Using a reference monitor to decide the commit/abort on a per external call
+  basis would disallow rollback of any already committed action. Transcript
+  enforces commit of a transaction in its entirety, only allowing it to commit
+  if all actions were allowed by the iblock.
+
+* Ideally implementing suspend/resume requires SpiderMonkey to be tail-call
+  recursive (so the interpreter does not accumulate any activation records 
+  in its native stack). Since doing so is invasive, we overcome the difficulty 
+  by gluing execution contexts (section-3.1, appendix-B).
+
+
+III) DOM cloning
+
+* DOM cloning is is implemented within the browser in C++ to make it fast and
+  we make efforts to clone all reachable state.
+
+* Event handlers installed by the guest are installed on the cloned copy of
+  the DOM. If this transaction is later committed, then Transcript executes
+  each event handlers within a new transaction bounded by the same security
+  policies which govern the original guest (section-3.1).
+
+
+IV) Miscellaneous
+
+* If a script within a transaction injects another script (via document.write,
+  innerHTML, etc.), Transcript creates a nested transaction for the injected
+  script (section-3). The changes made by the nested transaction are written
+  to the write set of the outer transaction and are committed to the host only
+  if the outer transaction commits.
+
+* Transcript's design does not impose any fundamental restrictions on JITing
+  of code within a transaction. However, to ease the development effort for
+  our Transcript prototype, we chose not to handle JITed code paths in the
+  prototype.
+
+* Transcript's read/write sets allow enforcement of confidentiality and
+  integrity policies. Both read and write sets support iteration.
+
+* Crom and ParaScript use speculation to improve performance, but do not
+  address all corner cases involved in the design and implementation of a
+  fully speculative JavaScript engine. Crom applies speculation to event
+  handlers and takes non-speculative event handlers to create speculative
+  versions, running them in a cloned browser context. ParaScript implements a
+  selective checkpointing scheme which avoids JavaScript constructs that allow
+  code injection like document.write, innerHTML, etc., and stops speculation
+  if checkpointing becomes expensive.
+
+* Warth (ECOOP'11), <iframe sandbox>, Harmony modules and Ripley are all
+  relevant and we will cite them in our revised draft.

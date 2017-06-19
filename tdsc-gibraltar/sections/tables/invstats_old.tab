@@ -1,0 +1,15 @@
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+{ } & {Class} & {Object} & {Linked Lists}\\ \hline\hline
+Constancy & 422 & 643622 & NA \\ \hline
+Bounds & 600 & 16696 & NA \\ \hline
+Nonzero & 266 & 49058 & NA \\ \hline
+Subset & NA & NA & 3580 \\ \hline
+Length & NA & NA & - \\ \hline
+Total & 1288 & 709376 & 3580 \\ \hline
+\end{tabular}
+\caption{Invariants deduced by individual template across classes, objects and lists. 
+\tool\ mined a total of 215788 invariants, used as integrity specifications}
+\label{invstats}
+\end{center}

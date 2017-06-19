@@ -1,0 +1,17 @@
+Conf:
+
+
+The boot normal is same in both following experiments. The difference is that the patagonix user daemon is either running in Dom0 or Patagonix SD.
+
+
+Results:
+--------
+
+Boot normal
+4.703s , 0.18383 SD
+
+Boot with Patagonix running in Dom0
+6.4712s , 0.06772 SD 
+
+Boot with Patagonix running in SD
+6.4874s , 0.06479 SD 

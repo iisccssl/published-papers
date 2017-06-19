@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/jointwork/tzra/!svn/ver/90/usenixsec15
+END
+paper.pdf
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/jointwork/tzra/!svn/ver/89/usenixsec15/paper.pdf
+END
+paper.tex
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/jointwork/tzra/!svn/ver/90/usenixsec15/paper.tex
+END
+mobisys15-revs.txt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/jointwork/tzra/!svn/ver/86/usenixsec15/mobisys15-revs.txt
+END
+widow.sty
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/jointwork/tzra/!svn/ver/69/usenixsec15/widow.sty
+END
+usenix.sty
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/jointwork/tzra/!svn/ver/72/usenixsec15/usenix.sty
+END
+algorithm2e.sty
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/jointwork/tzra/!svn/ver/70/usenixsec15/algorithm2e.sty
+END
+fancyhdr.sty
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/jointwork/tzra/!svn/ver/69/usenixsec15/fancyhdr.sty
+END
+references.bib
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/jointwork/tzra/!svn/ver/85/usenixsec15/references.bib
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/jointwork/tzra/!svn/ver/69/usenixsec15/Makefile
+END

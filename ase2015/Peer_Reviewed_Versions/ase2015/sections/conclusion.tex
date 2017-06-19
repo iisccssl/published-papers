@@ -1,0 +1,27 @@
+\section{Summary and Future Work}
+\label{section:conclusions}
+
+Developers are eager to deploy their mobile apps on as many platforms as
+possible, and cross-platform mobile app development frameworks are emerging as
+a popular vehicle to do so. However, the frameworks themselves are complex and
+difficult to develop. Using \tool\ to test Xamarin, we showed that differential
+testing is an effective method to identify inconsistencies in the way that
+these frameworks handle the APIs of the home and target platforms.
+
+While \tool\ has been highly effective, it suffers from a number of limitations
+that we plan to remedy in future work. First, while \tool\ uses random method
+sequences as test cases, the arguments to these methods are drawn at random
+from a fixed, manually-defined pool. We plan to investigate techniques to
+invoke methods with random, yet meaningful arguments, which would further
+increase the coverage of the API during testing. Second, \tool\ has primarily
+focused on testing the framework libraries that provide support for the
+platform-independent part of cross-platform apps. However, when end-users
+interact with apps that have been cross-compiled, they also expect a similar
+end-user experience when interacting with the app's UI. To ensure this
+property, we must test that semantically-similar UI elements on different
+platforms elicit the same behavior within the apps on the corresponding
+platforms. This will likely require an analysis of the elements of the UI
+itself, and recent work on cross-platform feature matching~\cite{fmap:issta14}
+may help in this regard. Finally, we plan to extend \tool\ to work with other
+target platforms (\eg~Xamarin for iOS) and with other cross-platform
+app-development tools.

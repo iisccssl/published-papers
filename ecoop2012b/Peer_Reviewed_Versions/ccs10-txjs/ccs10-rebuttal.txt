@@ -1,0 +1,69 @@
+We address common concerns, including a factual error, followed by specific
+questions.
+
+BENEFITS over other approaches:
+
+ * Transcript handles ALL JavaScript constructs in UNRESTRICTED third-party
+   code. This is our main difference from Caja, ADSafe, etc. Unlike Caja
+   wrappers, iblocks can express policies to constrain UNMODIFIED JavaScript
+   code.
+
+ * Transcript allows arbitrary JavaScript code in iblocks. In contrast,
+   Conscript imposes a typing discipline on policy code. Expressing Conscript
+   policies using iblocks shows that Transcript is at least as powerful as
+   Conscript.
+
+
+DIFFICULTY writing iblocks:
+
+ * Iblocks contain two main parts: generic and application-specific. The
+   generic part includes self-checking and HTML parsing. This functionality is
+   common, and can be written once (by experts) and included as a library in
+   iblocks of multiple applications, as we have. Application-specific parts
+   are EASY to write, as shown in the Appendix.
+
+
+HTML Parsing:
+
+ * FACTUAL-ERROR: Two reviewers are under the impression that the use of the
+   HTML parser is to prevent third-party code from overwriting transaction
+   symbols. This is NOT the case. HTML parsing is used to recognize <script>
+   tags included using document.write(...). If the parser fails, it notifies
+   the iblock, which drops the script tag. Each piece of HTML is parsed only
+   once, either by the browser or the iblock. Incorrect HTML parsing may break
+   FUNCTIONALITY, but won't compromise SECURITY.
+
+ * The use of an HTML parser written in JavaScript was to ease prototype
+   development. We could have instead modified the browser to expose its HTML
+   parser to the JavaScript interpreter.
+
+
+EXAMPLE showing transactional aspect and rollback:
+
+ * Figure 1 shows the transactional aspect: that of recording read-write
+   sets and making writes speculative. This example is not contrived; it is
+   based on a policy advocated by Kikuchi et.al. (and Conscript #10) to prevent
+   links from being used for cookie access. We use "img" instead of "links".
+
+ * Transcript executes all transactions speculatively, so a transaction that
+   violates policy can simply be garbage-collected away and never committed.
+   A simplistic reference monitor that merely halts bad code would have to
+   roll back the code's effects, including writing to a global variable or
+   accessing the network. Transcript instead keeps these effects private until
+   the transaction commits.
+
+
+ENCAPSULABILITY of JavaScript, Buffering AJAX:
+
+ * DOM and AJAX operations are not encapsulable. We therefore cause the
+   transaction to suspend to its iblock, which can then examine the state of
+   the transaction and the security policy to decide whether to allow the
+   action. By using or simulating a transactional DOM, Transcript could allow
+   speculative updates to the DOM without suspending the transaction.
+
+ * Transcript implements speculation at byte-code granularity. Hence,
+   writes by a widget's custom setters are also speculative.
+
+ * Transcript handles AJAX callbacks similarly to event handlers. The
+   callback is wrapped in a transaction and an iblock, so when it is
+   invoked, it is executed with the same context as its parent transaction.

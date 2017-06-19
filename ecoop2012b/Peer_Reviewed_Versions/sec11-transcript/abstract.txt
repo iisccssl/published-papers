@@ -1,0 +1,18 @@
+\txjs\ is a system that extends Web browsers with the ability to speculatively
+execute \js\ code. It extends the \js\ language with support for a new
+\textit{transaction} construct, which hosting Web applications can use to
+demarcate regions that contain untrusted guest code. Actions performed within a
+transaction are logged and considered speculative until they are examined by
+the host and committed.  \txjs\ therefore provides hosting Web applications
+with powerful mechanisms to mediate the actions of untrusted guests. It also
+allows hosts to cleanly recover from the effects of security-violating guest
+code.
+
+This paper describes the design \txjs\ and its implementation in Firefox. Our
+exposition focuses on the novel features introduced by \txjs\ to support
+transactions, including (1)~a suspend/resume mechanism for \js, (2)~support for
+speculative DOM updates, and (3)~a gluing mechanism that allows transactions to
+be implemented with minimal changes to commodity \js\ interpreters.  In our
+evaluation, we present case studies showing that \txjs\ can be used to enforce
+powerful security policies on untrusted \js\ code and report its performance on
+real-world applications and microbenchmarks.

@@ -1,0 +1,37 @@
+Thematic changes:
+(1) Automation: Don't idioms ruin complete automation?
+(2) Errors: Don't idioms introduce errors?
+(3) Writing style: Intuitive idea of idioms to come earlier.
+(4) Relevance: Must mention that concepts generalize beyond LSM.
+(5) Hooks don't authorize operations. They check that operations 
+    are authorized by the policy.
+
+Changes to the CCS paper:
+(1) Introduction.
+  * Relevance: must focus less on LSM, and more on generic technique.
+  * Automation: tone down the "automatic" part, and include discussion
+    on idioms.
+(2) Conceptual operations.
+  * Relevance: Increase discussion on relevance of the technique.
+(3) Auth hook placement using static analysis.
+  * Automation: include details on idiom-based analysis.
+  * Errors: include a precursor to the "idioms" definition.
+  * Errors: TOCTOU not our problem should be mentioned here.
+  * Writing Style: Reduce the verbosity of the expanation for code examples.
+  * Automation/Errors: Section 3.2.2: Rewrite completely:
+    + Include discussion on how you wrote idioms.
+    + Include discussion on how to refine idioms.
+    + Include discussion on adding conjucts and new idioms.
+  * Automation/Errors: Explain idiom completeness better.
+  * Check the correctness of Find_CKF.
+(4) Results.
+  * Results in tabulated form?
+  * Make "Methodology", "FP", "FN" separate subsections.
+  * Redo CKF experiments.
+(5) Appendix.
+  * Create idioms.html
+
+
+Consistency note:
+- You use security_inode_rmdir in the intro, but selinux_inode_rmdir in the
+	later part of the text. This WILL cause confusion.

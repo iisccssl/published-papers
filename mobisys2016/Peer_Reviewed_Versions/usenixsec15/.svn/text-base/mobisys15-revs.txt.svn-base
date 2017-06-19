@@ -1,0 +1,245 @@
+Regulating the Use of Smart Personal Devices in Restricted Spaces
+
+Our USENIX Security 2015 submission was previously submitted to MobiSys 2015.
+We have included a brief description of the changes in this draft as compared
+to the MobiSys submission (Part A). The full reviews from the MobiSys'15 PC
+are also included below (Part B).
+______________________________________________________________________________
+
+A. DIFFERENCES BETWEEN THIS DRAFT AND MOBISYS'15 SUBMISSION
+
+This paper improves upon the MobiSys'15 papers in two ways:
+
+* First, we have enhanced the system from the MobiSys'15 paper to also allow
+  guest devices to defend against malicious hosts. We did this by designing
+  and implementing a trusted vetting service that guests can use to check the
+  remote operation requests sent by the host. This remote vetting service
+  allows us to relax a number of assumptions in our threat model. This vetting
+  service is described in Section 6 of the submission, and is also referenced
+  throughout the paper. Other changes in the paper due to this vetting service
+  are in the threat model section of the paper.
+  
+  This was a common concern for several of our MobiSys reviewers, who felt
+  that the guest having to trust the host was quite a limiting factor of our
+  system. With the addition of the trusted vetting service in this paper, this
+  limitation no longer exists.
+
+* Second, we studied the impact of our dummy driver replacement strategy on 
+  the stability of the mobile platform as well as of user apps. We report the
+  experimental results of this study in Appendix A of the paper.
+
+The MobiSys reviewers also raised two other issues, which unforutnately are
+not addressed in this paper. We feel that addressing these issues would 
+be full-fledged papers of their own, and therefore beyond the scope of a
+single paper on the topic:
+
+* Usability concerns and end-user behavior. Reviewers note the inability of 
+  our system to handle covert device use, and note that some end-users may
+  find the kind of policy enforcement we are proposing too intrusive. We
+  acknowledge these concerns, and in fact note them in the paper ourselves.
+  Covert use is excluded from our threat model currently, and usability 
+  concerns are the topic of a separate paper.
+
+* Ability of host to analyze a large number of device configurations. The
+  reviewers correctly note that the host must be able to analyze memory
+  configurations of a large number of heterogeneous devices. This is indeed
+  true, but we feel that this is not an insurmountable problem. For example,
+  one could imagine security companies offering cloud based services to
+  analyze memory configurations for various kinds of devices. Hosts could
+  simply subscribe to such services to be able to analyze guest devices.
+  This deployability concern is somewhat orthogonal to the technical details
+  of our system architecture.
+
+
+______________________________________________________________________________
+
+B. FULL REVIEWS FROM MOBISYS'15
+
+===========================================================================
+                           MobiSys15 Review #96A
+                    Updated 27 Dec 2014 11:25:12pm EST
+---------------------------------------------------------------------------
+   Paper #96: Regulating the Use of Smart Personal Devices in Restricted
+              Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 4. Accept
+                 Reviewer expertise: 2. Some familiarity
+
+                         ===== Paper summary =====
+
+This paper describes an approach for using trusted hardware to allow an
+environment’s host to enforce policies that restrict some sensing or networking
+features of mobile/smart devices. The author’s system uses the trusted hardware
+to implement a simple read page/write page API. The paper shows that a host can
+use this read/write interface to change Android kernel pages to disable
+networking as well as sensors such as cameras and microphones. The paper
+describes an implementation on a FreeScale dev board (using TrustZone hardware)
+as well a version on a Samsung Nexus Galaxy using a simulated TrustZone
+functionality.
+
+                      ===== Comments for author =====
+
+This paper is addressing a hugely important problem. Devices are getting
+smaller, more prevalent and more capable and as the paper points out there are
+social, business and regulatory justifications for constraining device
+functionality in some environments. This is the first paper that I’ve seen that
+presents a strong mechanism for allowing flexible policies to be implemented. I
+particularly appreciated the discussion section which surveyed a variety of
+issues and alternative approaches.
+
+A few issues or suggestions:  Page 2 says that the mechanism must have the
+ability to inspect and make changes.  Is that really true?  Is it not
+sufficient for the mechanism to simply inspect? Could a user not put their
+device into a “compliant state” and then present it for inspection via the
+TrustZone implemented read functionality? If not, maybe explain why because I
+wasn’t sure.
+
+Your system seem well suited to strongly regulated environments: government
+building, semiconductor fabs, etc. where people need to present their devices,
+purses, backpacks for inspection.  It seems less well suited to other examples
+you presented such as bars or concerts. It is likely that user’s in those
+situations would try to “smuggle” their devices in without presenting them for
+inspection/alteration since the cost of being caught is probably small. Any
+thoughts for how “Check-In” could actually be used in an environment like a pub
+or restaurant or theater to incent users to participate?
+
+
+===========================================================================
+                           MobiSys15 Review #96B
+                     Updated 6 Jan 2015 5:13:41am EST
+---------------------------------------------------------------------------
+   Paper #96: Regulating the Use of Smart Personal Devices in Restricted
+              Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+                 Reviewer expertise: 3. Knowledgeable
+
+                         ===== Paper summary =====
+
+The paper describes a restricted spaces framework which would allow personal
+devices to have controlled access to proprietary (such as businesses) networks.
+
+                      ===== Comments for author =====
+
+The paper is reasonably well presented however I have reservations about the
+applicability of the technique. In particular the framework seems to assume
+that the user is willing to trust the network to take over the control of their
+devices, which seems more than what people currently would be willing to do.
+The paper has a section in which this is discussed however I am not sure what
+is proposed there would be enough. 
+
+Also it is proposed that the host software runs a number of checks to make sure
+the device is not malicious: I wonder if it will be possible to keep these
+checks up to date for all companies. It would be pretty dangerous even if in
+just one instance the company network was penetrated. I wonder if the approach
+would actually be accepted as the danger seems too high for the return.
+
+The applicability of the specific approach is limited to a specific device (the
+ARM trust zone devices): alternatives are discussed however they all bring in a
+set of new problems too.
+
+Finally, each device needs to check out when leaving the private network: is
+this feasible to assume all will remember? Can something different be thought
+as I do not think people will remember to do this when leaving!
+
+===========================================================================
+                           MobiSys15 Review #96C
+                     Updated 8 Jan 2015 3:04:01pm EST
+---------------------------------------------------------------------------
+   Paper #96: Regulating the Use of Smart Personal Devices in Restricted
+              Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+                 Reviewer expertise: 1. No familiarity
+
+                         ===== Paper summary =====
+
+This paper presents a model and approach to enabling restricted access on a
+guest's device when that guest is in the host's space.
+
+                      ===== Comments for author =====
+
+At a high level, it is a interesting goal to try to figure out how to restrict
+access for guest's devices. And the authors present a variety of scenarios
+where restriction would be warranted, from privacy-focused restaurants, to
+security-minded companies. However, the heavy weight solutions in this paper
+are only applicable to the latter. 
+
+The proposed approach is to essentially allow the host total control over the
+guest's device. However, it is not clear to me that people will really allow
+that in a location they are visiting (especially since the authors do not deal
+with malicious hosts). As an employee, a company can put whatever restrictions
+they want on the employee, but not really on a guest. If the company is so
+paranoid that they don't want to allow any devices, then this approach falls
+short since it does not really prevent people from sneaking in devices.
+
+
+===========================================================================
+                           MobiSys15 Review #96D
+                     Updated 7 Feb 2015 9:15:44pm EST
+---------------------------------------------------------------------------
+   Paper #96: Regulating the Use of Smart Personal Devices in Restricted
+              Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+                 Reviewer expertise: 2. Some familiarity
+
+                         ===== Paper summary =====
+
+This paper presents the design and implementation of a system for disabling
+certain functionality in smart devices (e.g. camera, microphone) and verifying
+that the smart device is complying. The key point of leverage is ARM's
+TrustZone TCB, which is used to unlink drivers and check memory for the OS and
+running apps.
+
+                      ===== Comments for author =====
+
+This paper is thoughtful and well-written, and also seeks to address a problem
+that many organizations and people are facing. It also has several novel ideas,
+and has a good discussion about tradeoffs and alternative approaches to
+addressing its stated problem.
+
+The main reason for the relatively low score is that this paper has (a) a
+limited threat model, (b) makes a lot of assumptions about usage, and (c) would
+face a lot of uphill challenges in getting people to adopt it (see people's
+past reactions to DRM, e.g. latest reaction to Keurig and DRM).
+
+More comments:
+
+I can understand why the paper doesn't address malicious hosts, or covert
+usage. However, it seems that, by not doing so, it really weakens the paper, as
+the paper only addresses a rather limited threat model. That is, it's not clear
+that the proposed approach could help mitigate issues with cheating in classes,
+or restrict photos in specified zones. 
+
+One barrier to deployment would be that the system would require knowledge of
+every OS and how to verify that OS based on memory fingerprints. Furthermore,
+as in 3.1 "We assume that the host has access to the type declarations of the
+data structures used by the kernel being analyzed, e.g., the sizes, layouts,
+and fields of every data structure." This is a pretty big assumption,
+especially given minor versions of OS updates, patches, and modifications by
+manufacturers. In practice, this could likely be extremely unwieldy.
+
+54 seconds does seem pretty long to check and hash the memory. This isn't too
+bad considering that it's unoptimized, but even if the time were halved it
+would still be a pretty serious barrier to deployment.
+
+I suspect that there would also be a lot of human-oriented issues too, which
+lead to a lot of corner cases. These would include forgetting to change back
+(inevitable, though the paper notes that people can reboot), if someone gets
+their device modified multiple times in a row (someone will forget to undo or
+undo in the wrong order), failure to mutually authenticate, loss of token due
+to low battery, etc. A single paper clearly can't solve all of these, and these
+are more second order effects that can be investigated in later papers.
+
+Section 2.2 and 2.4, on how one possible way to protect personal data would be
+to encrypt disk and memory, does seem to be a pretty high bar. As the paper
+notes, many apps would need to be redesigned.
+
+The discussion, sketching out alternative approaches, is quite good.
+
+______________________________________________________________________________

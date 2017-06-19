@@ -1,0 +1,29 @@
+Revision status for Oakland'11 submission of Transcript:
+[1] New introduction -- DONE.
+[2] Revised motivation -- TODO.
+  DONE -- make less repetitive.
+  DONE -- describe three attacks. 
+     DONE -- no covert channels.
+  ** -- address upfront concerns about example being contrived.
+  DONE -- describe DOM undo.
+[3] Add DOM to design -- TODO.
+  DONE -- modify picture to include DOM (?)
+  DONE -- modify parsing HTML section: document.parse()
+  DONE -- add a paragraph on speculative DOM updates.
+  DONE -- add security analysis section.
+     DONE -- complete mediation.
+     DONE -- fail-safe defaults.
+    DONE  -- no covert channels.
+[4] Add DOM to implementation -- TODO.
+  DONE -- DOM ids + resolution on suspension.
+  DONE -- role of iframe?
+  DONE -- copying event handlers.
+  DONE -- update DOM on commit().
+  DONE -- corner cases/consistency problems?
+[5] Enhance results section 
+  DONE -- Policy comparison; 
+  DONE -- Isolation example.
+[6] Related work -- TODO.
+
+PERVASIVE CHANGES: Refer to "host" and "guest" rather than "Web application"
+and "third-party code".

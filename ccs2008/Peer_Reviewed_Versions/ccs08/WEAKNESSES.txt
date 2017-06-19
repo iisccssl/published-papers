@@ -1,0 +1,11 @@
+1. Implementation consists of only one large benchmark.
+
+2. No quantitative evidence of the amount of error-handling code that we can 
+   save using our techniques.
+
+3. We don't have performance evaluation for large benchmarks.
+
+4. We need to be able to say: "We replaced FreeCS's enforcement mechanism and
+   made it use TMI to enforce policies instead". We also need to say: "In all,
+   we wrote XYZ fingerprints for FreeCS"
+

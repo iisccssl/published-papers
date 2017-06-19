@@ -1,0 +1,168 @@
+\mysection{Related Work and Alternatives}
+\label{section:related}
+
+\myparagraph{TrustZone Support}
+%
+A number of projects have used TrustZone to build novel security applications.
+TrustDump~\cite{trustdump:esorics14} is a TrustZone-based mechanism to reliably
+acquire memory pages from the normal world of a device (Android
+LiME~\cite{lime} and similar tools~\cite{dmd,ddms,recoverymode} do so too, but
+without the security offered by TrustZone).  While similar in spirit to remote
+reads, TrustDump's focus is to be an alternative to virtualized memory
+introspection solutions for malware detection. Unlike our work, TrustDump is
+not concerned with restricted spaces, authenticating the host, or remotely
+configuring guest devices.
+
+Samsung Knox~\cite{knox:ccs14} and \textsc{Sprobes}~\cite{sprobes:most14}
+leverage TrustZone to protect the normal world in real-time from kernel-level
+rootkits. These projects harden the normal world kernel by making it perform a
+world switch when it attempts to perform certain sensitive operations to kernel
+data. A reference monitor in the secure world checks these operations, thereby
+preventing rootkits. In our work, remote reads allow the host to detect
+infected devices, but we do not attempt to provide real-time protection from
+malware. Our work can also leverage Knox to enhance the security of the normal
+world (\sectref{section:threat}).
+
+TrustZone has also been used to improve the security of user applications.
+Microsoft's TLR~\cite{tlr:asplos14} and Nokia's ObC~\cite{obc:asiaccs09} use
+TrustZone to provide a secure execution environment for user apps, even in the
+presence of a compromised kernel. Other applications include ensuring
+trustworthy sensor readings from peripherals~\cite{tenor:mobisys12} and
+securing mobile payments~\cite{proxama}.
+
+\myparagraph{Enterprise Security} With the growing ``bring your own device''
+(BYOD) trend, a number of research projects and enterprise MDM products
+(\eg~\cite{knox:mdm,ms:intune,blackberry:emm}) have developed security
+solutions that enable multiple persona
+(\eg~\cite{asm:sec14,flaskdroid:sec13,cells:sosp11}) or enforce mandatory
+access control policies on smart devices
+(\eg~\cite{deepdroid:ndss15,seandroid:ndss13,flaskdroid:sec13,asm:sec14}).
+Prior work has also explored context-based access control and techniques for
+restricted space objects to push usage policies onto guest devices
+(\eg~\cite{saint:acsac09,Covington2002,conxsense:asiaccs14,worlddriven:ccs14,blindspot:2009,markit:upside14}).
+
+These projects tend to use one of two techniques. One is to require guest
+devices to run a software stack enhanced with a policy enforcement mechanism.
+For instance, ASM~\cite{asm:sec14} introduces a set of security hooks in
+Android, which consult a security policy (installed as an app) that can be used
+to create multiple persona on a device. Each persona is customized with a view
+of apps and peripherals that it can use. Another approach is to require
+virtualized guest devices
+\cite{cells:sosp11,cox:hotmobile07,vmwareverizon,kvmarm:asplos14}. In this
+approach, a trusted hypervisor on the guest device enforces isolation between
+virtual machines implementing different persona.
+
+The main benefit of these techniques over our work is the greater app-level
+control that they provide. For example, they can be used to selectively block
+sensitive audio and blur faces by directly applying policies to the
+corresponding user apps~\cite{worlddriven:ccs14,ar:sec13}. These techniques
+are able to do so because they have a level of semantic visibility into
+app-level behavior that is difficult to achieve at the level of raw memory
+operations.
+
+On the other hand, our approach enjoys two main benefits over prior work.
+First, our approach simplifies the design of the trusted policy-enforcing code
+that runs on guest devices to a TCB of just a few thousand lines of code. In
+contrast, security-enhanced OSes and virtualized solutions required hundreds of
+thousands of lines of trusted policy-enforcement code to execute on guest
+devices.  Prior research has investigated ways to reduce the TCB, \eg~by
+creating small hypervisors~\cite{nova:eurosys09}. However, the extent to which
+such work on small hypervisors applies to smart devices is unclear, given that
+any such hypervisor must support a variety of different virtualization modes,
+guest quirks, and hardware features on a diverse set of personal devices.
+
+The second benefit of our approach is that it provides security guarantees that
+are rooted in trusted hardware. Prior projects have generally trusted guest
+devices to correctly implement the host's policies. This trust can easily be
+violated by a guest running a maliciously-modified OS or hypervisor.  It is
+also not possible for a host to obtain guarantees that the policy was enforced
+for the duration of the guest's stay in the restricted space. We leverage the
+TrustZone to offer such guarantees using verification tokens and REM-suspend.
+
+\myparagraph{Other Hardware Interfaces}
+%
+Hardware interfaces for remote memory operations were originally investigated
+for the server world to perform remote DMA as a means to bypass the performance
+overheads of the TCP/IP stack~\cite{mellanox,infiniband}.  This work has since
+been repurposed to perform kernel malware detection~\cite{copilot:sec04} and
+remote repair~\cite{backdoor:icac04}. These systems use a PCI-based
+co-processor on guests via which the host can remotely transfer and modify
+memory pages on the guest.
+
+On personal devices, the closest equivalent to such a hardware interface is the
+IEEE 1394 (Firewire), which is available on some laptops. However, it is not
+currently available on smaller form-factor devices.  Another possibility is to
+use the JTAG interface~\cite{jtag}, which allows read/write access to memory
+and CPU registers via a few dedicated pins on the chipset.  However, the JTAG
+is primarily used for debugging and is not easily accessible on consumer
+devices.  One drawback of repurposing these hardware interfaces is that they
+cannot authenticate the credentials of the host that initiates the memory
+operation. Moreover, to use these hardware interfaces on guest devices, the
+host needs physical access to plug into them.  Thus, these interfaces are best
+used when the guest can physically authenticate the host and trust it to be
+benign.
+
+
+% \myparagraph{App Security}
+% 
+% It is now well-known that many popular apps exfiltrate sensitive user data
+% from smart devices~\cite{taintdroid:osdi10}. Moreover, a significant fraction
+% of apps (on Android) are over-privileged~\cite{stowaway:ccs11,pscout:ccs12}
+% and end-users are poor at understanding the meaning of app
+% permissions~\cite{ep:ubicomp12,felt:soups12}.  Such apps can leverage the
+% increasing array of sensors on modern smart devices in novel and dangerous
+% ways~\cite{soundcomber:ndss11,placeraider:ndss13}. These threats will amplify
+% in the future as we see an increasing number of augmented reality apps that
+% continuously monitor sensor feeds and extract data from the device's
+% environment.
+
+% Some projects have attempted to rectify the situation by offering improved
+% app permission models~\cite{howtoask:hotsec12} or modifying the execution
+% environment on the device to return ``fake'' sensor data to
+% apps~\cite{mockdroid:hotmobile10}. However, such techniques are usually
+% ineffective when the device itself is compromised (\eg~via kernel rootkits),
+% or if the user unintentionally installs a malicious app.  Our work can
+% complement these efforts by allowing hosts to control peripherals below the
+% app layer. 
+
+% \myparagraph{Hardening Smart Devices}
+% 
+% Finally, the research community has addressed techniques to harden the
+% software stack of smart devices. Samsung Knox~\cite{knox:ccs14}, as
+% previously discussed, provides the ability to detect certain classes of
+% kernel-level rootkits in real time.  MOCFI~\cite{mocfi:ndss12} enhances the
+% mobile OS by enforcing control-flow integrity properties,
+% thereby mitigating the effect of attacks such as buffer overflow-based
+% exploits.  Airbag~\cite{airbag:ndss14} employs lightweight virtualization to
+% isolate user apps and prevent them from infecting the device's firmware or
+% leaking sensitive information. At the app level,
+% RetroSkeleton~\cite{retro:mobisys13} rewrites Android apps to improve their
+% security on commodity devices. These techniques can help improve the
+% resilience of smart devices to attack. Our work allows hosts to remotely
+% analyze smart devices via remote memory operations and verify that they are
+% free of malware infection.
+
+
+% \myparagraph{Defending from Malware}
+% \myparagraph{Context Awareness}
+
+
+
+% * Clear difference from SAMSUNG KNOX.
+% * List the things that we don't want to do (because SAMSUNG KNOX is our competition)
+%     - Intercept critical operations.
+%     - They cannot detect memory overflow errors.
+%     - Ours is asynchronous, theirs is synchronous.
+%     - No writes/uninstalling devices.
+% * KNOX is not enforcing any enterprise security policy. Ours is enforcing specific enterprise policies.
+% * KNOX checks the integrity of certain kernel memory pages.
+%
+% Prior work has developed numerous examples of security primitives that use
+% remote memory operations. Examples include memory forensics~\cite{}, kernel
+% malware detection~\cite{}, and OS repair~\cite{}.  
+% However, the bulk of these techniques have usually been developed for
+% server-class systems or personal computers with larger form factors, such as
+% desktops, that typically use the x86 architecture and where methods to isolate
+% the target from the monitor, \ie~virtualization or co-processors, are readily
+% available.
+%

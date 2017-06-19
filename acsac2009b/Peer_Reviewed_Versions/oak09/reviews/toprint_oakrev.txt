@@ -1,0 +1,410 @@
+===========================================================================
+                          Oakland09 Review #154A
+                 Updated Friday 5 Dec 2008 11:53:33am EST
+---------------------------------------------------------------------------
+  Paper #154: Protecting Commodity OS Kernels from Vulnerable Device
+              Drivers
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Reject: will argue to reject
+                Reviewer confidence: 3. Confident
+                        Correctness: 2. Unconvincing
+                       Presentation: 3. Readable
+                          Relevance: 4. This is a reasonable venue for this
+                                        paper
+                            Novelty: 2. Probably done before
+
+                       ===== Summary of paper =====
+
+The paper presents an extension to the microdrivers framework to
+protect microdriver device drivers from attack.  The new feature is a
+monitor that vets RPC communications between a user-space half and a
+kernel-space half of the driver, to make sure no data structure
+invariants or control-flow integrity constraints will be violated.
+Invariants are determined by the Daikon invariant generation tool, and
+a static analysis (for the control flow part).
+
+                        ===== Recommendation =====
+
+I don't think this paper should be accepted.
+
+Positives:
+
++ The idea of using data invariants for integrity monitoring is a good
+  one (in fact, good enough that it's been done before, see below).
+  The authors make some small changes to Daikon for better
+  cost/benefit in their setting.
+
++ The system is built and seems to work against some attacks the
+  authors tested.
+
+Negatives:
+
+- This work seems to be a small increment on work done before on 1)
+  microdrivers in particular, 2) Daikon-based techniques for inferring
+  and enforcing invariants for host-based intrusion detection
+  generally (Saidi, PLAS 2007) and on kernel data structures in
+  particular (Baliga et al., ACSAC 2008), and 3) control-flow
+  integrity (Abadi et al., CCS 2005) whether via static analysis or
+  dynamic training).  I find essentially no new interesting or
+  surprising ideas in the paper.
+
+- The paper has not convinced me the microdrivers approach is is the
+  most effective compared to other approaches, essentially since much
+  of the driver code still resides in the kernel, unprotected.  The
+  paper implicitly assumes that this performance-critical code is not
+  vulnerable to exploits, but never offers any proof of this
+  assumption, either in terms of case studies (e.g., looking through
+  past bug reports) or experimental results (which were only testing
+  the u-driver portion).  Other approaches cited in the paper, such as
+  SafeDrive or XFI, or even kernel integrity monitors more generally,
+  provide much better coverage and similar overheads.
+
+                     ===== Comments for authors =====
+
+Throughout, the paper suggests that "running in the kernel" is an
+inherent problem for device driver security.  For example, it points
+out that SafeDrive and XFI are problematic because they run in the
+kernel.  I have two problems with this.  First, it should be clear WHY
+this is the case.  From the point of view of memory safety, running in
+the kernel is not an issue---we can use VM protection (as in Nooks)
+and/or type safety (as in SafeDriver) or another software-enforced
+approach (as in XFI) to guarantee memory safety.  From the point of
+view of control-flow integrity, again, this is not a problem: the
+above systems ensure control-flow integrity as well (though the
+type-safety-based approach could be compromised by corruption due to
+bugs elsewhere in the kernel).  The best I can see that running in the
+kernel could be a problem is for *liveness* reasons---i.e., a driver
+that can be exploited to exhaust memory or run forever is potentially
+problematic.  However, even in this case, Nooks does a pretty good job
+of isolating things so that drivers can be killed.  In any case, it's
+odd that the authors criticise kernel residency since significant
+portions of microdrivers run in the kernel (indeed, for uhci-hcd, more
+than 80% of the code is in the kernel).
+
+I found the discussion of control-flow integrity enforced by the
+approach to be confusing.  On the one hand, the authors mention that
+Daikon is used to infer whether function pointer values are invariant,
+but on the other hand they say they use a static analysis to construct
+the legal control flow graph.  Why do you need the former if you have
+the latter?
+
+It would be nice to see the problem being solved here stated more
+generally.  I.e., if you have boundary crossing between two components
+and you want to check integrity constraints, how do you do it?  A
+general problem solution here should be applicable for several
+applications, not just microdrivers.  Indeed, it may be better suited
+to other scenarios, since it seems to me that the microdrivers
+architecture is potentially flawed for enforcing security (since so
+much of the driver runs unprotected in the kernel).  You could imagine
+generalizing the approach to acquire invariants from many sources, not
+just Daikon (e.g., Saidi uses BLAST, too, I believe).
+
+Some notion of coverage would be useful.  That is, why should I
+believe Daikon has produced sufficient invariants to prevent attacks?
+The evaluation, with by-hand-constructed attacks for particular
+subsystems, was not convincing.  Indeed, the by-hand attacks seemed to
+be directly related to the invariants that were discovered (which
+makes me wonder whether they'd been chosen once the invariants were
+discovered).
+
+I found it hard to discern what exactly is new in the present paper,
+compared to the microdrivers work.  The "background" section
+4.1. clearly has new features in it, since microdrivers did not have
+any sort of integrity checking before, as far as I can tell.
+
+What are the threats against the RPC monitor in the kernel?  How might
+it be verified?
+
+===========================================================================
+                          Oakland09 Review #154B
+                 Updated Friday 19 Dec 2008 11:04:11am EST
+---------------------------------------------------------------------------
+  Paper #154: Protecting Commodity OS Kernels from Vulnerable Device
+              Drivers
+---------------------------------------------------------------------------
+
+                      Overall merit: 3. Weak reject: will not argue against
+                Reviewer confidence: 3. Confident
+                        Correctness: 3. Plausible
+                       Presentation: 3. Readable
+                          Relevance: 5. This is the natural home for this
+                                        paper
+                            Novelty: 3. Unsurprising next step
+
+                       ===== Summary of paper =====
+
+A Microdrivers architecture was recently proposed (ASPLOS'08) to better
+isolate kernel data from device drivers on commodity OS kernels without
+incurring significant performance penalty.  In this architecture, each
+device driver is split by a source-code transformation tool
+(DriverSlicer) into a small, trusted kernel-level k-driver and a usually
+large, untrusted user-level u-driver.
+
+This paper extends the previous Microdrivers work with a RPC monitor to
+mediate the communication between the u-driver and the k-driver.  The
+RPC monitor code, which is generated in the resulted Microdriver code by
+the extended DriverSlicer, enforces the kernel data structure integrity
+constraints and the policies of control transfers from u-driver to
+k-driver.
+
+
+The proposed approach addresses both data and control-flow attacks
+from a compromised u-driver:
+
+- The presented RPC monitor checks kernel data structure integrity
+  constraints learned by the Daikon invariant inference engine during
+  training.  This paper has a good discussion on the classes of
+  invariants and the configurations of Daikon that are useful for the
+  experiments.
+
+- The RPC monitor also enforces that a u-driver can only make the
+  permitted downcalls while serving a particular upcall from k-driver.
+  The associations between each upcall and the corresponding permitted
+  downcalls are extracted through a static analysis by DriverSlicer.
+
+This paper reports good performance results of large data transfers for
+two network drivers and one USB driver.
+
+                        ===== Recommendation =====
+
+The main problem with this paper is that it provides no assurance that the resulting drivers
+are more secure. It is not enough that some attacks have been disrupted by the approach.
+The real question is whether attacks are still possible, and if so, what they are. The paper is
+silent on the issue of "gaps" in the invariants learnt by their technique that can provide
+room for attacks. Also missing is a serious discussion of possible false positives. Together,
+this leads me to believe that the paper is perhaps premature for publication.
+
+                     ===== Comments for authors =====
+
+Can you really provide any assurance against compromised user level
+drivers? How do the data structure integrity constraints help? It is
+not very helpful to say that many previously working attacks will
+no longer work, as the attacker can simply find ways to circumvent
+your approach (ie craft attacks that don't violate your intergrity
+constraints). 
+
+May be too much of a delta over previous work. 4.1 is previous work,
+4.2 is also previous work (Daikon). So, all that is going on is a
+customization of Daikon and implementation of techniques described
+in previous works.
+
+How does a link-list  length invariant help? In particular, what attacks are
+made impossible without violating length constraints while still
+being allowed to change the list elements? 
+
+What about parameters to down calls? Are they being controlled to
+ensure that bad things cannot happen?
+
+The technique is not that effective. k-driver is still far too
+large, often bigger than u-driver. Annotations are large for
+some drivers, eg USB.
+
+Attack experiments are not helpful. Obviously, you will prevent
+attacks that involve execution of statically uninferred down-calls 
+or modification of data on which you have inferred invariants.
+The real question is what fraction of the data remains "open"
+for corruption, and whether attacks are possible using them.
+
+- This paper uses an invariant inference engine to infer data structure
+  invariant constraints from the training data.  Due to this, the
+  resulted constraints can be incomplete, too specific, or even
+  incorrect, which can affect the effectiveness of the data attack
+  protection in the RPC monitor.  Unfortunately, this paper presents
+  neither techniques nor sufficient experimental results to assess the
+  quality of learned data invariant constraints.  Moreover, as
+  acknowledged by the authors, some invariants need to be generalized to
+  be applicable across multiple installations. But it remains unclear
+  how much manual effort is needed to validate, refine or generalize the
+  inferred data invariant constraints.
+
+- In this paper, the effectiveness w.r.t. attack detection is studied
+  using a set of simulated attacks.  It would be more convincing if a
+  number of real-world attacks are also used for the evaluation.
+
+===========================================================================
+                          Oakland09 Review #154C
+                Updated Thursday 8 Jan 2009 11:45:10pm EST
+---------------------------------------------------------------------------
+  Paper #154: Protecting Commodity OS Kernels from Vulnerable Device
+              Drivers
+---------------------------------------------------------------------------
+
+                      Overall merit: 3. Weak reject: will not argue against
+                Reviewer confidence: 3. Confident
+                        Correctness: 4. Convincing
+                       Presentation: 4. Well written
+                          Relevance: 3. Not sure whether it belongs here or
+                                        in another venue
+                            Novelty: 3. Unsurprising next step
+
+                       ===== Summary of paper =====
+
+This paper extends the authors' earlier ASPLOS '08 work on
+microdrivers, an architecture for splitting OS drivers into a kernel
+piece (k-driver) and a user piece (u-driver) for fault containment.
+This paper introduces a reference monitor in between the k-driver and
+u-driver to enforce safety invariants on the data and control flowing
+from the u-driver to the k-driver, and uses Ernst's Daikon system to
+automatically discover these invariants.  With this system, if there
+is a security vulnerability in the u-driver, exploiting the
+vulnerability will not affect the OS or its applications (except if
+the exploit causes the device the driver is driving to stop working,
+of course).
+
+                        ===== Recommendation =====
+
+This is solid work, and potentially interesting.  But, it doesn't feel
+like the paper has made substantial enough of a delta over its
+predecessor (the ASPLOS'08 paper).  I do like the architecture, and
+believe the introduction of the reference monitor is useful, but the
+paper doesn't adequately explore the implications of the reference
+monitor, nor does it sufficiently evaluate the actual benefits (in
+terms of security) or the performance costs of the approach.  A
+significant fraction of the paper repeats ASPLOS material.
+
+                     ===== Comments for authors =====
+
+I liked the microdrivers paper, and I like this addition to that work.
+It's pretty clear that once you have a clean interface identified and
+defined between the k-driver and u-driver, that interface is a natural
+and potentially effective location for a reference monitor to enforce
+invariants and integrity constraints.  It's also pretty clear that a
+byzantine u-driver will have a tough time attacking the kernel given
+a reasonable reference monitor.
+
+But, the paper nonetheless felt like the increment over the ASPLOS
+paper was not yet fully baked and substantial.  The two major
+additional contributions of the paper are the RPC monitor and the use
+of Daikon to infer the invariants the monitor should track.  Given
+this, I'd hoped the paper would rigorously explore and evaluate these
+parts of the system.  But, the paper didn't seem to do a good job of this:
+
+A security argument of the paper is that microdrivers allows one to
+push functionality out of the kernel into the user-level.  But, from
+both the general description of duplicated data structure
+accessors/mutators in the k-driver and u-driver, plus the side of the
+k-driver and u-driver components reported in figure 4, it isn't clear
+this is happening.  I was hoping for some qualitative comments or
+analysis on whether the splitting of the four drivers really achieved
+this security goal.
+
+I'm always nervous about relying on heuristics such as those used by
+Daikon in critical parts of an application.  The danger, of course, is
+that Daikon (a) misses important invariants, leading to potential
+vulnerabilities, and (b) includes false invariants ("serendipitous" in
+your terminology), leading to a scenario in which an alarm will be
+raised during benign activity.  The paper doesn't adequately examine
+either possibility; it was good that you thought to test for false
+positives at the end of 5.2, but it looked like this testing was not
+rigorous or systematic.
+
+It was difficult to tell if Daikon-generated invariants are really
+necessary.  For example, one hypothesis (that I suspect is false, but
+the paper cannot refute) is that just a small number of simple
+invariants that are manually generated would be enough to prevent
+malicious u-drivers from being able to harm the kernel.  Said another
+way, figure 6 shows the number of invariants generated by Daikon and
+used by the reference monitor, but section 5.2 didn't report on the
+nature of these invariants or how many of them would fire during your
+simulated attacks.  Similarly, the paper doesn't demonstrate that
+these attacks would actually crash or compromise a microdriver kernel
+that didn't enforce the invariants (which seems like a really simple
+test to do!).
+
+The goal of DriverSlicer is to reduce the amount of effort necessary
+to take a stock Linux driver and port it to a microdriver-enhanced
+kernel.  But, it looked like a fairly large amount of effort was still
+required to do this porting: the author must add annotations to the
+driver code for DriverSlicer, the first paragraph of section 5 says
+that driver porting requires domain-specific understanding and is
+time-consuming, etc.  Given this, is DriverSlicer really better than
+just doing the splitting manually?
+
+The performance evaluation could be more informative.  It was nice to
+see that most driver activity involved only the k-driver (though this
+made me wonder whether the architecture was achieving its separation
+of concerns goals -- most activity tickles the trusted component
+inside the kernel, rather than the u-driver component that is able to
+withstand corruption).  But, given this, it's not a surprise that your
+measurements show little overhead.  However, I wanted to understand
+the performance overhead of the RPC system and the reference monitor;
+one could imagine a driver in which the u-driver/k-driver interface is
+on the critical path, in which case understanding this seems
+important.
+
+The related work section was thorough; nice job.  I did find myself
+wondering if this paper should have compared a microdriver approach to
+one of the other user-mode driver frameworks, and done a head-to-head
+evaluation (in terms of the porting effort, the security benefits, and
+the performance of the resulting system).
+
+5.2, figure 45:  you have reasonable function coverage (except for
+ens1371), but how good is your coverage in terms of lines of code?
+I could imagine having most functions covered, but many lines within
+each covered function not actually being exercised.
+
+The paper didn't feel adequately anonymized; it seems pretty obvious that
+there is overlap between the authors of the ASPLOS paper and this paper.
+(On the other hand, it's hard to know how to effectively anonymize a paper
+that builds on such specialized, published previous work.)
+
+===========================================================================
+                          Oakland09 Review #154D
+                Updated Wednesday 14 Jan 2009 6:24:14pm EST
+---------------------------------------------------------------------------
+  Paper #154: Protecting Commodity OS Kernels from Vulnerable Device
+              Drivers
+---------------------------------------------------------------------------
+
+                      Overall merit: 3. Weak reject: will not argue against
+                Reviewer confidence: 3. Confident
+                        Correctness: 4. Convincing
+                       Presentation: 4. Well written
+                          Relevance: 3. Not sure whether it belongs here or
+                                        in another venue
+                            Novelty: 3. Unsurprising next step
+
+                       ===== Summary of paper =====
+
+The work builds on two bodies of earlier work: (1) microdrivers that
+split device drivers  into a kernel-mode and user-mode part and (2)
+the Daikon invariant inference tool. The contribution is that
+microdrivers are extended with an RPC monitor that verifies both
+kernel data structure updates and control transfer. By moving
+untrusted code to user-mode processes and verifying the integrity all
+kernel requests, certain vulnerabilities can be prevented.
+
+                        ===== Recommendation =====
+
+Weak reject. Adding a reference monitor between a driver and the
+kernel is logical step, but cannot be seen as a major contribution.
+Motivation is questionable and resulting security properties are
+vague. Maybe better fits in dependability community.
+
+                     ===== Comments for authors =====
+
+This work is a logical step forward from microdrivers. The motivation
+for building on microdrivers is weak, however, given that better
+results can be obtained on full-fledged microkernel-based multiserver
+systems. The claim of better compatibility conflicts with the results
+that state that porting a driver still is cumbersome procedure. The
+claim of good flexibility is not backed up by actual examples of how
+easy it is to apply different policies. The paper is vague however
+about the exact classes of attacks that can be prevented and which
+vulnerabilities still could be exploited. Kernel data structure
+integrity and flow control are certainly important for dependability
+in the face of buggy drivers, but more seems to be required for
+security.
+
+Fundamental problem is that the performance critical code such as
+device-specific IRQ handling (left in kernel with microdrivers) is
+likely to be more complex and more buggy than the code moved to user
+code. Why not using a completely user-mode driver framework as found
+in MINIX or L4? Performance is not necessarily bad, as L4 based system
+have shown. In fact, you're adding more potentially vulnerable code to
+the kernel. E.g., how big is the RPC monitor itself? In a complete
+multiserver environment this would not be the case.
+
+
+

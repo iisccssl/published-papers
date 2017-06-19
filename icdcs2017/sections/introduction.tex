@@ -1,0 +1,98 @@
+\section{Introduction}
+\label{section:introduction}
+
+In recent years, the research community has devoted much attention to security
+and privacy threats that arise in public cloud computing platforms, such as
+Amazon EC2 and Microsoft Azure. From the perspective of cloud clients, one of
+the chief security concerns is that the computing infrastructure is not under
+the client's control. While relinquishing control frees the client from having
+to procure and manage computing infrastructure, it also exposes the client's
+code and data to cloud providers and administrators. Malicious cloud
+administrators can compromise client confidentiality by reading sensitive code
+and data directly from memory images of the client's virtual machines (VM).
+They could also inject malicious code into client VMs, \eg~to insert backdoors
+or log keystrokes, thereby compromising integrity. Even otherwise honest cloud
+providers could be forced to violate client trust because of subpoenas.
+
+Intel's SGX
+architecture~\cite{sgx:attest:hasp13,sgx:instructions:hasp13,sgx:isolated:hasp13,intelsgx:sep13,intelsgx:oct14}
+offers hardware support to alleviate such client security and privacy concerns.
+SGX allows client processes and VMs to create \textit{enclaves}, within which
+they can store and compute on sensitive data.  Enclaves are encrypted at the
+hardware level using hardware-managed keys. SGX guarantees that enclave content that includes enclave code and data is not visible in the clear outside the enclave, even to the most privileged
+software layer running on the system, \ie~the operating system (OS) or the
+hypervisor. SGX also offers support for enclave attestation, thereby providing
+assurances rooted in hardware that an enclave was created and bootstrapped
+securely, without interference from the cloud provider.  With SGX, clients can
+therefore protect the confidentiality and integrity of their code and data even
+from a malicious cloud provider or administrator, so long as they are willing
+to trust the hardware.
+
+Despite these benefits, SGX has the unfortunate consequence of flipping the
+trust model that is prevalent on contemporary cloud platforms. On non-SGX
+platforms, a benign cloud provider benefits from the ability to inspect client
+code and data. The cloud provider can provide clients with services such as
+malware detection, vulnerability scanning, and memory deduplication. Such
+services are also beneficial to benign clients.  The cloud provider can check
+client VMs for service-level agreement (SLA) compliance, thereby catching
+malicious clients who may misuse the cloud platform in various ways, \eg~by
+using it to host a botnet command and control server. In contrast, on an SGX
+platform, the cloud provider can no longer inspect the content of a client's
+enclaves. This affects benign clients, who can no longer avail of cloud-based
+services for their enclaves. It also benefits malicious clients by giving them
+free reign to perform a variety of SLA-violating activities within enclaves.
+Researchers have discussed the possibility of such ``detection-proof'' SGX
+malware~\cite{davenportford:vbtn,rutkowska:aug13,rutkowska:sep13}.  Without the
+ability to inspect the client's code, the cloud provider is left to using
+other, indirect means to infer the presence of such malicious activities. For
+example, minibox ~\cite{minibox:atc14} verifies that an application behaves properly
+by checking system call parameters of the application for malicious activities such as
+accessing sensitive files that do not belong to the application.
+
+Can a benign client benefit from the security offered by the SGX while still
+allowing the cloud provider to exert some control over the content of the
+client's enclaves? One strawman solution to achieve this goal is to use a
+trusted-third party (TTP). Both the cloud provider and client would agree upon
+a certain set of policies/constraints that the enclave content must satisfy (as
+is done in SLAs). For example, the cloud provider could specify that the
+enclave code must be certified as clean by a certain anti-malware tool, or that
+the enclave code be produced by a compiler that inserts security checks, \eg~to
+enforce control-flow integrity or check for other memory access violations.
+They inform the TTP about these policies, following which the client discloses
+its sensitive content to the TTP, which checks for policy compliance.  The
+cloud provider then allows the client to provision the enclave with this
+content.
+
+However, the main drawback of this strawman solution is the need for a TTP.
+Finding such a TTP that is acceptable to both the cloud provider and the client
+is challenging in real-world settings, thereby hampering deployability. TTPs
+could themselves be subject to government subpoenas that force them to hand
+over the client's sensitive content. From the client's perspective, this
+solution provides no more security than handing over sensitive
+content to the cloud provider.  
+
+\myparagraph{Contributions.} In this paper, we present \tool, an enclave
+inspection library that achieves the above goal without TTPs.  Cloud providers
+and clients agree upon the policies that enclave code must satisfy and encode
+it in \tool. Thus, cloud providers and clients mutually trust \tool\ with
+policy enforcement. The cloud provider creates a fresh enclave provisioned with
+\tool, and proves to the client, using SGX's hardware attestation, that the
+enclave was created securely. The client then hands its sensitive content to
+\tool\ over an encrypted channel. It provisions the enclave with the client's
+content only if the content is policy-compliant. If not, it informs the cloud
+provider, who can prevent the client from creating the enclave. 
+
+\tool's approach combines the security benefits of non-SGX and SGX platforms.
+From the cloud provider's perspective, it is able to check client computations
+for policy-compliance, as in non-SGX platforms. From the client's perspective,
+its sensitive content is not revealed to the cloud provider, preserving the
+security guarantee as offered by SGX platforms. Moreover, \tool\ statically
+inspects the client's enclave content only once---when the enclave is first
+provisioned with that content. One can also imagine an extension of \tool\ that
+instruments client code to enforce policies at runtime, but our current
+implementation only implements support for static code inspection.  Thus,
+except for a small increase in enclave-provisioning time, \tool\ does not
+impose any runtime performance penalty on the client's enclave computations.
+We have implemented a prototype of \tool\ and have used it to check a variety
+of security policies on a number of popular open-source programs running within
+enclaves.

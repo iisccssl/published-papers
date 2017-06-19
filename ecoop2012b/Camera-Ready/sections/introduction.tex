@@ -1,0 +1,537 @@
+\mysection{Introduction}
+\label{section:introduction}
+
+% Problem definition.
+%
+\add{It is now common for Web applications (\textit{host}) to include untrusted,
+third-party \js\ code (\textit{guest}) of arbitrary provenance in the form
+of advertisements, libraries and widgets. Despite advances in language and
+browser technology, \js\ still lacks mechanisms that enable Web application
+developers to debug and understand the behavior of third-party guest
+code. Using existing reflection techniques in \js, the host cannot attribute
+changes in the \js\ heap and the DOM to specific guests. Further, fine-grained
+context about a guest's interaction with the host's DOM and network is not
+supported. For example, the host cannot inspect the behavior of guest code under
+specific cookie values or decide whether to allow network requests by the
+guests.}
+
+\add{This paper proposes to enhance the \js\ language with builtin support for
+introspection of third-party guest code. The main idea is to extend \js\
+with a new \texttt{transaction} construct, within which hosts can speculatively
+execute guest code containing arbitrary \js\ constructs. In addition to
+enforcing security policies on guests, a \texttt{transaction} would allow hosts
+to \textit{cleanly recover from policy-violating actions of guest code}. When
+a host detects an offending guest, it simply chooses not to commit the
+transaction corresponding to the guest. Such an approach neutralizes any data
+and DOM modifications initiated earlier by the guest, without having to undo
+them explicitly. The introspection mechanism (\texttt{transaction}) is built
+within the \js\ language itself, thereby allowing guest code to contain
+arbitrary \js\ constructs (unlike contemporary
+techniques \cite{adsafe,fbjs,caja,wrappers:esorics09,language:csf09}).} 
+
+\remove{The client-side of modern Web applications frequently contains \js\ code
+in the form of advertisements, games, and libraries that may be developed by
+untrusted third parties.  To include such third-party code (the \textit{guest}),
+the author of such a Web application (the \textit{host}) must choose to
+(a)~place the guest code in its own protection domain (\eg~an \code{iframe}) or
+(b)~include the guest in the same protection domain as the host. The first
+approach isolates the guest from the host, but has the downside of offering
+limited means for guest/host interaction.  Any communication between the guest
+and the host must happen via explicit \code{postMessage} commands between the
+corresponding \code{iframes}.  The second approach eases guest/host interaction,
+but also exposes the host to malicious guests. Hosts must therefore employ
+protection mechanisms to confine the actions of guest code. This paper
+addresses the problem of designing such protection mechanisms.
+
+% Prior work to address the problem.
+%
+One way to protect against untrusted guests is to use \textit{\js\ reference
+monitors}.  Reference monitors mediate the action of guest code as it executes
+and ensure that any accesses by the guest to the host's data structures conform
+to the host's security policies. Examples of reference monitors include
+Caja~\cite{caja}, object capabilities~\cite{mmt10}, inlined reference
+monitors~\cite{phung:asiaccs09,corescript:popl07,mets:hotos07}, object
+wrappers~\cite{wrappers:esorics09}, and aspect-oriented policy
+enforcement~\cite{conscript:oak10}. Some reference monitors also require the
+guest code to be written in safe subsets of \js\ (\eg~Caja). The main purpose of
+these reference monitors is to provide \textit{access control} to the host's
+objects.
+
+% What is our unique contribution to this space?
+%
+This paper proposes a novel approach to construct \js\ reference monitors using
+speculative execution.  The main idea is to extend \js\ with a new
+\textit{transaction} construct, within which hosts can speculatively execute
+guest code that contains arbitrary \js\ constructs. In addition to enforcing
+access control policies, reference monitors that use speculative execution
+allow hosts to \textit{cleanly recover from the policy-violating actions of
+guest code}. When a host detects an offending guest, it simply chooses not to
+commit the transaction corresponding to the guest. Such an approach neutralizes
+any data and DOM modifications initiated earlier by the guest, without having
+to undo them explicitly.}
+
+% Why is this contribution important? (i.e., motivating example).
+%
+\remove{To motivate the need for recovery,} Let us consider an example of a
+Web-based word processor that hosts a third-party widget to display
+advertisements (see \figref{figure:motivate}). During an editing session, this
+widget scans the document for specific keywords and displays advertisements
+relevant to the text that the user has entered.  Such a widget may modify the
+host in several ways to achieve its functionality, \eg~it could install event
+handlers to display advertisements when the user places the mouse over specific
+phrases in the text. However, as an untrusted guest, this widget may also
+contain malicious functionality, \eg~it could implement a clickjacking-style
+attack by overlaying the editor with transparent HTML elements pointing to
+malicious sites.
+
+%-------------------------------------------------------------------------------
+% Redid motivated example with reduced font sizes and in two-column format.
+%-------------------------------------------------------------------------------
+\begin{figure*}[t]%{rh}{0.60\textwidth}
+%\vspace*{-3.5ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+%\scriptsize
+\begin{tabular}{rl}
+%\hline
+\lno{1} & \htmltiny{script type="text/javascript"}\\
+\lno{2} & \codetiny{var editor = new Editor(); initialize(editor);}\\
+\lno{3} & \codetiny{var builtins = [], tocommit = true;}\\
+\lno{4} & \codetiny{for(var prop in Editor.prototype) builtins[prop] = prop;}\\
+\lno{5} & \codetiny{var tx = transaction \{} 
+          \fbox{\textbf{\textrm{\tiny Guest code: Lines 6--9}}}\\
+  \rowcolor[gray]{0.9}
+\lno{6} & \mytab \codetiny{Editor.prototype.getKeywords = function(content)
+\{...\}}\\
+  \rowcolor[gray]{0.9}
+        & \mytab \codetiny{...}\\
+  \rowcolor[gray]{0.9}
+\lno{7} & \mytab \codetiny{var elem = document.getElementById("editBox");}\\
+  \rowcolor[gray]{0.9}
+\lno{8} & \mytab \codetiny{elem.addEventListener("mouseover", displayAds,
+false);}\\
+  \rowcolor[gray]{0.9}
+        & \mytab \codetiny{...}\\
+  \rowcolor[gray]{0.9}
+\lno{9} & \mytab \codetiny{document.write(`<div style="opacity:0.0;
+z-index:0;
+\textit{... size/loc params}">}\\
+  \rowcolor[gray]{0.9}
+         & \mytab \mytab \codetiny{<a href="http://evil.com"> Evil Link
+</a></div>');}\\
+\lno{10} & \codetiny{\};}\\
+\lno{11} & \codetiny{tocommit = gotoIblock(tx);}
+           \fbox{\textbf{\textrm{\tiny Implements the host's security
+policies}}}\\
+\lno{12} & \codetiny{if (tocommit) tx.commit();}\\
+\lno{13} & \codetiny{... /* rest of the Host Web application's code */}\\
+\lno{14} & \htmltiny{/script}\\
+%\hline
+\end{tabular}
+\remove{
+\mycaptionsquish{Motivating example. \describecaption{This example shows how a
+hosting Web application can mediate untrusted guest code (lines 6--9). The
+invocation to the introspection block (line 11) enforces the host's security
+policies (see \figref{figure:iblock}) on the actions performed by the guest. To
+ease exposition, 
+%
+(a)~this example omits variable hiding (a concept introduced in
+\sectref{section:design:hiding}), which ensures that the guest cannot tamper
+with sensitive host variables such as \code{tx}, \code{tocommit} and
+\code{builtins};
+%
+(b)~we inlined the guest code from \code{http://untrusted.com/guest.js} in
+lines~\lnobig{6}--\lnobig{9}. \sectref{section:implementation:auxiliary:script}
+explains how the host can use transactions to mediate guests included using a
+\code{<script>} tag. }}
+}
+\add{
+\mycaptionsquish{Motivating example. \describecaption{This example shows how a
+host can mediate an untrusted guest (lines 6--9). The 
+introspection block (invoked in line 11) enforces the host's security
+policies (see \figref{figure:iblock}) on the actions performed by the guest.}}
+}
+{\label{figure:motivate}}
+%\vspace*{-3.0ex}
+\end{figure*}
+
+%-------------------------------------------------------------------------------
+
+Traditional reference monitors \add{\cite{ulfarthesis}, which mediate the
+action of guest code as it executes,} can detect and prevent such attacks.
+However, such reference monitors typically only enforce access control policies,
+and would have let the guest modify the host's heap and DOM (such as to install
+innocuous event handlers) until the attack is detected.  When such a reference
+monitor reports an attack, the end-user faces one of two unpalatable options:
+(a)~close the editing session and start afresh; or (b)~continue with the
+tainted editing session. In the former case, the end-user loses unsaved work.
+In the latter case, the editing session is subject to the unknown and possibly
+undesirable effects of the heap and DOM changes that the widget initiated
+before being flagged as malicious. In our example, the event handlers
+registered by the malicious widget may also implement undesirable functionality
+and should be removed when the widget's clickjacking attempt is detected.
+
+Speculative execution allows \add{hosts to introspect all actions of untrusted
+guest code.} \remove{reference monitors to detect and recover from malicious
+guests.} In our example, the host speculatively executes the untrusted
+widget by enclosing it in a transaction. When the attack is detected, the
+host simply discards all changes initiated by the widget. The end-user can
+proceed with the editing session without losing unsaved work, and with the
+assurance that the host is unaffected by the malicious widget.
+
+% What are the main technical contributions of this paper?
+This paper describes the \txjs\ system, that has the following novel features:
+%
+\begin{mylist}
+%
+\item \textbf{\js\ transactions.} \txjs\ allows hosting Web applications to
+speculatively execute guests by enclosing them in transactions.  \txjs\
+maintains \textit{read and write sets} for each transaction to record the
+objects that are accessed and modified by the corresponding guest.  These sets
+are exposed as properties of a \textit{transaction object} in \js.  Changes to
+a \js\ object made by the guest are visible within the transaction, but any
+accesses to that object from code outside the transaction return the unmodified
+object.  The host can inspect such speculative changes made by the guest and
+determine whether they conform to its security policies.  The host must
+explicitly commit these changes in order for them to take effect; uncommitted
+changes simply do not take and need not be undone explicitly.
+%
+\item \textbf{Transaction suspend/resume.} Guest code may attempt
+operations outside the purview of the \js\ interpreter. In a browser,
+these \textit{external operations} include
+AJAX calls that send network requests, such as \code{XMLHttpRequest}.  \txjs\
+introduces a \emph{suspend and resume} mechanism that affords unprecedented
+flexibility to mediate external operations. Whenever a guest attempts an
+external operation, \txjs\ suspends it and passes control to the host.
+Depending on its security policy, the host can perform the action on behalf of
+the guest, perform a different action unbeknownst to the guest, or buffer up
+and simulate the action, before resuming this or another suspended transaction. 
+%
+
+\remove{Developers often use \js\ callbacks (or continuations) to
+implement event driven or asynchronous Web 2.0 applications, which can quickly
+lead to code blow-up. Suspend/resume enables a non-continuation passing style of
+programming for asynchronous requests by implementing an implicit callback
+invocation mechanism using resume.}
+%
+\item \textbf{Speculative DOM updates.} Because \js\ interacts heavily with the
+DOM\@, \txjs\ provides a speculative DOM subsystem, which ensures that DOM
+changes requested by a guest will also be speculative. Together with support for
+\js\ transactions, \txjs's DOM subsystem allows hosts to cleanly recover from
+attacks by malicious guests.
+%
+\end{mylist}
+
+\txjs\ provides these features without restricting or modifying guest code in
+any way. This allows reference monitors based on \txjs\ to mediate the actions
+of legacy libraries and applications that contain constructs that are often
+disallowed in safe \js\
+subsets~\cite{adsafe,fbjs,caja,wrappers:esorics09,language:csf09}
+(\eg~\code{eval}, \code{this} and \code{with}).
+
+In the rest of the paper, we discuss the design, implementation and evaluation
+of \txjs.
+
+\remove{
+We have implemented a prototype of \txjs\ by adding these features to
+Firefox's \js\ interpreter.
+We evaluated our prototype by using it to build
+reference monitors to mediate several guests, the largest of which was a
+jQuery-based application containing about $7,500$ lines of code. Our results
+show that \txjs\ is expressive and effective at isolating untrusted guests. On
+average, the use of \txjs\ increased the load time of these guests by only 0.16
+seconds.
+}
+
+\begin{comment}
+% Problem definition.
+%
+The client-side of modern Web applications frequently contains \js\ code in the
+form of advertisements, games, and libraries that may be developed by untrusted
+third parties. To include such third-party code (the \textit{guest}),
+the author of such a Web application (the \textit{host}) must choose to
+(a)~place the guest code in its own protection domain (\eg~an
+\code{iframe}) or (b)~include the guest in the same protection domain as the
+host. The first approach isolates the guest from the host, but has the downside
+of offering limited means for guest/host interaction.  Any communication
+between the guest and the host must happen via explicit \code{postMessage}
+commands between the corresponding \code{iframes}.  The second approach eases
+guest/host interaction, but also exposes the host to malicious guests. Hosts
+must therefore employ protection mechanisms to confine the actions of guest
+code. This paper addresses the problem of designing such protection mechanisms.
+
+% Prior work to address the problem.
+%
+One way to protect against untrusted guests is to use \textit{\js\ reference
+monitors}.  Reference monitors mediate the action of guest code as it executes
+and ensure that any accesses by the guest to the host's data structures conform
+to the host's security policies. Examples of reference monitors include
+Caja~\cite{caja}, object capabilities~\cite{mmt10}, inlined reference
+monitors~\cite{phung:asiaccs09,corescript:popl07,mets:hotos07}, object
+wrappers~\cite{wrappers:esorics09}, and aspect-oriented policy
+enforcement~\cite{conscript:oak10}. Some reference monitors also require the
+guest code to be written in safe subsets of \js\ (\eg~Caja). The main purpose of
+these reference monitors is to provide \textit{access control} to the host's
+objects.
+
+% What is our unique contribution to this space?
+%
+This paper proposes a novel approach to construct \js\ reference monitors using
+speculative execution.  The main idea is to extend \js\ with a new
+\textit{transaction} construct, within which hosts can speculatively execute
+guest code that contains arbitrary \js\ constructs. In addition to enforcing
+access control policies, reference monitors that use speculative execution
+allow hosts to \textit{cleanly recover from the security-violating actions of
+guest code}. When a host detects an offending guest, it simply chooses not to
+commit the transaction corresponding to the guest. Such an approach neutralizes
+any data and DOM modifications initiated earlier by the guest, without having
+to undo them explicitly.
+
+% Why is this contribution important? (i.e., motivating example).
+%
+To motivate the need for recovery, consider the example of a Web-based word
+processor that hosts a third-party widget to display advertisements (see
+\figref{figure:motivate}). During an editing session, this widget scans the
+document for specific keywords and displays advertisements relevant
+to the text that the user has entered.  Such a widget may modify the host in
+several ways to achieve its functionality, \eg~it could install event handlers
+to display advertisements when the user places the mouse over specific phrases
+in the text. However, as an untrusted guest, this widget may also contain
+malicious functionality, \eg~it could implement a clickjacking-style attack by
+overlaying the editor with transparent HTML elements pointing to malicious
+sites.
+
+%-------------------------------------------------------------------------------
+% Redid motivated example with reduced font sizes and in two-column format.
+%-------------------------------------------------------------------------------
+%\begin{figure*}[t!]
+%\begin{tabular}{|ll|}
+%\hline
+%\begin{minipage}[b]{0.48\linewidth}
+%\renewcommand{\arraystretch}{0.75}
+%\begin{tabular}{rl}
+%\lno{1} & \htmltiny{script type="text/javascript"}\\
+%\lno{2} & \codetiny{var editor = new Editor(); initialize(editor);}\\
+%\lno{3} & \codetiny{var builtins = [], tocommit = true;}\\
+%\lno{4} & \codetiny{for(var prop in Editor.prototype) builtins[prop] = prop;}\\
+%\lno{5} & \codetiny{var tx = transaction \{} 
+%          \fbox{\textbf{\textrm{\tiny Guest code: Lines 6--9}}}\\
+%  \rowcolor[gray]{0.9}
+%\lno{6} & \mytab \codetiny{Editor.prototype.getKeywords = function(content)
+%\{...\}}\\
+%  \rowcolor[gray]{0.9}
+%        & \mytab \codetiny{...}\\
+%  \rowcolor[gray]{0.9}
+%\lno{7} & \mytab \codetiny{var elem = document.getElementById("editBox");}\\
+%  \rowcolor[gray]{0.9}
+%\lno{8} & \mytab \codetiny{elem.addEventListener("mouseover", displayAds,
+%false);}\\
+%  \rowcolor[gray]{0.9}
+%        & \mytab \codetiny{...}\\
+%  \rowcolor[gray]{0.9}
+%\lno{9} & \mytab \codetiny{document.write(`<div style="opacity:0.0;
+%z-index:0;
+%\textit{... size/loc params}">}\\
+%  \rowcolor[gray]{0.9}
+%         & \mytab \mytab \codetiny{<a href="http://evil.com"> Evil Link
+%</a></div>');}\\
+%\lno{10} & \codetiny{\};}\\
+%\lno{11} & \codetiny{do \{} 
+%           \fbox{\textbf{\textrm{\tiny Introspection block (iblock): Lines
+%11--27}}}\\
+%\lno{12} & \mytab \codetiny{var arg = tx.getArgs();~~~var obj =
+%tx.getObject();}\\
+%\lno{13} & \mytab \codetiny{var rs = tx.getReadSet();~var ws =
+%tx.getWriteSet();}\\
+%\end{tabular}
+%\end{minipage} &
+%\begin{minipage}[b]{0.5\linewidth}
+%\renewcommand{\arraystretch}{0.75}
+%\begin{tabular}{rl}
+%\lno{14} & \mytab \codetiny{for(var i in builtins) \{}\\
+%\lno{15} & \mytab \mytab \codetiny{if (ws.checkMembership(Editor.prototype,
+%builtins[i])) tocommit = false;}\\
+%\lno{16} & \mytab \codetiny{\} ... /* definition of `IsClickJacked' to go here
+%*/}\\
+%\lno{17} & \mytab \codetiny{if (IsClickJacked(tx.getTxDocument())) tocommit =
+%false;}\\
+%\lno{18} & \mytab \codetiny{... /* more policy checks go here */}\\
+%  \rowcolor[gray]{0.9}
+%\lno{19} & \mytab \codetiny{switch(tx.getCause()) \{}\\
+%  \rowcolor[gray]{0.9}
+%\lno{20} & \mytab \mytab \codetiny{case "addEventListener":}\\
+%  \rowcolor[gray]{0.9}
+%\lno{21} & \mytab \mytab \mytab \codetiny{var txHandler =
+%MakeTxHandler(arg[1]);}\\
+%  \rowcolor[gray]{0.9}
+%\lno{22} & \mytab \mytab \mytab \codetiny{obj.addEventListener(arg[0],
+%txHandler, arg[2]); break;}\\
+%  \rowcolor[gray]{0.9}
+%\lno{23} & \mytab \mytab \codetiny{case "write": WriteToTxDOM(obj, arg[0]);
+%break; ... /* more cases */}\\
+%  \rowcolor[gray]{0.9}
+%\lno{24} & \mytab \mytab \codetiny{default: break;}\\
+%  \rowcolor[gray]{0.9}
+%\lno{25} & \mytab \codetiny{\}; tx = tx.resume();}\\
+%  \rowcolor[gray]{0.9}
+%\lno{26} & \codetiny{\} while(tx.isSuspended());}\\
+%\lno{27} & \codetiny{if (tocommit) tx.commit();}\\
+%\lno{28} & \codetiny{... /* rest of the Host Web application's code */}\\
+%\lno{29} & \htmltiny{/script}\\
+%\end{tabular}
+%\end{minipage}\\
+%\hline
+%\end{tabular}
+%\mycaptionsquish{Motivating example. \describecaption{This example shows how a
+%hosting Web application can mediate untrusted guest code (lines 6--9). The
+%introspection block (lines 11--27) enforces the host's security policies on the
+%actions performed by the guest. To ease exposition, 
+%
+%(a)~this example omits variable hiding, a concept introduced in
+%\sectref{section:design:hiding}, which ensures that the guest cannot tamper
+%with sensitive host variables such as \code{tx}, \code{tocommit} and
+%\code{builtins};
+%
+%(b)~we inlined the guest code from \code{http://untrusted.com/guest.js} in
+%lines~\lnobig{6}--\lnobig{9}.
+%\sectref{section:implementation:auxiliary:script} explains how the host can use
+%transactions to mediate guests included using a \code{<script>} tag.
+%}}{\label{figure:motivate}}
+%\end{figure*}
+
+%-------------------------------------------------------------------------------
+% Redid motivated example with reduced font sizes and in two-column format.
+%-------------------------------------------------------------------------------
+\begin{wrapfigure}{rh}{0.55\textwidth}
+\centering
+\scriptsize
+\begin{tabular}{|rl|}
+\hline
+\lno{1} & \htmltiny{script type="text/javascript"}\\
+\lno{2} & \codetiny{var editor = new Editor(); initialize(editor);}\\
+\lno{3} & \codetiny{var builtins = [], tocommit = true;}\\
+\lno{4} & \codetiny{for(var prop in Editor.prototype) builtins[prop] = prop;}\\
+\lno{5} & \codetiny{var tx = transaction \{} 
+          \fbox{\textbf{\textrm{\tiny Guest code: Lines 6--9}}}\\
+  \rowcolor[gray]{0.9}
+\lno{6} & \mytab \codetiny{Editor.prototype.getKeywords = function(content)
+\{...\}}\\
+  \rowcolor[gray]{0.9}
+        & \mytab \codetiny{...}\\
+  \rowcolor[gray]{0.9}
+\lno{7} & \mytab \codetiny{var elem = document.getElementById("editBox");}\\
+  \rowcolor[gray]{0.9}
+\lno{8} & \mytab \codetiny{elem.addEventListener("mouseover", displayAds,
+false);}\\
+  \rowcolor[gray]{0.9}
+        & \mytab \codetiny{...}\\
+  \rowcolor[gray]{0.9}
+\lno{9} & \mytab \codetiny{document.write(`<div style="opacity:0.0;
+z-index:0;
+\textit{... size/loc params}">}\\
+  \rowcolor[gray]{0.9}
+         & \mytab \mytab \codetiny{<a href="http://evil.com"> Evil Link
+</a></div>');}\\
+\lno{10} & \codetiny{\};}\\
+\lno{11} & \codetiny{tocommit = gotoIblock(tx);}
+           \fbox{\textbf{\textrm{\tiny Implements the host's security
+policies}}}\\
+\lno{12} & \codetiny{if (tocommit) tx.commit();}\\
+\lno{13} & \codetiny{... /* rest of the Host Web application's code */}\\
+\lno{14} & \htmltiny{/script}\\
+\hline
+\end{tabular}
+\mycaptionsquish{Motivating example. \describecaption{This example shows how a
+hosting Web application can mediate untrusted guest code (lines 6--9). The
+invocation to the introspection block (line 11) enforces the host's security
+policies (see \figref{figure:iblock}) on the actions performed by the guest. To
+ease exposition, 
+%
+(a)~this example omits variable hiding (a concept introduced in
+\sectref{section:design:hiding}), which ensures that the guest cannot tamper
+with sensitive host variables such as \code{tx}, \code{tocommit} and
+\code{builtins};
+%
+(b)~we inlined the guest code from \code{http://untrusted.com/guest.js} in
+lines~\lnobig{6}--\lnobig{9}. \sectref{section:implementation:auxiliary:script}
+explains how the host can use transactions to mediate guests included using a
+\code{<script>} tag. }}
+{\label{figure:motivate}}
+\end{wrapfigure}
+
+%-------------------------------------------------------------------------------
+
+Traditional reference monitors can detect and prevent such attacks.  However,
+such reference monitors typically only enforce access control policies, and
+would have let the guest modify the host's heap and DOM (such as to install
+innocuous event handlers) until the attack is detected.  When such a reference
+monitor reports an attack, the end-user faces one of two unpalatable options:
+(a)~close the editing session and start afresh; or (b)~continue with the
+tainted editing session. In the former case, the end-user loses unsaved work.
+In the latter case, the editing session is subject to the unknown and possibly
+undesirable effects of the heap and DOM changes that the widget initiated
+before being flagged as malicious. In our example, the event handlers
+registered by the malicious widget may also implement undesirable functionality
+and should be removed when the widget's clickjacking attempt is detected.
+
+Speculative execution allows reference monitors to detect and
+recover from malicious guests. In our example, the host would speculatively
+execute the untrusted widget by enclosing it within a transaction. When the
+attack is detected, the host simply discards all changes initiated by the
+widget. The end-user can proceed with the editing session without losing
+unsaved work, and with the assurance that the host is unaffected by the
+malicious widget.
+
+% What are the main technical contributions of this paper?
+This paper describes \txjs, a speculative execution system for \js\ with
+several novel features:
+%
+\begin{mylist}
+%
+\item \textbf{\js\ transactions.} \txjs\ allows hosting Web applications to
+speculatively execute guests by enclosing them in transactions.  \txjs\
+maintains \textit{read and write sets} for each transaction to record the
+objects that are accessed and modified by the corresponding guest.  These sets
+are exposed as properties of a \textit{transaction object} in \js.  Changes to
+a \js\ object made by the guest are visible within the transaction, but any
+accesses to that object from code outside the transaction return the unmodified
+object.  The host can inspect such speculative changes made by the guest and
+determine whether they conform to its security policies.  The host must
+explicity commit these changes in order for them to take effect; uncommitted
+changes simply do not take and need not be undone explicitly.
+%
+\item \textbf{Transaction suspend/resume.} Guest code may attempt
+operations outside the purview of the \js\ interpreter. In a browser,
+these \textit{external operations} include
+AJAX calls that send network requests, such as \code{XMLHttpRequest}.  \txjs\
+introduces a \emph{suspend and resume} mechanism that affords unprecedented
+flexibility to mediate external operations. Whenever a guest attempts an
+external operation, \txjs\ suspends it and passes control to the host.
+Depending on its security policy, the host can perform the action on behalf of
+the guest, perform a different action unbeknownst to the guest, or buffer up
+and simulate the action, before resuming this or another suspended transaction. 
+%
+\item \textbf{Speculative DOM updates.} Because \js\ interacts heavily with the
+DOM\@, \txjs\ provides a speculative DOM subsystem, which ensures that DOM
+changes requested by a guest will also be speculative.  Together with support
+for \js\ transactions, \txjs's DOM subsystem allows hosts to cleanly recover
+from attacks by malicious guests.
+%
+\end{mylist}
+
+\txjs\ provides these features without restricting or modifying guest code in
+any way. This allows reference monitors based on \txjs\ to mediate the actions
+of legacy libraries and applications that contain constructs that are often
+disallowed in safe \js\
+subsets~\cite{adsafe,fbjs,caja,wrappers:esorics09,language:csf09}
+(\eg~\code{eval}, \code{this} and \code{with}).
+
+We have implemented a prototype of \txjs\ by adding these features to
+Firefox's \js\ interpreter.
+We evaluated our prototype by using it to build
+reference monitors to mediate several guests, the largest of which was a
+jQuery-based application containing about $7,500$ lines of code. Our results
+show that \txjs\ is expressive and effective at isolating untrusted guests. On
+average, the use of \txjs\ increased the load time of these guests by only 0.16
+seconds.
+\end{comment}

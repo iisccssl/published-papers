@@ -1,0 +1,69 @@
+\begin{figure*}[t!]
+\begin{tabular}{cc}
+\begin{minipage}{0.34\textwidth}
+% \begin{figure}[t!]
+\footnotesize
+\renewcommand{\arraystretch}{0.45}
+\centering
+\begin{tabular}{|l|r|}
+\hline
+\multicolumn{1}{|c|}{\bf Component Name} & \multicolumn{1}{|c|}{\bf LOC}\\
+\hline
+\hline
+\multicolumn{2}{|c|}{\bf \scriptsize Secure World (TCB)}\\
+\hline
+Memory manager                  & 1,381\\
+Authentication                  & 1,285\\
+Memory ops. \& verif. tokens    & 305\\
+REM-suspend                     & 609\\
+\hline
+SHA1+HMAC                       & 861\\
+X509                            & 877\\
+RSA                             & 2,307\\
+\hline
+\hline
+\multicolumn{2}{|c|}{\bf \scriptsize Normal World}\\
+\hline
+Kernel module                   & 93\\
+UI app                          & 72\\
+\hline
+\end{tabular}
+\mycaption{Sizes of components on the guest.}
+{\label{table:loc}}
+% \end{figure}
+\end{minipage} & 
+%
+\begin{minipage}{0.62\textwidth}
+% \begin{figure}[t!]
+\footnotesize
+\newcommand{\centcol}[1]{\multicolumn{1}{c|}{#1}}
+\centering
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{|p{0.78in}|p{0.75in}|p{0.35in}|p{0.5in}|p{0.45in}|p{0.55in}|}
+\hline
+\textbf{\scriptsize Peripheral uninstalled} 
+  & \textbf{\scriptsize Approach used (from \figref{figure:uninstall})} 
+  & \textbf{\scriptsize Device used}
+  & \textbf{\scriptsize Bytes added or modified} 
+	& \textbf{\scriptsize Vetting time (sec.)}
+	& \textbf{\scriptsize Verification token (bytes)}\\
+\hline
+USB (webcam) & \textsc{null}ification  & i.MX53 & \centcol{104} & \centcol{-}    & \centcol{260}\\
+USB (webcam) & Dummy driver            & i.MX53 & \centcol{168} & \centcol{2.22} & \centcol{388}\\
+Camera       & \textsc{null}ification  & Nexus  & \centcol{140} & \centcol{-}    & \centcol{332}\\
+Camera       & Dummy driver            & Nexus  & \centcol{224} & \centcol{2.19} & \centcol{500}\\
+WiFi         & Dummy driver            & Nexus  & \centcol{152} & \centcol{5.58} & \centcol{356}\\
+3G (Data)    & Dummy driver            & Nexus  & \centcol{192} & \centcol{2.15} & \centcol{436}\\
+3G (Voice)   & Dummy driver            & Nexus  & \centcol{124} & \centcol{2.15} & \centcol{300}\\
+Microphone   & Dummy driver            & Nexus  & \centcol{164} & \centcol{2.27} & \centcol{380}\\
+Bluetooth    & Dummy driver            & Nexus  & \centcol{32}  & \centcol{2.52} & \centcol{116}\\
+\hline
+\end{tabular}
+\mycaption{Peripherals uninstalled using remote write operations to a guest
+device.}{\label{table:uninstall}}
+% \end{figure}
+\end{minipage}
+\end{tabular}
+\end{figure*}
+
+

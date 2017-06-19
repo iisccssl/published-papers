@@ -1,0 +1,449 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww25100\viewh13020\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 XACE Automated hook placement analysis: \
+\
+\
+Type of analysis: Full field sensitivity, No placement policy. \
+\
+\ul Statistics\ulnone :\
+	\
+\ul 	Pivots:  \
+		
+\i If: \
+			
+\i0 \ulnone Total = 5617
+\b \ul \
+
+\b0 \ulnone 			UI = 2553 \
+			UI + Not Empty = 402\
+			UI + Not Empty + Bal = 264
+\b \
+
+\b0 \ul 		
+\i Non-If: \
+			
+\i0 \ulnone Total = 456
+\i \ul \
+
+\b \ulnone 	
+\i0\b0 		UI = 32 \
+			UI + Not Empty = 10 \
+\
+	\ul Sec Sens Data Structures\ulnone :  \
+			All data structs: 430\
+			All Container data structs: 74\
+			Sec Sens containers: 31\
+ \
+	\ul Hooks: \
+			\ulnone Manual: 74\
+			Automated No policy: 606\
+			Automated With Simple policy ** : 501\
+
+\b\fs32 \ul \
+\
+
+\b0 \ulnone ** 
+\b \ul Redundant Hooks\
+
+\b0\fs24 \ulnone \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 There are several cases of obviously redundant hooks. Example, there are 74 hooks that mediate write(_Client->errorValue)  \
+which writes an error value to the client, if an operation does not occur for some reason. There are not typically mediated by manual hooks. \
+So the programmer can specify a placement policy that says "DontCare(_Client->errorValue)"  to ensure that  there are no \
+hooks placed for this operation. Another example of a redundant placement is mediating the read(_Client->req_len), which \
+a programmer can also be flagged as a "DontCare" before hook placement. This would eliminate 27 redundant hooks. \
+\
+\
+\
+
+\b\fs34 \ul Property
+\fs24 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 \ulc0 \
+
+\b0 \ulnone Typically, the access to the property of a window includes access to the window itself followed by retrieval of the property. The window \
+lookup and Property lookup occur at functions
+\i  dixLookupWindow
+\i0  and 
+\i dixLookupProperty
+\i0 , the argument that specifies what operations \
+are being checked is available at the callers of these functions as shown in the following examples. The rationale behind this is that \
+it makes sense to check for the appropriate permissions at the lookup itself. Our automated tool doesn't perform these optimizations \
+yet and therefore places the hooks at the callers. \
+ \
+\
+\
+
+\b \ul Examples: \
+
+\b0 \ulnone \
+
+\fs30 A
+\i ) ProcChangeProperty: 
+\i0 \
+
+\fs24 	\
+	int ProcChangeProperty(ClientPtr client)\
+		\{\
+			
+\b err = dixLookupWindow(&pWin, stuff->window, client, DixSetPropAccess);  /* Hook 1*/
+\b0 \
+			\'85 \
+			err = dixChangeWindowProperty(client, pWin, stuff->property, stuff->type,\
+ 				  (int)format, (int)mode, len, &stuff[1],TRUE);\
+\
+		\} \
+\
+	int dixChangeWindowProperty(\'85) \
+		\{ \
+		access_mode = (mode == PropModeReplace) ? DixWriteAccess : DixBlendAccess;\
+		
+\b rc = dixLookupProperty(&pProp, pWin, property, pClient, access_mode); /* Hook 2*/
+\b0 \
+		if (rc == BadMatch) /* 
+\b property.c@268 */ \
+			
+\b0 \{ 	\
+			\'85\
+			pProp->propertyName = property;\
+		            pProp->type = type;\
+     			pProp->format = format;\
+     	 		
+\i pProp->data = data;\
+     		 	pProp->size = len;\
+			\
+			
+\i0\b rc = XaceHookPropertyAccess(pClient, pWin, &pProp, DixCreateAccess|DixWriteAccess); /* Hook 3 */
+\i\b0 \
+			/* Insert pProp at the beginning of the properties list */\
+	
+\i0 		pProp->next = pWin->optional->userProps;\
+      			pWin->optional->userProps = pProp;\
+			\} \
+		else if (rc == Success) /* 
+\b property.c@298 */\
+
+\b0 			\{ \
+			 if (mode == PropModeReplace) /* 
+\b property.c@313 */
+\b0 \
+				\{ \
+				
+\i pProp->data = data;\
+      			            pProp->size = len;
+\i0 \
+        				pProp->type = type;\
+        				pProp->format = format;\
+				\} \
+			else if (len == 0) \
+      				\{\
+      				  /* do nothing */\
+        				\}\
+      			else if (mode == PropModeAppend)\
+				\{\
+        		        		
+\i pProp->data = data;\
+       				pProp->size += len;
+\i0 \
+        				\}\
+     			 else if (mode == PropModePrepend)\
+        				\{	\
+       				
+\i pProp->data = data;\
+        				pProp->size += len;
+\i0 \
+        				\}\
+			access_mode |= DixPostAccess;\
+			
+\b rc = XaceHookPropertyAccess(pClient, pWin, &pProp, access_mode); /* hook 4 */ 
+\b0 \
+			\} \
+		else \
+			return rc;\
+		\} \
+\
+We discuss the existing manual hooks: \
+\
+1) We note that 
+\b ProcChangeProperty
+\b0  calls the 
+\b dixLookupWindow
+\b0  function to look up a window based \
+on some parameter. It also passes the operation
+\i  DixSetPropAccess
+\i0\b  
+\b0 as a parameter to the lookup. This is \
+because 
+\b dixLookupWindow
+\b0  in turn calls an XACE hook to check if the client has the permission to \
+change window properties on window being retrieved. Note that even though the operation on the Window \
+doesn't occur within this function, the check is done early during retrieval itself.  \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 \
+2) After retrieving the window,  
+\b ProcChangeProperty
+\b0  calls 
+\b dixChangeWindowProperty 
+\b0 which in turn has three \
+hooks. First, the 
+\b dixLookupProperty 
+\b0 function is called to look up the property, which in turn has a hook to \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 check for access on Properties. The access mode passed to this hook is 
+\b DixWriteAccess : DixBlendAccess
+\b0 ; \
+the latter checks for append/prepend access. \
+\
+3) The result of the property lookup indicates if there is an existing property\
+ with the same name. If there is no existing hook, it 
+\i creates
+\i0  a new property.  In this case, there is an additional hook\
+ that checks 
+\b DixCreateAccess | DixWriteAccess
+\b0 .  \
+\
+4) Finally, in the latest version a new hook was added to check if the new data assigned to the property is ok. \
+So there is a hook for 
+\b DixPostAccess
+\b0 . The second nested 
+\i if
+\i0  (/* 
+\b property.c@313 */) \
+
+\b0 branches into finer grained operations, i.e., whether to replace the existing property data, or append to it, or \
+prepend to it or do nothing. \
+\
+\
+Now we compare this with the manual placement. \
+	\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b \cf0  \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b0 \cf0 1) 
+\b Lookup:
+\b0  \
+Our first hook is at the property lookup function
+\b  dixLookupProperty
+\b0 . \
+\
+	Position:Stm:If(pWin__dixLookupProperty->optional) - property.c@99\
+	Ops: read(_Window->optional-> userProps),read(_WindowOpt->userProps)\
+\
+This hook checks whether the client can access the properties of the window. This \
+corresponds in part to 
+\b hook 1
+\b0 . Hook 1 also checks directly to see if the client can \
+modify the properties. \
+\
+\
+2) 
+\b Hoisting: \
+\
+
+\b0 First, we consider the pivot at  
+\b [if (rc == Success)
+\b0  /* 
+\b property.c@298 */]. \
+
+\b0 Since the second condition at  /* 
+\b property.c@313 */  
+\b0 branch (len == 0) does nothing, it is removed \
+from consideration.  Then we see that the operations 
+\i write(_Property->data),write(_Property->size) 
+\i0 are common to the \
+remaining branches at /* 
+\b property.c@313 */ 
+\b0 . Therefore, the hook  is hoisted up to their pivot  i.e., \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b \cf0 [if (rc == Success)
+\b0  /* 
+\b property.c@298 */]. 
+\b0 Further
+\b , 
+\b0 we see that
+\b  
+\b0 these two operations also occur \
+in the other branch of the dominating pivot i.e., [ 
+\b if (rc == BadMatch) /* property.c@268 */ ]. \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b0 \cf0 Therefore, they are hoisted even above this pivot. Our first hook is, \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 	\
+	Position: Above(Stm:If(rc__dixChangeWindowProperty==8) - property.c@268)\
+	Ops: write(_Property->data),write(_Property->size)\
+\
+This matches the existing 
+\b hook 2. 
+\b0 \
+\
+3) Now we see that in the taken branch of pivot  [ 
+\b if (rc == BadMatch) /* property.c@268 */ ], 
+\b0 there \
+are still some operations that are not mediated by the first hook. Therefore a second hook is added by \
+the tool. 
+\b  
+\b0 \
+	Position: \
+		Stm:If(rc__dixChangeWindowProperty==8) - property.c@268 ::::::\
+		Branch:: Branch(3072)@property.c@270\
+ 	Ops: \
+		1) write(_Property->format),write(_Property->propertyName),write(_Property->type),\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\i \cf0 	  	2) write(_Window- >optional->userProps),write(_WindowOpt->userProps),\
+		     read(_Window->optional->userProps),read(_WindowOpt->userProps)\
+\
+
+\i0 We see that the first set of operations this hook mediates us writing some additional fields of Property. The second \
+set of operations indicates writing to the properties field of the Window data structure. This hook covers the \
+creation and writing hook for the property and window data structures. Therefore it combines both \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b \cf0 hook 1 
+\b0 and 
+\b  hook 3. \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b0 \cf0 \
+4)The operations 
+\i write(_Property->format),write(_Property->type) 
+\i0 at the first branch of pivot at 
+\b property.c@313
+\i\b0  \
+
+\i0 are not covered by any other hooks yet. Therefore the tool places a hook, \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0   	Position: \
+		 Stm:If(mode__dixChangeWindowProperty==0) - property.c@313 ::::::\
+		 Branch:: Branch(3091)@property.c@315\
+   	Ops: \
+		 write(_Property->format),write(_Property->type)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 \
+We see that there is no corresponding manual hook and this may be because our placement is finer grained. \
+The programmer can for example specify either a "don't care" for those two fields or have a placement spec such as \
+
+\i  "if (data&&size) then (format&&type)"
+\i0  to imply that once permission has been granted for the 
+\i data 
+\i0 and \
+
+\i size
+\i0  attributes of Property it automatically implies access to format and type attributes. \
+\
+ 5) Finally, we see that there is no direct correlation of any automated hook to the manual 
+\b hook 4.
+\b0 This is because this \
+hook simply checks if the new value of the property is ok. We can assume that this can also be checked by any of the \
+other hooks that check the writing of the property instead of adding an explicit hook to check for this. \
+\
+\
+
+\i\fs30 \
+B) ProcListProperties: 
+\i0 \
+
+\fs24 \
+This function has two hooks manual hook \
+	 int\
+	ProcListProperties(ClientPtr client)\
+	\{\
+		 rc = dixLookupWindow(&pWin, stuff->id, client, DixListPropAccess); 
+\b /* Hook 1*/
+\b0 \
+	 	rc = XaceHookPropertyAccess(client, pWin, &realProp, DixGetAttrAccess);
+\b /* Hook 2*/
+\b0 	\} \
+\
+
+\b Manual Hooks: \
+
+\b0 There are two manual hooks. The first one checks if the client has access to 
+\b DixListPropAccess 
+\b0 during window lookup. \
+The second one checks if the client has access to get attributes of the Property. 
+\b \
+
+\b0 \
+
+\b Automated hooks:\
+
+\b0 We place a single hook that covers the checks for both the manual hooks. We can see that the hook covers access to \
+both Property and Window data structures as well as some additional operations that deal with writing the reply to the client. \
+\
+Position:Entry(ProcListProperties)\
+Hook: write(_Client->pSwapReplyFunc),read(_Client->sequence),read(_Property->propertyName),read(_Window->optional),read(_WindowOpt->userProps)\
+\
+\
+
+\i\fs30 \
+C) ProcDeleteProperty\
+
+\i0\fs24 \
+int\
+ProcDeleteProperty(ClientPtr client)\
+\{\
+result = dixLookupWindow(&pWin, stuff->window, client, DixSetPropAccess);\
+return DeleteProperty(client, pWin, stuff->property);\
+\} \
+\
+\
+int\
+DeleteProperty(ClientPtr client, WindowPtr pWin, Atom propName)\
+\{\
+rc = dixLookupProperty(&pProp, pWin, propName, client, DixDestroyAccess);\
+\} \
+\
+\
+
+\b Automated Hooks:  \
+
+\b0 Single hook to check for all ops on both window and property data structures. \
+Position:Stm:If(rc__DeleteProperty==0) - property.c@393\
+Hook: write(_WindowOpt->userProps),read(_WindowOpt->userProps)\
+	write(_Property->next),read(_Property->data),read(_Property->devPrivates),read(_Property->next),read(_Property->propertyName),\
+	read(_Window->optional),write(_Window->optional)\
+\
+\
+
+\i\fs32 \
+
+\fs30 D) ProcGetProperty 
+\i0\fs22 \
+
+\fs24 \
+int \
+\{ \
+	Mask win_mode = DixGetPropAccess, prop_mode = DixReadAccess;\
+	\'85\
+	rc = dixLookupWindow(&pWin, stuff->window, client, win_mode); \
+	...\
+	rc = dixLookupProperty(&pProp, pWin, stuff->property, client, prop_mode);\
+		\
+\} \
+\
+Again, one hook to mediate for both these operations at the caller itself. \
+\
+	Position:Entry(ProcGetProperty)\
+	Hook: write(_Client->pSwapReplyFunc),read(_Client->sequence)\
+		write(_Property->next),write(_Window->optional),read(_Property->data),read(_Property->devPrivates),read(_Property->format),read(_Property->next),\
+		read(_Property->propertyName),read(_Property->size),read(_Property->type)\
+		write(_WindowOpt->userProps), read(_WindowOpt- >userProps)\
+		read(_Window->optional->userProps)\
+\
+\
+\
+\
+\
+\
+\
+}

@@ -1,0 +1,70 @@
+********* ALL DONE: Very satisfied with the whole paper ***********
+
+1. Abstract       -- DONE: Very satisfied with it.
+
+2. Introduction   -- DONE: Very satisfied with it.
+
+3. Overview       -- DONE: Modulo checks, very nice.
+* Checks:
+  (1) Closing a xterm window does not involve Window_map 
+      OK: MapWindow call is there, but xEvent is not there.
+  (2) Typing to an xterm window does not involve Window_map
+      OK: MapWindow itself is not there.
+  (3) Typing to an xterm window does not involve Window_enumerate
+  (4) Confirm about Window_enumerate
+
+4. AID
+* Checks: 
+  (1) Does opening an xterm involve Window_Setattr?
+  (2) What is Window_DrawEvent (difference from Window_Map)?
+  (3) Check numbers carefully in text and crosscheck with table.
+      - 95 distinct functions (change)
+  (4) Out of 17 functions reported as performing Window_Enumerate
+      only 11 actually do.
+  (5) This simple heuristic is quite effective. 
+
+5. ALPEN          -- DONE: Very satisfied with it.
+
+6. Results        -- DONE: Modulo checks, quite nice.
+* Checks:
+  (1) Check that Window_Chprop only appears in change property traces.
+  (2) Check that Cut and Paste only traces contain ProcSetSelectionOwner
+      and ProcConvertSelection.
+  (3) Check up on Attack I
+
+7. Related Work   -- DONE: Very satisfied with it.
+
+8. Conclusions    -- DONE: Very satisfied with it.
+
+- Do a comparison against the NSA-based hook placement
+- Intra and interprodcedural fingerprints for AID.
+- Be careful about mentioning WHO REQUESTS THE OPERATION.
+
+
+
+=====================================================================
+Experiment-wise:
+---------------
+(1) Check that the False-positive and False-negative labels in Figure 4 are
+    accurate (by checking for the code patterns in the trace)
+(2) Check that the distinct function, distinct code pattern counts are all
+    correct.
+(3) Check that the root-causes in Figure 5 are INDEED root-causes.
+(4) Check the value of |FP| (size of fingerprint set) of Figure 5.
+(5) Check the variables in scope carefully (count both local and global, and
+    document it carefully this time).
+(6) Is Window_Enumerate the only Window operation for which static pattern
+    matching fails? Check this once again.
+(7) Compare the results that we have against the results of NSA placement.
+(8) Contact NSA
+
+Some good news: DeleteWindow: DestroyNotify (?)
+
+More specific points TO BE CHECKED:
+-----------------------------------
+- Is Window_Map indeed WRITE of MapRequest and MapNotify? Change appropriately
+  => DONE: Changed it to a BETTER idiom.
+- Is the determination of subject and object for MAPSUBWINDOWS (shown in
+  Figure~2), correct? If not, modify the text appropriately.
+
+Section 2.3 checks:

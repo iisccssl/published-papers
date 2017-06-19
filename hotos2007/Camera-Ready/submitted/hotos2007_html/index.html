@@ -1,0 +1,794 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2002-2-1 (1.70)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Microdrivers: A New Architecture for Device Drivers</TITLE>
+<META NAME="description" CONTENT="Microdrivers: A New Architecture for Device Drivers">
+<META NAME="keywords" CONTENT="hotos2007">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2002-2-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="hotos2007.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER"><B>Microdrivers: A New Architecture for Device Drivers</B></H1><DIV>
+
+<P ALIGN="CENTER">
+<a href="http://www.cs.wisc.edu/~vg"><b>Vinod Ganapathy</b></a>, 
+<a href="http://www.cs.wisc.edu/~arinib"><b>Arini Balakrishnan</b></a>, 
+<a href="http://www.cs.wisc.edu/~swift"><b>Michael M. Swift</b></a>, and 
+<a href="http://www.cs.wisc.edu/~jha"><b>Somesh Jha</b></a></P>
+<P ALIGN="CENTER"><I><I>
+<a href="http://www.cs.wisc.edu">Computer Sciences Department</a>, 
+<a href="http://www.wisc.edu">University of Wisconsin-Madison</a></I></I></P>
+</DIV>
+
+<P>
+
+<center>
+<H3><u>Abstract</u></H3>
+</center>
+
+<DIV> 
+
+<P>
+Commodity operating systems achieve good performance by running device drivers
+in-kernel. Unfortunately, this architecture offers poor fault isolation.  This
+paper introduces microdrivers, which reduce the amount of driver code running
+in the kernel by splitting driver functionality between a small kernel-mode
+component and a larger user-mode component. This paper presents the microdriver
+architecture and techniques to refactor existing device drivers into
+microdrivers, achieving most of the benefits of user-mode drivers with the
+performance of kernel-mode drivers. Experiments on a network driver show that
+75% of its code can be removed from the kernel without affecting common-case
+performance.
+
+<P>
+</DIV>
+<P>
+<hr>
+
+<P>
+
+
+<H2><A NAME="SECTION00010000000000000000"></A>
+<A NAME="section:introduction"></A><BR>
+1. Introduction
+</H2>
+
+<P>
+Bugs in device drivers are a major source of reliability problems in commodity
+operating systems. For instance, a recent Microsoft report indicates that as
+many as 85% of failures in Windows XP stem from buggy device
+drivers&nbsp;[<A
+ HREF="hotos2007.html#orgovan03">19</A>].
+
+<P>
+The root of the problem is the architecture of commodity operating systems.
+They are designed as <I>monolithic kernels</I> with all device drivers (and
+other kernel extensions), residing in the same address space as the kernel.
+This architecture results in good performance because invoking driver
+functionality is as easy and efficient as a function call.  Unfortunately, this
+also results in bloated operating systems and poor fault isolation. For
+example, kernel extensions constitute over 70% of Linux kernel
+code&nbsp;[<A
+ HREF="hotos2007.html#cyc+01">6</A>] (a large fraction of these are device drivers), while over
+35,000 drivers exist on Windows XP desktops&nbsp;[<A
+ HREF="hotos2007.html#murphy04a">18</A>]. A single bug
+exercised in any one of these extensions suffices to crash the entire operating
+system.
+
+<P>
+Several architectures have been proposed to isolate faults in device
+drivers&nbsp;[<A
+ HREF="hotos2007.html#minix3">1</A>,<A
+ HREF="hotos2007.html#eko95">9</A>,<A
+ HREF="hotos2007.html#fgb91">10</A>,<A
+ HREF="hotos2007.html#l95">16</A>,<A
+ HREF="hotos2007.html#msudf">17</A>,<A
+ HREF="hotos2007.html#sbl05">22</A>,<A
+ HREF="hotos2007.html#yab+86">25</A>]. For example,
+<I>microkernels</I> run device drivers as user-mode processes. A bug
+exercised in a device driver only results in the failure of the user-mode
+process running that driver. This approach, however, has two key problems.
+First, this architecture is not compatible with commodity operating systems,
+which are designed as monolithic kernels. Providing support for user-mode
+device drivers in commodity operating systems thus requires kernel
+modifications and rewriting device drivers&nbsp;[<A HREF="hotos2007.html#c04">7</A>, <A
+HREF="hotos2007.html#lcf+05">14</A>]. Second, switching between the kernel and
+a user-mode device driver involves the costly overhead of changing protection
+domains.  For devices such as high-throughput network cards, this can result in
+significant latencies and performance penalties [<A
+HREF="hotos2007.html#sbl05">22</A>,<A HREF="hotos2007.html#vanmaren99">23</A>].
+A common escape hatch employed in such cases is to implement drivers within the
+kernel, which defeats the benefit afforded by microkernels.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="figure:rf-overview"></A><A NAME="363"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1: Microdrivers split device driver
+functionality between a kernel-mode component and a user-mode
+component.</CAPTION>
+</STRONG>
+<TR><TD><DIV ALIGN="LEFT">
+<TABLE CELLPADDING=3 BORDER="0" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER"><IMG SRC="microdriver-arch.png"></TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+This paper presents a new architecture for device drivers called
+<I>microdrivers</I>. Microdrivers seek the middle ground between monolithic kernels and
+microkernels, and improve reliability while maximizing performance. In a microdriver,
+the functionality of a device driver is <I>split</I> between a kernel-mode
+component and a user-mode component (<A HREF="#figure:rf-overview">Figure 1</A>).  The
+kernel-mode component contains critical and frequently used functionality, such
+as interrupt handling and performance-critical operations (<I>e.g.,</I>&nbsp;sending and
+receiving network packets and processing SCSI commands), while the user-mode
+component contains non-critical and infrequently used functionality
+(<I>e.g.,</I>&nbsp;startup/shutdown and error-handling). The user-mode component is
+implemented as a standalone process that is called from the kernel-mode
+component.  Together, they provide the functionality of a traditional device
+driver.
+
+<P>
+Microdrivers are motivated by a simple mantra: <I>reduce the amount of code
+running in the kernel to improve its reliability</I>.  As discussed in
+<A HREF="#section:case">Section 2</A>, more than 70% of device driver code contains
+non-critical functionality. By relegating this code to a user-mode process, 
+a microdriver reduces the amount of code running in the kernel and improves the
+reliability of the system as a whole.  In addition, because the kernel-mode
+component of a microdriver is much smaller than the entire driver, it is amenable to
+verification and code audits.
+
+<P>
+Perhaps the most important aspect of microdrivers is compatibility with
+commodity operating system architectures--device drivers written for monolithic
+kernels can be <I>refactored nearly automatically</I> into microdrivers. This
+provides a path to execute device drivers written for commodity operating
+systems in user-mode without sacrificing performance. Prior efforts at
+user-mode device drivers have either required rewriting the driver
+completely&nbsp;[<A HREF="hotos2007.html#c04">7</A>,<A
+HREF="hotos2007.html#lcf+05">14</A>] or impose significant performance
+penalty&nbsp;[<A HREF="hotos2007.html#vanmaren99">23</A>].  We show that
+program analysis techniques can automatically identify critical functions in a
+device driver, following which a semantics-preserving transformation can split
+the driver into a user-mode and a kernel-mode component. We discuss the design
+and implementation of such a refactoring tool in <A
+HREF="#section:refactor">Section 4</A>.  We used this tool to refactor the
+e1000 device driver for the Intel PRO/1000 gigabit network adapter into a
+microdriver. The kernel-mode component of this microdriver contains just 25% of
+the code of the entire microdriver. Our preliminary experience with this
+microdriver indicates that overheads for common-case performance and CPU
+utilization are negligible.
+
+<P>
+
+<H2><A NAME="SECTION00020000000000000000"></A>
+<A NAME="section:case"></A><BR>
+2. The case for microdrivers
+</H2>
+
+<P> Because device drivers communicate with I/O devices, their performance is
+critical to ensure fast I/O. Conventional wisdom holds that
+performance-critical functionality must be implemented in the kernel.  Even
+undergraduate texts preach that I/O algorithms must be implemented in the
+kernel for good performance&nbsp;[<A HREF="hotos2007.html#sg99">21</A>,
+page&nbsp;427]. Unfortunately, a popular interpretation of this tenet is that
+device drivers must reside in the kernel.  This has lead to the monolithic and
+unreliable operating systems that we see today.
+
+<P> Surely, the <I>entire driver</I> does not reside on the
+performance-critical path? To answer this question, we conducted a study of 455
+device drivers, comprising network, SCSI and sound drivers from the Linux
+2.6.18 kernel, and identified performance-critical functions in each of them.
+To do so, we extracted the static call-graph of each driver--this graph has an
+edge from <I>f</I> to <I>g</I> if function <I>f</I> can potentially call
+function <I>g</I>. We resolved calls via function pointers using a simple
+pointer analysis that is conservative in the absence of type-casts--each
+function pointer can resolve to any function whose address is taken, and whose
+type signature matches that of the function pointer. 
+
+<P> We then identified a set of <I>critical root functions</I> that are driver
+entrypoints that must execute in the kernel for high performance. Critical root
+functions are those that handle interrupts or execute at other high-priority
+levels (<I>e.g.,</I>&nbsp;tasklets, bottom-halves), and functions that supply
+data to or receive data from a device. We define performance-critical functions
+to be critical root functions plus the functions that they transitively call.
+Given a template of the entrypoints, critical root functions can be identified
+automatically for each family of drivers:&nbsp;<I>e.g.,</I>&nbsp;functions that
+transmit network packets are critical for network drivers, while functions that
+process SCSI commands are critical for SCSI device drivers. We wrote a tool to
+automatically identify critical root functions (based upon their type
+signatures) and the functions that they transitively call.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="figure:classification"></A><A NAME="428"></A>
+<TABLE BORDER=1 ALIGN=CENTER>
+<TR ALIGN=CENTER>
+<td><b>Driver family</b></td> 
+<td><b>Drivers analyzed</b></td> 
+<td><b>Critical functions</b></td>
+</TR>
+<TR ALIGN=CENTER><td>Network</td> <td>134</td> <td>27.8%</td></TR>
+<TR ALIGN=CENTER><td>SCSI</td> <td>49</td> <td>26.1%</td></TR>
+<TR ALIGN=CENTER><td>Sound</td> <td>272</td> <td>7.8%</td></TR>
+</TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2: Classification of functions in
+different families of Linux device drivers.</STRONG></CAPTION>
+</DIV>
+
+<P> <A HREF="#figure:classification">Figure 2</A> shows the results of our
+study.  We found that fewer than 30% of the functions in a driver are
+performance critical. The remaining functions are called only occasionally,
+<I>e.g.,</I>&nbsp;during device startup/shutdown, to configure device
+parameters, and to obtain diagnostic information. Consider, for example, the
+e1000 driver, one of the drivers considered in our study. Critical root
+functions for this driver include the interrupt handler, the function to
+transmit network packets, and callback functions registered with the kernel to
+poll the device. This driver contains 274 functions (containing approximately
+15,100 lines of source code). Of these, just 25 functions (containing
+approximately 1,550 lines of source code) were classified as critical. It
+suffices to execute just these functions in the kernel for good performance.
+Relegating the remaining functions, which handle startup/shutdown and get/set
+device parameters, to a user-mode process will greatly reduce the amount of
+code running in kernel space without adversely impacting common-case
+performance. Note that our estimate of critical device driver code is
+conservative, because we only identify critical functions. It is likely that a
+finer-grained approach will show that even less code is on the critical path.
+
+<P> Three factors lead us to believe that implementing non-critical
+functionality as a user-mode process will also improve system reliability and
+availability as a whole. 
+
+<P> First, fault isolation improves. Any bugs that crash the user-mode process
+of a microdriver will potentially render the corresponding device unusable but
+will not affect the rest of the operating system. The device driver can then be
+restarted in isolation to restore operation of the device. Note that because
+the kernel-mode component of a microdriver implements critical device
+functionality, such as interrupt processing, it is possible to keep the device
+operational even if the user-mode process crashes. For example, the kernel-mode
+component can implement error-checking code that detects that the user-mode
+process has crashed, and wait until the process restarts. However, as it does
+so, it can still serve other requests to/from the device.
+
+<P> Second, because the kernel-mode component of the microdriver implements
+critical and heavily-used functionality, this code is likely more heavily
+tested than the user-mode component. Further, because the kernel-mode component
+is a relatively small entity, it can either be verified, subject to thorough
+code audits, or be protected with mechanisms such as SFI&nbsp;[<A
+HREF="hotos2007.html#wlg93">24</A>]. 
+
+<P> Third, because the kernel-mode component and the user-mode component of a
+microdriver communicate via a narrow interface (as desribed in <A
+HREF="#section:arch">Section 3</A>), data passed between the kernel- and
+user-mode components can be sanity-checked for errors. For example, a bug in
+the user-mode component may introduce a dangling pointer in a data structure
+that it then passes to the kernel. However, the corrupted data structure can be
+detected using error-checking code implemented at the interface, thus
+potentially preventing corruption of kernel data structures. 
+
+<P> Indeed, the tenet that reduced code in the kernel means improved
+reliability has also been recognized by many others&nbsp;[<A
+HREF="hotos2007.html#b05">4</A>,<A HREF="hotos2007.html#c04">7</A>,<A
+HREF="hotos2007.html#eko95">9</A>,<A HREF="hotos2007.html#l04">13</A>], and is
+an important motivation for microkernels. This has resulted in several
+services, that were previously implemented in the kernel, being implemented in
+user-mode (<I>e.g.,</I>&nbsp;kernel module loaders, AFS). There have also been
+several recent efforts to redesign device drivers (in particular, graphics
+drivers) with the goal of reducing the amount of code running in the
+kernel&nbsp;[<A HREF="hotos2007.html#b05">4</A>,<A
+HREF="hotos2007.html#l04">13</A>].  
+
+<P> Finally, microdrivers also allow vendors to take advantage of user-level
+tools such as profilers and debuggers during the driver development process.
+Comparable tools for developing kernel code are fewer in number and not as
+advanced because kernel programming represents a smaller market and a more
+challenging target. 
+
+<P> Of course, microdrivers are not a panacea for device driver reliability
+problems.  A&nbsp;bug in the kernel-mode component of a microdriver could still
+crash the operating system. It is also possible that by splitting functionality
+between a user-mode and kernel-mode component, microdrivers can expose
+otherwise latent bugs. For example, a latent race condition in a device driver
+could potentially be exposed in its microdriver implementation.
+
+<P>
+
+<H2><A NAME="SECTION00030000000000000000"></A>
+<A NAME="section:arch"></A><BR>
+3. Architecture of a microdriver
+</H2>
+
+<P> A microdriver consists of a kernel-mode component that implements critical
+functionality and a user-mode process that implements non-critical
+functionality. Device driver functionality is split between the kernel-mode and
+user-mode components at function boundaries. The two components communicate
+using an LRPC-like mechanism&nbsp;[<A HREF="hotos2007.html#bal+90">3</A>]. In
+the kernel-mode component, direct calls to functions implemented in the
+user-mode component are replaced with upcalls through stubs. Stubs marshal data
+structures accessed by the called function and unmarshal them when the call
+returns. A symmetric downcall mechanism enables the user-mode component to
+invoke kernel functions. To handle multiple requests from the kernel-mode
+component, the user-mode process is multithreaded. 
+
+<P> An object tracker, similar to the one used by Nooks&nbsp;[<A
+HREF="hotos2007.html#sbl05">22</A>], synchronizes copies of a data structure in
+the kernel's address space and the user-mode process' address space. It has
+three main functions.
+
+<P> First, the object tracker is invoked during marshaling/unmarshaling to
+translate pointers between address spaces. This ensures that updates to a data
+structure in one address space are reflected on its copy in the other address
+space. Doing so is challenging for complex data structures such as arrays,
+whose elements are accessed as offsets from the start of the data structure.
+The object tracker must explicitly store the range of such data structures and
+ensure that accesses via offsets are translated correctly between address
+spaces. 
+
+<P> Second, the object tracker ensures that data structures
+allocated/deallocated in one address space are also allocated/deallocated in
+the other. Allocations are dealt with during pointer translation--a new data
+structure is allocated and initialized in an address space if no corresponding
+copy is found in that address space. Dealing with deallocations is more
+challenging. Deallocator functions must update the object tracker's database by
+removing the entry for the data structure being deallocated. 
+
+<P> Third, the object tracker manages synchronization of shared data
+structures.  Two copies of a shared data structure can exist in a microdriver,
+one in each address space, only one of which must be modified at any time. To
+support concurrent accesses to such data structures, the user-mode process must
+synchronize with the kernel to acquire a lock on a shared data structure.  The
+object tracker must ensure that any updates to a shared data structures in one
+address space are reflected to its copy in the other address space. 
+
+<P> In addition to the basic functions described above, the object tracker can
+optionally include error-checking code to check for a variety of common data
+structure corruptions, such as dangling pointers and potential null-pointer
+dereferences.
+
+<P> Several enhancements are possible to the basic architecture of a
+microdriver.  Functions that are repeatedly called from both the kernel-mode
+component and user-mode component can potentially be replicated in both
+components, thus avoiding the overhead of an address-space change each time the
+function is accessed. Similarly, a frequently-accessed data structure can be
+allocated in a shared memory region that is accessible both to the kernel and
+the user-mode process. Finally, to ensure fast operation of the user-mode
+process, the operating system can pin the process' pages to memory. 
+
+<P>
+
+<H2><A NAME="SECTION00040000000000000000"></A> 
+<A NAME="section:refactor"></A><BR>
+4. Refactoring device drivers to microdrivers
+</H2>
+
+<P> Microdrivers present the same interface to the kernel as traditional device
+drivers, and are thus compatible with commodity operating systems.  Moreover,
+code to implement upcalls, downcalls, marshaling and unmarshaling follows a
+standard template and can be automatically generated. This section presents the
+design of a tool that statically refactors traditional device drivers into
+microdrivers (see <A HREF="#figure:annotsplit">Figure 3</A>). Such a tool
+preserves the investment in existing device drivers and provides a migration
+path to create microdrivers.  
+
+<P> The refactoring tool has two functions. First, it must analyze the device
+driver and determine which functions are critical. This is achieved by the
+<I>splitter</I>. Second, it must move the remaining (non-critical) functions to
+a user-mode component, and generate code for communication between the
+kernel-mode and user-mode components. This is achieved by the <I>code
+generator</I>.
+
+<P> <b>The splitter.</b> The splitter analyzes the device driver and determines
+how functions implemented in the driver must be split between kernel-mode and
+user-mode. It builds a static call-graph of the driver (including edges for
+indirect calls), identifies critical root functions, and classifies functions
+transitively called by them as critical, as described in the study in <A
+HREF="#section:case">Section 2</A>. Critical root functions need to be
+identified just once for each family of device drivers.
+
+<P> While this simple propagation-based approach to identify critical functions
+has worked well for drivers that we have considered so far, the splitter can
+employ more sophisticated algorithms that use dynamically gathered profile
+information. For example, critical functions can be inferred by solving an
+optimization problem on the static call-graph modeled as a <I>flow
+network</I>&nbsp;[<A HREF="hotos2007.html#amo93">2</A>] with weights on edges
+and nodes. Edge weights denote call frequencies (obtained by profiling) and
+node weights are proportional to the number of lines of code in the function
+denoted by the node. The goal is to find a cut in the graph under the
+constraint that all nodes representing critical root functions must appear on
+one side of the cut (the critical side).  Additional constraints can also be
+imposed, <I>e.g.,</I>&nbsp;that a critical section must not be split between
+the kernel-mode and user-mode components.  Further, the cut should be optimal:
+it should mimimize both the weight of edges crossing the cut and the weight of
+nodes on the critical side of the cut.  All nodes on the critical side of the
+cut are marked critical, and the remaining nodes are non-critical.
+Intuitively, such a cut minimizes the number of switches between protection
+domains and also the amount of code running in the kernel. 
+
+<P>
+<b>The code generator.</b> The code generator uses the critical functions
+identified and emits code for the kernel-mode and user-mode components.  It
+also generates all the code to handle upcalls and downcalls, including stubs
+and code to marshal/unmarshal data structures.  The object tracker and
+threadpool implementation (for the multithreaded user-mode component) are
+common to all microdrivers and need to be written just once.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="figure:annotsplit"></A><A NAME="551"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3: Design of a tool to refactor
+traditional device drivers into microdrivers.</STRONG></CAPTION>
+<TR><TD><DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="0" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER"><IMG SRC="annotsplit.png"
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV>
+
+<P> The code generator needs <I>marshaling annotations</I> to guide the
+generation of marshaling/unmarshaling code. These annotations are used to
+specify the length of dynamically allocated arrays, linked lists and other
+complex data structures. The code generator employs a conservative static
+analysis algorithm to identify variables that represent such data structures
+and prompts the user to provide these annotations. This potentially reduces the
+traditional burden associated with annotation, because the user does not have
+to provide annotations beforehand, but only as guided by the code generator,
+and only for data structures that cross the user/kernel boundary.  For example,
+for the e1000 device driver, the code generator automatically infers that
+variables of type <TT><FONT>struct e1000_rx_ring</FONT></TT> and
+<TT><FONT>struct e1000_tx_ring</FONT></TT> (among others) are arrays. These
+denote ring buffers that are allocated by the e1000 driver at startup. It
+requests marshaling annotations for each function call that crosses
+address-spaces and potentially modifies these data structures. The user must
+supply marshaling annotations that determine the length of these data
+structures (or supply predicates, <I>e.g.,</I>&nbsp;those that determine how to
+stop traversing a linked list).
+
+<H2><A NAME="SECTION00050000000000000000"></A>
+<A NAME="section:results"></A><BR>
+5. Implementation and experiments
+</H2>
+
+<P>
+We have implemented several portions of the microdriver architecture and the
+refactoring tool. In particular, the refactoring tool automatically identifies
+a split and generates code for the kernel- and user-mode components. We have
+also implemented a static analysis algorithm to infer where marshaling
+annotations are necessary and are currently in the process of integrating this
+with the code-generator for marshaling/unmarshaling.  To date, we have applied
+the tool to several network drivers. Because our infrastructure is still in
+development, we report our experience simulating the operation of an e1000
+microdriver. In particular, we used our tool to generate code for the kernel- and
+user-mode components, and ran both the components in the kernel address-space,
+using delays to simulate change of protection domains.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="figure:results"></A><A NAME="589"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 4: Performance of an e1000 microdriver.
+</STRONG> </CAPTION>
+<TR><TD><DIV ALIGN="CENTER"><IMG SRC="e1000-results.png"></DIV></TD></TR>
+</TABLE>
+</DIV>
+
+<P> The kernel-mode component of our e1000 microdriver contains just 25% of the
+code of the entire microdriver.  In our experiments, we ran the e1000
+microdriver on a dual-core 3Ghz Pentium-D machine running Linux-2.6.18.  We
+measured network throughput and CPU utilization using <TT><FONT
+SIZE="-1">netperf</FONT></TT> to send TCP packets (results for TCP/receive were
+similar and are omitted). We used buffers of size 256KB on both the sending and
+receiving side and trasmitted 32KB messages.  <A HREF="#figure:results">Figure
+4</A> compares the network throughput and CPU utilization of the e1000
+microdriver (with different values for delays) against a traditional e1000
+device driver running under the same conditions. We observed that the
+microdriver has negligible overheads for network throughput and CPU utilization
+for delays under 10 microseconds. Even with a 20 millisecond delay (60,000,000
+machine cycles) we only observed a 6.3% drop in network throughput and 26%
+increase in CPU utilization.  These results show that microdrivers reduce the
+amount of driver code running in the kernel without affecting common-case
+performance, and are thus a viable alternative to traditional device drivers.
+
+<H2><A NAME="SECTION00060000000000000000"></A>
+<A NAME="section:relatedwork"></A><BR>
+6. Related work
+</H2>
+
+<P> <B>Hardware-based isolation.</B> Several architectures use hardware-based
+mechanisms to isolate faults in kernel extensions, in particular device
+drivers. These include Nooks&nbsp;[<A HREF="hotos2007.html#sbl05">22</A>] and
+VMM-based mechanisms&nbsp;[<A HREF="hotos2007.html#fhn+04">11</A>,<A
+HREF="hotos2007.html#lus+04">15</A>] that run each driver in its own protection
+domain. Microdrivers also use hardware, in particular, the process boundary, to
+isolate large parts (but not the entire) device driver. However, microdrivers
+can potentially perform better than these hardware-based isolation mechanisms
+because performance-critical code resides and executes in kernel address-space.
+In addition, microdrivers also reduce the amount of code running in the kernel.
+Microkernels (<I>e.g.,</I>&nbsp;[<A HREF="hotos2007.html#l95">16</A>,<A
+HREF="hotos2007.html#vanmaren99">23</A>,<A
+HREF="hotos2007.html#yab+86">25</A>]) also use the process boundary to isolate
+device drivers, and explicitly aim to reduce the amount of code executing with
+kernel privilege, but do so at the cost of reduced performance.  Microdrivers
+offer poorer isolation than microkernels, but promise better performance.
+
+<P> Several recent efforts have focused on reducing the amount of driver code
+running in commodity operating system kernels&nbsp;[<A
+HREF="hotos2007.html#b05">4</A>,<A HREF="hotos2007.html#c04">7</A>,<A
+HREF="hotos2007.html#e03">8</A>,<A HREF="hotos2007.html#l04">13</A>,<A
+HREF="hotos2007.html#lcf+05">14</A>,<A HREF="hotos2007.html#msudf">17</A>]. The
+FUSD framework&nbsp;[<A HREF="hotos2007.html#e03">8</A>] and the Microsoft
+user-mode driver framework&nbsp;[<A HREF="hotos2007.html#msudf">17</A>] offer
+APIs to program user-mode device drivers that communicate with a kernel module.
+Chubb&nbsp;[<A HREF="hotos2007.html#c04">7</A>] and Leslie <I>et
+al.</I>&nbsp;[<A HREF="hotos2007.html#lcf+05">14</A>] report user-mode driver
+performance comparable to in-kernel device drivers. However, unlike
+microdrivers, they require both kernel support, and rewriting device drivers,
+making them incompatible with existing operating systems.
+
+<P> <B>Language-based isolation.</B> SafeDrive&nbsp;[<A
+HREF="hotos2007.html#zca+06">27</A>] is a recent effort to improve device
+driver reliability by preventing type safety violations (and is similar in
+spirit to SFI&nbsp;[<A HREF="hotos2007.html#wlg93">24</A>]). SafeDrive reports
+good performance and is compatible with commodity operating systems. However,
+unlike microdrivers, SafeDrive does not reduce the amount of in-kernel code.
+Moreover, it does not offer protection against bugs that do not violate type
+safety (<I>e.g.,</I>&nbsp;violation of the locking protocol or other kernel API
+usage rules).
+
+<P> <B>Program partitioning.</B> Automatic and semi-automatic program
+partitioning techniques, much like the ones in <A
+HREF="#section:refactor">Section 4</A>, have also been applied to improve
+application security&nbsp;[<A HREF="hotos2007.html#bs04">5</A>,<A
+HREF="hotos2007.html#zzn+02">26</A>] and to improve the performance of
+distributed components&nbsp;[<A HREF="hotos2007.html#hs99">12</A>] and
+data-intensive user applications&nbsp;[<A HREF="hotos2007.html#pws+03">20</A>].
+
+<H2><A NAME="SECTION00070000000000000000"></A>
+<A NAME="section:conclusions"></A><BR>
+7. Conclusions
+</H2>
+
+<P> Microdrivers are a promising alternative to existing architectures for
+device drivers.  They can improve system reliability by reducing the amount of
+code running in the kernel without adversely affecting common-case performance.
+Because microdrivers are compatible with commodity operating systems, they
+offer a path for running existing device drivers in user-mode with good
+common-case performance. This paper also shows that program analysis and
+transformation techniques can refactor existing drivers nearly automatically
+into microdrivers.
+
+<P>
+ 
+<H2><A NAME="SECTION00080000000000000000">References</A>
+</H2><DL COMPACT><DD>
+<P>
+<P></P><DT><A NAME="minix3">[<b>1</b>]</A>
+<DD>
+The Minix3 operating system.
+<BR><TT><FONT SIZE="-1">www.minix3.org</FONT></TT>.
+
+<P>
+<P></P><DT><A NAME="amo93">[<b>2</b>]</A>
+<DD>
+R.&nbsp;K. Ahuja, T.&nbsp;L. Magnanti, and J.&nbsp;B. Orlin.
+<BR><EM>Network Flows: Theory, Algorithms, and Applications</EM>.
+<BR>Prentice Hall, February 1993.
+
+<P>
+<P></P><DT><A NAME="bal+90">[<b>3</b>]</A>
+<DD>
+B.&nbsp;N. Bershad, T.&nbsp;E. Anderson, E.&nbsp;D. Lazowska, and H.&nbsp;M. Levy.
+<BR>Lightweight remote procedure call.
+<BR><EM>ACM TOCS</EM>, 8(1), February 1990.
+
+<P>
+<P></P><DT><A NAME="b05">[<b>4</b>]</A>
+<DD>
+D.&nbsp;Blythe.
+<BR>Windows graphics overview.
+<BR>In <EM>Windows Hardware Engineering Conference</EM>, 2005.
+
+<P>
+<P></P><DT><A NAME="bs04">[<b>5</b>]</A>
+<DD>
+D.&nbsp;Brumley and D.&nbsp;Song.
+<BR>Privtrans: Automatically partitioning programs for privilege
+  separation.
+<BR>In <EM>13th USENIX Security Symposium</EM>, 2004.
+
+<P>
+<P></P><DT><A NAME="cyc+01">[<b>6</b>]</A>
+<DD>
+A.&nbsp;Chou, J.&nbsp;Yang, B.&nbsp;Chelf, S.&nbsp;Hallem, and D.&nbsp;Engler.
+<BR>An empirical study of operating system errors.
+<BR>In <EM>18th ACM SOSP</EM>, 2001.
+
+<P>
+<P></P><DT><A NAME="c04">[<b>7</b>]</A>
+<DD>
+P.&nbsp;Chubb.
+<BR>Get more device drivers out of the kernel!
+<BR>In <EM>Ottawa Linux Symposium</EM>, 2004.
+
+<P>
+<P></P><DT><A NAME="e03">[<b>8</b>]</A>
+<DD>
+J.&nbsp;Elson.
+<BR>FUSD: A Linux framework for user-space devices, 2004.
+<BR>User manual for FUSD 1.0.
+
+<P>
+<P></P><DT><A NAME="eko95">[<b>9</b>]</A>
+<DD>
+D.&nbsp;R. Engler, M.&nbsp;F. Kaashoek, and J.&nbsp;O'Toole.
+<BR>Exokernel: An operating system architecture for application-level
+  resource management.
+<BR>In <EM>15th ACM SOSP</EM>, 1995.
+
+<P>
+<P></P><DT><A NAME="fgb91">[<b>10</b>]</A>
+<DD>
+A.&nbsp;Forin, D.&nbsp;Golub, and B.&nbsp;Bershad.
+<BR>An I/O system for Mach.
+<BR>In <EM>USENIX Mach Symposium</EM>, 1991.
+
+<P>
+<P></P><DT><A NAME="fhn+04">[<b>11</b>]</A>
+<DD>
+K.&nbsp;Fraser, S.&nbsp;Hand, R.&nbsp;Neugebauer, I.&nbsp;Pratt, A.&nbsp;Warfield, and M.&nbsp;Williamson.
+<BR>Safe hardware access with the Xen virtual machine monitor.
+<BR>In <EM>Workshop on Operating System and Architectural Support for
+  the On-Demand IT Infrastructure</EM>, 2004.
+
+<P>
+<P></P><DT><A NAME="hs99">[<b>12</b>]</A>
+<DD>
+G.&nbsp;C. Hunt and M.&nbsp;L. Scott.
+<BR>The Coign automatic distributed partitioning system.
+<BR>In <EM>4th ACM/USENIX OSDI</EM>, 1999.
+
+<P>
+<P></P><DT><A NAME="l04">[<b>13</b>]</A>
+<DD>
+B.&nbsp;Langley.
+<BR>Windows ``Longhorn'' display driver model--details and
+  requirements.
+<BR>In <EM>Windows Hardware Engineering Conference</EM>, 2004.
+
+<P>
+<P></P><DT><A NAME="lcf+05">[<b>14</b>]</A>
+<DD>
+B.&nbsp;Leslie, P.&nbsp;Chubb, N.&nbsp;Fitzroy-Dale, S.&nbsp;Gotz, C.&nbsp;Gray, L.&nbsp;Macpherson,
+  D.&nbsp;Potts, Y.&nbsp;Shen, K.&nbsp;Elphinstone, and G.&nbsp;Heiser.
+<BR>User-level device drivers: Achieved performance.
+<BR><EM>Journal of Computer Science and Technology</EM>, 20(5), September
+  2005.
+
+<P>
+<P></P><DT><A NAME="lus+04">[<b>15</b>]</A>
+<DD>
+J.&nbsp;LeVasseur, V.&nbsp;Uhlig, J.&nbsp;Stoess, and S.&nbsp;Gotz.
+<BR>Unmodified device driver reuse and improved system dependability via
+  virtual machines.
+<BR>In <EM>6th ACM/USENIX OSDI</EM>, 2004.
+
+<P>
+<P></P><DT><A NAME="l95">[<b>16</b>]</A>
+<DD>
+J.&nbsp;Liedtke.
+<BR>On microkernel construction.
+<BR>In <EM>15th ACM SOSP</EM>, 1995.
+
+<P>
+<P></P><DT><A NAME="msudf">[<b>17</b>]</A>
+<DD>
+Microsoft.
+<BR>Architecture of the user-mode driver framework, May 2006.
+<BR>Version 0.7.
+
+<P>
+<P></P><DT><A NAME="murphy04a">[<b>18</b>]</A>
+<DD>
+B.&nbsp;Murphy and M.&nbsp;R. Garzia.
+<BR>Software reliability engineering for mass market products.
+<BR><EM>The DoD Software Tech News</EM>, 8(1), 2004.
+
+<P>
+<P></P><DT><A NAME="orgovan03">[<b>19</b>]</A>
+<DD>
+V.&nbsp;Orgovan and M.&nbsp;Tricker.
+<BR>An introduction to driver quality.
+<BR>Microsoft WinHec 2004 Presentation DDT301, 2003.
+
+<P>
+<P></P><DT><A NAME="pws+03">[<b>20</b>]</A>
+<DD>
+A.&nbsp;Purohit, C.&nbsp;P. Wright, J.&nbsp;Spadavecchia, and E.&nbsp;Zadok.
+<BR>Cosy: Develop in user-land, run in kernel-mode.
+<BR>In <EM>9th HotOS</EM>, 2003.
+
+<P>
+<P></P><DT><A NAME="sg99">[<b>21</b>]</A>
+<DD>
+A.&nbsp;Silberschatz and P.&nbsp;B. Galvin.
+<BR><EM>Operating System Concepts</EM>.
+<BR>Addison Wesley, fifth edition, 1999.
+
+<P>
+<P></P><DT><A NAME="sbl05">[<b>22</b>]</A>
+<DD>
+M.&nbsp;M. Swift, B.&nbsp;N. Bershad, and H.&nbsp;M. Levy.
+<BR>Improving the reliability of commodity operating systems.
+<BR><EM>ACM TOCS</EM>, 23(1), February 2005.
+
+<P>
+<P></P><DT><A NAME="vanmaren99">[<b>23</b>]</A>
+<DD>
+K.&nbsp;T. Van Maren.
+<BR>The Fluke device driver framework.
+<BR>Master's thesis, Dept. of Computer Science, Univ. of Utah, December
+  1999.
+
+<P>
+<P></P><DT><A NAME="wlg93">[<b>24</b>]</A>
+<DD>
+R.&nbsp;Wahbe, S.&nbsp;Lucco, T.&nbsp;E. Anderson, and S.&nbsp;L. Graham.
+<BR>Efficient software-based fault isolation.
+<BR>In <EM>14th ACM SOSP</EM>, 1993.
+
+<P>
+<P></P><DT><A NAME="yab+86">[<b>25</b>]</A>
+<DD>
+M.&nbsp;Young, M.&nbsp;Accetta, R.&nbsp;Baron, W.&nbsp;Bolosky, D.&nbsp;Golub, R.&nbsp;Rashid, and
+  A.&nbsp;Tevanian.
+<BR>Mach: A new kernel foundation for UNIX development.
+<BR>In <EM>Summer USENIX Conference</EM>, 1986.
+
+<P>
+<P></P><DT><A NAME="zzn+02">[<b>26</b>]</A>
+<DD>
+S.&nbsp;Zdancewic, L.&nbsp;Zheng, N.&nbsp;Nystrom, and A.&nbsp;C. Myers.
+<BR>Secure program partitioning.
+<BR><EM>ACM TOCS</EM>, 20(3), August 2002.
+
+<P>
+<P></P><DT><A NAME="zca+06">[<b>27</b>]</A>
+<DD>
+F.&nbsp;Zhou, J.&nbsp;Condit, Z.&nbsp;Anderson, I.&nbsp;Bagrak, R.&nbsp;Ennals, M.&nbsp;Harren, G.&nbsp;Necula,
+  and E.&nbsp;Brewer.
+<BR>SafeDrive: Safe and recoverable extensions using language-based
+  techniques.
+<BR>In <EM>7th OSDI</EM>, 2006.
+<P>
+</DL>
+
+<hr>
+
+<small>Produced using Latex2HTML. Vinod Ganapathy, April 4th, 2007.</small>
+
+</BODY>
+</HTML>
+

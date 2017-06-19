@@ -1,0 +1,85 @@
+Title: Policy Weaving with Simplified Transactional Enforcement
+Problem statement: The control-flow and semantics of a general
+  transaction mechanism can be difficult to reason about \cite{}.
+  Furthermore, the logic required to inspect the actions that occur
+  during a transaction and make a decision to commit or suppress those
+  actions can be complex and error-prone. In a setting in which security
+  invariants must be guaranteed, relying on manual placement of
+  transactions and formulation of inspection routines is unacceptable.
+Key insight: We examine the benefits of applying policy weaving to
+  guarantee security invariants using transactional enforcement.
+Advantages: A policy weaving algorithm takes as input a program to be
+  secured and a security policy in the form of finite-state automaton
+  that accepts disallowed execution traces. It produces a secured
+  program in which potentially policy-violating statements are
+  monitored at runtime and results inspected via generated handler
+  functions. Therefore, the complexity of manually placing individual
+  transactions and constructing inspection logic has been reduced to
+  formulation of the security automaton, which, in addition to being a
+  much smaller and self-contained artifact, much more directly coincides
+  with the intentions and goals of the user.
+  Conversely, we find that the use of a transactional paradigm serves as
+  a natural and intuitive runtime enforcement platform for policy
+  weaving, and results in substantial benefits in terms of performance
+  and flexibility when compared to other enforcement mechanisms.
+Contributions:
+  1) We present JAMScript, an evolution and simplification of the
+     JavaScript transaction system Transcript \cite{transcript}.
+  2) We show how the JAM policy weaving system is used to automatically
+     and soundly generate transactional instrumentation of a program
+     to enforce security invariants.
+  3) We provide experimental results demonstrating the effectiveness and
+     favorable performance of the system.
+Additional results:
+  N/A [???]
+Planned experiments:
+  Subjects: All JAM benchmarks and MIT-LL applications
+  Measurements:
+    1) Program information
+    2) Weaver analysis time
+    3) In-browser execution time: JAMScript vs. uninstrumented
+    4) Complexity [metric?] of transactional enforcement vs. policy
+    5) Performance comparison of granular vs. modular transactions
+
+====================================================================
+
+Abstract
+
+ o State the problem
+ o Say why it is an interesting problem
+ o Say what your solution achieves
+ o Say what follows from your solution
+
+1. Introduction
+
+   o Describe the problem
+   o State your contributions
+   o Organization of the paper [if not able to cover point by point in contributions]
+
+2. Overview and Problem Statement
+
+3. Terminology
+
+4. Main Body
+
+5. Experiments
+
+6. Related Work
+
+7. Conclusions
+   [Restatement of the abstract, but can explain in terms of technical
+   concepts introduced in the paper]
+
+================================================================
+Alternative organization of Introduction
+
+ o Elevator story -- high-level statement of the problem
+ o The problem in more technical terms
+ o Conventional wisdom: sketch of previous techniques and their shortcomings
+ o Describe the solution to the problem as a black box,
+   so that it is clear what our solution offers over previous work
+ o Technical challenges to obtaining a solution (e.g., 1 paragraph for each)
+ o State how we solve the challenges (at most a few paragraphs)
+ o Experimental highlights
+ o Contributions
+ o Organization of the paper 

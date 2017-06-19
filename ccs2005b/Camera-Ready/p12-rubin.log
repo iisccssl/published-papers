@@ -1,0 +1,434 @@
+This is TeX, Version 3.14159 (Web2C 7.4.5) (format=latex 2003.4.4)  2 SEP 2005 11:20
+**p12-rubin
+(./p12-rubin.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(./sig-alternate.cls
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/epsfig
+.sty
+Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/graphi
+cx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/keyval
+.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/graphi
+cs.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/trig.s
+ty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/config/graphics
+.cfg
+File: graphics.cfg 2001/08/31 v1.1 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: dvips.def on input line 80.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/dvips.
+def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\Gin@req@height=\dimen102
+\Gin@req@width=\dimen103
+)
+\epsfxsize=\dimen104
+\epsfysize=\dimen105
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/amssym
+b.sty
+Package: amssymb 2002/01/22 v2.2d
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/amsfon
+ts.sty
+Package: amsfonts 2001/10/25 v2.2f
+\@emptytoks=\toks15
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 132.
+))
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsmath/amsmath
+.sty
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip41
+
+For additional information on amsmath, use the `?' option.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsmath/amstext
+.sty
+Package: amstext 2000/06/29 v2.01
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsmath/amsgen.
+sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks16
+\ex@=\dimen106
+))
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsmath/amsbsy.
+sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen107
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsmath/amsopn.
+sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count79
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count80
+\leftroot@=\count81
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count82
+\DOTSCASE@=\count83
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen108
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count84
+\c@MaxMatrixCols=\count85
+\dotsspace@=\muskip10
+\c@parentequation=\count86
+\dspbrk@lvl=\count87
+\tag@help=\toks17
+\row@=\count88
+\column@=\count89
+\maxfields@=\count90
+\andhelp@=\toks18
+\eqnshift@=\dimen109
+\alignsep@=\dimen110
+\tagshift@=\dimen111
+\tagwidth@=\dimen112
+\totwidth@=\dimen113
+\lineht@=\dimen114
+\@envbody=\toks19
+\multlinegap=\skip42
+\multlinetaggap=\skip43
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+)
+Document Class 'sig-alternate' <26th. July '05>. Modified by G.K.M. Tobin/Gerry
+ Murray
+Based in part upon document Style `acmconf' <22 May 89>. Hacked 4/91 by
+shivers@cs.cmu.edu, 4/93 by theobald@cs.mcgill.ca
+Excerpts were taken from (Journal Style) 'esub2acm.cls'.
+****** Bugs/comments/suggestions/technicalities to Gerry Murray -- murray@hq.ac
+m.org ******
+Questions on the style, SIGS policies, etc. to Adrienne Griscti griscti@acm.org
+
+\footheight=\dimen115
+\@maxsep=\dimen116
+\@dblmaxsep=\dimen117
+\aucount=\count91
+\originalaucount=\count92
+\auwidth=\dimen118
+\auskip=\dimen119
+\auskipcount=\count93
+\auskip=\dimen120
+\allauboxes=\dimen121
+\addauthors=\toks21
+\addauflag=\count94
+\subtitletext=\toks22
+\savesection=\count95
+\sectioncntr=\count96
+\c@figure=\count97
+\c@table=\count98
+\titleboxnotes=\toks23
+\titleboxnoteflag=\count99
+Document Class: sig-alternate 2005/26/07 - V1.8 - based on acmproc.cls V1.3 <No
+v. 30 '99>
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/base/latexsym.s
+ty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 42.
+)
+\@acmtitlebox=\box28
+\titlenotecount=\count100
+\tntoks=\toks24
+\tntokstwo=\toks25
+\tntoksthree=\toks26
+\tntoksfour=\toks27
+\tntoksfive=\toks28
+\catcount=\count101
+\copyrightnotice=\toks29
+\conf=\toks30
+\confinfo=\toks31
+\c@part=\count102
+\c@section=\count103
+\c@subsection=\count104
+\c@subsubsection=\count105
+\c@paragraph=\count106
+
+Using 'Abbrev' bibliography style
+\bibindent=\dimen122
+\colcntr=\count107
+\savebox=\box29
+\copyrtyr=\toks32
+\acmcopyr=\toks33
+\boilerplate=\toks34
+\copyrightetc=\toks35
+) (./url.sty
+\Urlmuskip=\muskip11
+Package: url 2005/06/27  ver 3.2  Verb mode for urls, etc.
+) (./cite.sty
+LaTeX Info: Redefining \cite on input line 149.
+LaTeX Info: Redefining \nocite on input line 214.
+Package: cite 2003/11/04  v 4.01
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/psnfss/times.st
+y
+Package: times 2002/09/08 PSNFSS-v9.0a (SPQR) 
+) (./widow.sty
+Package: widow 
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/tools/tabularx.
+sty
+Package: tabularx 1999/01/07 v2.07 `tabularx' package (DPC)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/tools/array.sty
+Package: array 1998/05/13 v2.3m Tabular extension package (FMi)
+\col@sep=\dimen123
+\extrarowheight=\dimen124
+\NC@list=\toks36
+\extratabsurround=\skip44
+\backup@length=\skip45
+)
+\TX@col@width=\dimen125
+\TX@old@table=\dimen126
+\TX@old@col=\dimen127
+\TX@target=\dimen128
+\TX@delta=\dimen129
+\TX@cols=\count108
+\TX@ftn=\toks37
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/hyperr
+ef.sty
+Package: hyperref 2003/01/22 v6.73n Hypertext links for LaTeX
+\@linkdim=\dimen130
+\Hy@linkcounter=\count109
+\Hy@pagecounter=\count110
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/pd1enc
+.def
+File: pd1enc.def 2003/01/22 v6.73n Hyperref: PDFDocEncoding definition (HO)
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/config/hyperref
+.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive and teTeX
+)
+Package hyperref Info: Hyper figures OFF on input line 1792.
+Package hyperref Info: Link nesting OFF on input line 1797.
+Package hyperref Info: Hyper index ON on input line 1800.
+Package hyperref Info: Plain pages ON on input line 1805.
+Package hyperref Info: Backreferencing OFF on input line 1812.
+
+Implicit mode ON; LaTeX internals redefined
+Package hyperref Info: Bookmarks ON on input line 1916.
+LaTeX Info: Redefining \url on input line 2055.
+\Fld@menulength=\count111
+\Field@Width=\dimen131
+\Fld@charsize=\dimen132
+\Choice@toks=\toks38
+\Field@toks=\toks39
+Package hyperref Info: Hyper figures OFF on input line 2513.
+Package hyperref Info: Link nesting OFF on input line 2518.
+Package hyperref Info: Hyper index ON on input line 2521.
+Package hyperref Info: backreferencing OFF on input line 2528.
+Package hyperref Info: Link coloring OFF on input line 2533.
+\c@Item=\count112
+)
+*hyperref using default driver hdvips*
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/hdvips
+.def
+File: hdvips.def 2003/01/22 v6.73n Hyperref driver for dvips
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/pdfmar
+k.def
+File: pdfmark.def 2003/01/22 v6.73n Hyperref definitions for pdfmark specials
+\pdf@docset=\toks40
+\pdf@box=\box30
+\pdf@toks=\toks41
+\pdf@defaulttoks=\toks42
+\Fld@listcount=\count113
+\@outlinefile=\write3
+))
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/color.
+sty
+Package: color 1999/02/16 v1.0i Standard LaTeX Color (DPC)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/config/color.cf
+g
+File: color.cfg 2001/08/31 v1.1 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: dvips.def on input line 125.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/dvipsn
+am.def
+File: dvipsnam.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+)) (./needspace.sty
+Package: needspace 2003/02/18 v1.3a reserve vertical space
+) (./enumitem.sty
+Package: enumitem 2005/05/12 v1.1 Customized lists
+\labelindent=\skip46
+\enit@outerparindent=\dimen133
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/oberdiek/ifpdf.
+sty
+Package: ifpdf 2001/06/14 v1.0 Providing \ifpdf (HO)
+Package ifpdf Info: pdfTeX in pdf mode not detected on input line 140.
+)
+\c@defs=\count114
+ (./p12-rubin.aux)
+\openout1 = `p12-rubin.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 91.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/psnfss/ot1ptm.f
+d
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+Package hyperref Info: Link coloring OFF on input line 91.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/namere
+f.sty
+Package: nameref 2001/01/27 v2.19 Cross-referencing by name of section
+\c@section@level=\count115
+)
+LaTeX Info: Redefining \ref on input line 91.
+LaTeX Info: Redefining \pageref on input line 91.
+ (./p12-rubin.out) (./p12-rubin.out)
+\openout3 = `p12-rubin.out'.
+
+LaTeX Font Info:    Try loading font information for U+msa on input line 98.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/umsa.f
+d
+File: umsa.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 98.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/umsb.f
+d
+File: umsb.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 98.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 98.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/psnfss/ot1phv.f
+d
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+) (./abstract.tex
+Overfull \hbox (7.81206pt too wide) in paragraph at lines 20--27
+\OT1/ptm/m/n/9 pin-points sell-ers whose auc-tions con-tain po-ten-tial shill b
+id-ders. When
+ []
+
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 111.
+ (./Intro.tex [1
+
+
+]) (./rw.tex [2]) (./sec3.tex
+
+Package hyperref Warning: Token not allowed in a PDFDocEncoded string,
+(hyperref)                removing `\\' on input line 2.
+
+[3] (./tables/TableInterpetation.tex)) (./sec4.tex
+File: figures/auctionsHist.eps Graphic file (type eps)
+ <figures/auctionsHist.eps>
+File: figures/MarketShare.eps Graphic file (type eps)
+
+<figures/MarketShare.eps>
+Overfull \hbox (3.60028pt too wide) in paragraph at lines 35--48
+[][] 
+ []
+
+[4]
+File: figures/AveBidsHotSellers.eps Graphic file (type eps)
+ <figures/AveBidsHotSellers.eps>
+File: figures/splitPlane.eps Graphic file (type eps)
+ <figures/splitPlane.eps>
+Overfull \hbox (3.60028pt too wide) in paragraph at lines 138--150
+[][]
+ []
+
+[5]
+File: figures/AnomalyRSBTopSellers.eps Graphic file (type eps)
+ <figures/AnomalyRSBTopSellers.eps>
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 255.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 277.
+
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/psnfss/ot1pcr.f
+d
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+) <figures/10260.eps> <figures/10417.eps> <figures/10260.eps>
+<figures/10417.eps>
+File: figures/10260.eps Graphic file (type eps)
+ <figures/10260.eps>
+File: figures/10417.eps Graphic file (type eps)
+ <figures/10417.eps>
+Underfull \hbox (badness 1983) in paragraph at lines 331--339
+[]\OT1/ptm/m/it/9 Let $\OML/cmm/m/it/9 s$ \OT1/ptm/m/it/9 be a
+ []
+
+[6]) (./sec5.tex
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 19.
+File: figures/VenDiagram.eps Graphic file (type eps)
+ <figures/VenDiagram.eps>
+File: figures/AbnormalSelleraMb.eps Graphic file (type eps)
+ <figures/AbnormalSelleraMb.eps>
+File: figures/splitPlaneAbnormalOnly.eps Graphic file (type eps)
+
+<figures/splitPlaneAbnormalOnly.eps>
+File: figures/AbnormalProfile.eps Graphic file (type eps)
+ <figures/AbnormalProfile.eps> [7])
+(./sec6.tex [8]) (./conclusions.tex) (./p12-rubin.bbl [9]) [10]
+(./p12-rubin.aux) ) 
+Here is how much of TeX's memory you used:
+ 3880 strings out of 95847
+ 52650 string characters out of 1194058
+ 111930 words of memory out of 1000001
+ 6692 multiletter control sequences out of 10000+50000
+ 26673 words of font info for 70 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 39i,15n,40p,516b,513s stack positions out of 1500i,500n,5000p,200000b,5000s
+
+Output written on p12-rubin.dvi (10 pages, 108372 bytes).

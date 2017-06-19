@@ -1,0 +1,120 @@
+Common concerns:
+[A]:Relevance to ASPLOS 
+
+While we agree with our reviewers that the paper does 
+not have an architectural component, we note that ASPLOS 
+has traditionally been a multidisciplinary conference, 
+with a history of accepting papers with software-only 
+techniques that appeal to a broad audience. Recent ASPLOS's 
+have had several such papers: for example, HOIST, SWAT('04), 
+Phase prediction('02,'04), compiler, language, and byte-code 
+optimizations (four papers in'02), and bug-finding 
+(Flash/MC'00). We view our paper as being in a similar 
+vein as these. Stable heap metrics also have potential 
+applications in optimization and memory management, both 
+traditional areas at ASPLOS.
+
+[B]:Comparison with other techniques.
+
+HeapMD can detect malformed, but pointer-correct data 
+structures that Valgrind and Purify cannot. While 
+Valgrind and Purify are ideally suited at detecting 
+heap errors that cause program crashes, they are 
+ill-suited for detecting malformed structures that 
+arise because of logic errors (and do not cause crashes). 
+HeapMD can detect such bugs, examples of which we 
+provide in the last three paragraphs of Section 4.3 
+(in particular, Valgrind and Purify are not designed
+to find such bugs). To our knowledge, HeapMD is the 
+first to exploit the graph structure of the heap to 
+define invariants. In contrast, Daikon, DIDUCE and 
+Liblit et al. focus on predicates that remain invariant 
+over values of individual variables. HeapMD can 
+complement such tools.
+
+[C]:Should programs exhibit correct behavior for 
+training inputs?
+
+We place no restriction on training inputs. Training 
+inputs CAN exercise code-paths that contain bugs too. 
+As our reviewers correctly note, this means that the 
+effectiveness of HeapMD will be reduced, and that we 
+may not be able to detect those bugs. We make no claims 
+that HeapMD findsall bugs. HeapMD is good at finding 
+systemic bugs, that repeat often enough to affect global 
+metrics to violate their calibrated range. It may well 
+be the case that a bug does not result in violation, 
+in which case it will not be detected.
+
+
+Individual concerns, unaddressed by points above:
+Review #1:
+[1]:The main contribution of this paper is improved 
+    bug detection. Point [B] above clarifies differences 
+    with existing tools.
+[2]:The commercial applications are stable released versions. 
+    Bugs found by HeapMD were present even after regression 
+    testing. Some of these bugs will still be uncovered by 
+    state-of-the-art tools (see Point [B] above).
+[3]:Anomalous heap operations, in contrast to illegal heap 
+    operations, also include cases that result in malformed, 
+    but pointer-correct data structures that do not result 
+    in crashes. For example, producing an oct-DAG instead 
+    of an oct-TREE is an anomalous heap operation.
+[4]:Bugs during startup and shutdown (where no stable 
+    metrics are found) are hard to detect with HeapMD.
+
+Review #2: 
+[1]:Sensitivity study for thresholds: We will gladly add 
+    this study.
+[2]:Bug reports: We will provide examples of these.
+[3]:Besides pointer counts, we could add other graph metrics 
+    such as size and number of connected and stronly connected 
+    components, and value-based metrics such as the number of 
+    distinct values stored at a heap location over the program 
+    lifetime.
+[4]:Invariant metrics across program versions suggest similar 
+    heap behavior. Of course, if heap-behavior changes, these 
+    metrics will also change (e.g., changing balanced binary 
+    to B-trees).
+[5]:(Per-DS metrics and arrays) Our current implementation does 
+    not include type-information, so these are hard to test.
+
+Review #3:
+[1]:In/Out-degree=3 may also be useful and can easily be 
+    added to HeapMD. We chose our metrics with the hypothesis 
+    that most heap nodes will have small in/out-degrees as is
+    the case with linked-lists and trees; this has proved effective 
+    empirically.
+[2]:Violation of metric is a different concept from stability of a 
+    metric. A metric is called globally-stable if it is globally-stable 
+    for 40% of the inputs (other 60% can be unstable). The remaining
+    60% of inputs can remain within the calibrated range but be unstable.
+[3]:Ignoring 10% of execution to ignore startup and shutdown 
+    empirically worked across our benchmarks. We do not claim
+    that this number always works.
+[4]:HeapMD reports few false positives at the cost of missing
+    real bugs (Section 4.5). We do not claim that HeapMD
+    always produces 0 false positives.
+[5]:Our results are not hand-picked because HeapMD found 31 
+    previously-unknown bugs in commercial applications. 
+
+Review #4:
+[1]:HeapMD will be less effective at detecting bugs amongst 
+    fields.
+[2]:HeapMD results in a 2-3X slowdown (Section 2, second 
+    paragraph).
+[3]:Min and Max values in Figure 7 omit startup and shutdown.
+[4]:Training inputs for which metrics are stable are not used
+    for calibration. This does not mean that they correspond to 
+    bugs (see Review#3:[2])
+
+Review #5:
+[1]:To our knowledge, this is the first study on stable 
+    properties of the heap-GRAPH.
+[2]:(gcc comment): In all our benchmarks, we were able to identify 
+    stable metrics for the heap-graph. We do not claim that this is 
+    always possible. If no stable metrics exist, HeapMD won't be 
+    useful.
+[3]:We use call-stack logging to localize violation of a 
+    global property to a specific bug.

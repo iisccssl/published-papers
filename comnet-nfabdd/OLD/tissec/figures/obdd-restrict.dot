@@ -1,0 +1,30 @@
+digraph "DD" {
+size = "7.5,10"
+center = true;
+
+{ node [shape = plaintext];
+  edge [style = invis];
+}
+
+{ rank = same; 
+"0xcb";
+}
+{ rank = same; 
+"0xb6";
+}
+{ rank = same; 
+{ node [shape = box];
+ "0xb0";"0xb1"
+}
+}
+
+
+"0xcb" -> "0xb6";
+"0xcb" -> "0xb1" [style = dotted];
+"0xb6" -> "0xb1";
+"0xb6" -> "0xb0" [style = dotted];
+"0xb1" [label = "1"];
+"0xb0" [label = "0"];
+"0xcb" [label = "x"];
+"0xb6" [label = "y"];
+}

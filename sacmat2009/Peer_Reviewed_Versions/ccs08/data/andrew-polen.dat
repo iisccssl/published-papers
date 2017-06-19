@@ -1,0 +1,6 @@
+#INDEX  PHASE   NFS     POLEN
+0       untar	134	134
+1       configure	1102	1103
+2       compile	761	762
+3       install	104	100
+4       remove	38	38

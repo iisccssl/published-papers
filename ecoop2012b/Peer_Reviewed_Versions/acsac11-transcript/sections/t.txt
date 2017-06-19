@@ -1,0 +1,84 @@
+% \txjs\ operates by ensuring three properties when guest code executes in a
+% transaction:
+% %
+\begin{mylist}
+%
+\item \textit{Guest reads and writes are recorded.} \txjs\ maintains read and
+write sets for each transaction to record the objects that are accessed and
+modified by code executing within a transaction.  These sets are exposed as
+properties of a \textit{transaction object} in \js. 
+%
+\item \textit{Guest writes are speculative.} Any changes to \js\ objects made
+within a transaction are treated as speculative updates.  These changes are
+visible within the transaction, but any accesses to an object from code outside
+the transaction return the unmodified object. (\txjs\ also supports speculative
+changes to DOM objects within a transaction via its DOM subsystem, as explained
+below). Changes can only be committed from outside the transaction by invoking
+a \code{commit} method on the corresponding transaction object. 
+
+These two features allow a host to speculatively execute an untrusted guest
+within a transaction, inspect the data accesses made by the guest, and
+determine whether these accesses conform to site-specific security policies.
+Read and write sets are exposed at the language level, so security policies can
+be coded in \js\ itself using a library that \txjs\ provides for this purpose.
+
+Speculative changes made by the guest must be explicitly committed by the host
+in order to take effect; uncommitted changes simply do not take and need not be
+undone explicitly.
+%
+\item \textit{DOM and AJAX operations suspend transactions.} Besides accessing
+and modifying \js\ objects, Guest code may attempt to perform operations that
+fall outside the purview of the \js\ interpreter. In a browser, these
+\textit{external operations} involve changes to the DOM tree of the host's Web
+page (including registering new event handlers with DOM nodes) and AJAX calls,
+such as \code{XMLHttpRequest}, that send network requests.
+
+\txjs\ introduces a novel \emph{suspend and resume} mechanism that affords
+unprecedented flexibility to mediate external operations. Whenever a guest
+attempts an external operation, \txjs\ suspends it and passes control to the
+host.  Depending on its security policy, the host can perform the action on
+behalf of the guest, perform a different action unbeknownst to the guest, or
+buffer up and simulate the action, before resuming this or another suspended
+transaction.  For example, \txjs\ will suspend a guest that attempts to
+register an event handler. The host can wrap this handler within a transaction
+and register the wrapped code as the event handler, thereby ensuring that the
+execution of untrusted event handlers is also mediated by the host.
+
+Significantly, \textit{\txjs's DOM subsystem} ensures that DOM changes
+requested by a guest transaction will also be speculative. These changes are
+not reflected in the host's DOM unless the transaction commits. Because \js\
+code heavily interacts with the DOM, \txjs's DOM subsystem is key to ensuring
+that hosts can recover from policy-violating guests that contain both \js\ and
+DOM operations. 
+%
+\end{mylist}
+
+\myparagraph{Benefits of \txjs} Put together, the above mechanisms allow
+hosting Web applications to enforce a variety of security policies on guest
+code. For instance, transactions can be used to limit popups, mediate access to
+cookies, the DOM and sensitive \js\ objects, and restrict the use of certain
+functions, \eg~\code{eval} to process JSON\@.  In experiments, we used \txjs\
+to enforce a variety of security and reliability policies, including
+state-based and history-based access control policies, which are difficult to
+enforce using prior techniques. For example, transactions can be used to ensure
+that a guest can only perform \code{innerHTML} operations on DOM nodes that it
+previously created. If the host determines that the guest has violated its
+security policy, it can easily discard the guest's changes to its \js\ heap and
+DOM, both of which are speculative, without having to explicitly include
+cleanup code to do so.
+
+\txjs\ provides these benefits without restricting or modifying guest code in
+any way. The ability to mediate arbitrary \js\ code without restricting it to
+safe subsets is important because prior work shows that defining and proving
+safety of \js\ subsets is non-trivial~\cite{mmt10}. This feature also allows
+reference monitors based on \txjs\ to mediate the actions of legacy libraries
+and applications that contain constructs that are often disallowed in safe \js\
+subsets (\eg~\code{eval}, \code{this} and \code{with}).  Unlike other \js\
+reference monitors~\cite{caja,browsershield,phung:asiaccs09,corescript:popl07}
+that enforce policies on guest code by rewriting it to insert checks, \txjs\
+can enforce policies on unmodified guests. This feature is important because
+designing a rewriter for \js\ is complex and error-prone~\cite{caja}. Moreover,
+transactions can be nested freely, so guests can themselves include and mediate
+other guests in turn, without the code-size blow-up that would result from
+repeated rewriting.
+

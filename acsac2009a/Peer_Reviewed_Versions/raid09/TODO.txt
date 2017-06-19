@@ -1,0 +1,6 @@
+1. Cite Sekar's DIMVA'08 attack paper on taint analysis.
+
+Read:
+http://hackademix.net/2009/02/07/browser-plugins-add-ons-and-security-advisers/
+http://www.infoworld.com/article/09/01/27/04TC-firefox-security_1.html
+

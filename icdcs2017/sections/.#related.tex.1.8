@@ -1,0 +1,114 @@
+\section{Related Work}
+\label{section:related}
+
+\myparagraph{Intel SGX.} A number of recent projects have applied Intel SGX for
+trusted computation on cloud platforms. Microsoft's Haven~\citep{haven:tocs15}
+was the first project that leveraged Intel SGX to enable unmodified Windows
+binaries to run on Intel SGX-based cloud platforms. Have allows an application
+to be linked with a runtime library OS variant of Windows 8 and loaded into an
+enclave. The confidentiality and integrity of this code and data is protected
+from the cloud provider.  VC3~\cite{vc3:oak15} is another effort to leverage
+SGX to provide security for enclaves that perform MapReduce-style computations.
+VC3 also recognized that enclave code with memory safety errors could pose a
+threat to confidentiality of client data, and proposed instrumenting client
+code with a form of control-flow integrity instrumentation. 
+
+SecureKeeper~\cite{securekeeper:middleware16} leverages Intel SGX to keep
+ZooKeeper-style computations confidential. S-NFV~\cite{snfv:sdn16} uses Intel
+SGX to address security issues of today's NetWork Function Virtualization (NFV)
+infrastrucures by securely move the states of NFV applications in enclaves. SGX
+processors are also used to improve the performance of privacy preserving
+multi-party machine learning~\cite{machinelearningsgx:usenixsec16}.  
+
+While SGX provides attractive hardware-based security guarantees, it places
+considerable burden on the enclave code programmer to ensure that computations
+executing within the enclave do not accidentally leak information.  Similarily,
+vulnerabilities such as memory safety errors in enclave code can lead to
+exploits that leak confidential data.  Moat~\cite{moat:ccs15} takes a first
+step towards this goal by statically analyzing x86 machine code to be loaded
+within the enclave to check for information-flow violations.
+\code{/CONFIDENTIAL}~\cite{moatplus16} extends the approach proposed in Moat,
+and provides enclave authors with a library that they can link their enclave
+code against. As long as code is linked against the \code{/CONFIDENTIAL}
+library, and sensitive data sources are identified, the library ensures that
+sensitive data does not accidentially leak from enclaves (a property that the
+authors call information-release confinement).  \code{/CONFIDENTIAL} achieves
+this goal by restricting enclave communication with external memory through a
+narrow interface. 
+
+The key difference between \code{/CONFIDENTIAL} (and also Moat, VC3) and \tool\
+is in the threat model---in \code{/CONFIDENTIAL}, the client compiles his code
+against the the \code{/CONFIDENTIAL} library, but the cloud provider does not
+check that the code has been compiled against this library. Thus,
+\code{/CONFIDENTIAL} is developed for the benefit of the client.  In contrast,
+\tool\ focuses on mutual trust and SLA compilance. With \tool, the cloud
+provider can check that the client has compiled his code against a library such
+as \code{/CONFIDENTIAL}. The cloud provider therefore obtains an assurance that
+the client's code is policy-compliant. However, he does not learn any further
+facts about the client's code, thereby protecting the confidentiality of the
+client's enclave content.
+
+Intel SGX does not protect applications against side-channel attacks and \tool\
+also does not attempt to eliminate this attack vector. Yuanzhong
+\etal~\cite{controlledchannel:oak15} demonstrate that by exploiting the fact
+that page table management in SGX is under the control of the OS, a malicious
+OS can manipulate page tables and page faults to learn memory access patterns
+of an enclave and therefore can infer private information of that enclave.
+Similarly, AsynShock~\cite{asyncshock:esorics16} controls page access
+permissions of a multi-threaded enclave-based application to exploit
+synchronization bugs that might need to memory corruption or crashes. It offers
+a tool to widen the attack window in synchronization bugs by interrupting a
+thread by removing the read and execute permissions from enclave pages and then
+scheduling another thread whose execution causes synchoronization bugs such as
+atomicity violations. 
+
+\myparagraph{Recognizing Functions in Binary Code.} \tool\ assumes that client
+binaries are shipped with symbol-table information (binaries that do not
+contain this information are auto-rejected by \tool). This helps indentify
+functions in binary code which might be needed by the policies on verifying the
+binaries. Recognizing functions in COTS programs which do not contain debug
+information has become a growing interest in recent years.  For instance, both 
+supervised machine learning~\cite{binaryanalysis:AAAI08} and neural
+network-based algorithms~\cite{functionrecognizing:usenixsec15} have been
+applied to recognize functions in stripped binary executables. However, these
+approaches are still in their infancy, and cannot guarantee 100\%
+accuracy~\cite{functionrecognizing:usenixsec15}. As these techniques develop
+and improve in their accuracy and performance, \tool\ can be enhanced to even
+consider stripped binaries as enclave code.
+
+\myparagraph{Instrumenting Code to Thwart Attacks.} For years, various
+solutions have been proposed to defend against control flow hijack attacks due
+to software bugs. These include stack canaries to protect return addresses and
+other control data on the stack~\cite{stackcanaries:handbookofinfosec} uses
+stack canaries, and various forms of control-flow integrity protection
+(\eg~\cite{xfi:osdi06, mip:ccs13, hypersafe:oak10,edgecfi:sec14}) use binary
+rewriting to enforce CFI protection. Cloud providers may require clients to
+compile their code with such instrumentation. As we saw in this paper, \tool\
+can accomodate a variety of policy modules that check that enclave code has
+been instrumented as agreed-upon by the cloud provider and the client.
+
+% ~\cite{edgecfi:sec14} applies compiler-based instrumentation to
+% provide CFI protection and to prevent attacks that overwrite the virtual table
+% (vtable) pointer to hijack virtual calls. For CFI defense, it modifies compiler
+% toolchains to generate jump tables for indirect call targets and insert code at
+% indirect call sites to make function pointers point to an entry in the jump
+% tables. Similarly, to protect virtual calls it adds a verification call after
+% getting the vtable pointer and before deferencing it. The verification call
+% receives as arguments the vtable pointer and a set of valid vtable pointers for
+% the call site. If the vtable pointer is not in the valid set the verification
+% call aborts execution.
+ 
+%Preventing page faults from telling your secrets.
+
+%\cite{moat:ccs15}
+%\cite{vc3:oak15}
+%\cite{controlledchannel:oak15}
+%\cite{faultsecret:asiaccs16}
+%\cite{haven:tocs15}
+%\cite{moatplus:pldi16}
+%\cite{opensgx:ndss16}
+%\cite{snfv:sdn16}
+%\cite{scone:osdi16}
+%\cite{asyncshock:esorics16}
+%\cite{securekeeper:middleware16}
+%\cite{TODO}

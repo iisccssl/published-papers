@@ -1,0 +1,413 @@
+\section{Experimental Results}
+\label{section:results}
+
+In this section, we present experiments that illustrate the security versus
+energy tradeoff faced by kernel code-integrity and data-integrity monitors.  In
+each experiment, we report the total energy dissipated by the Viliv as it
+executed one of three workloads (lmbench, 3G and WiFi) and the value of the
+corresponding security metric (attack surface or window of vulnerability).  
+
+We start this section with two sets of measurements, one that quantifies the
+overhead of executing a hypervisor on the Viliv, and a second that measures the
+energy dissipated by activities that are routinely performed on mobile phones.
+For each experiment, we ensured that the virtual machine was idle prior to
+starting the workload. Each experiment was executed three times, and the charts
+depict the average measurements observed and error-bars showing the standard
+deviation.
+
+
+\noindent\textbf{Overhead of virtualization.}
+%
+Both Patagonix and Gibraltar are hypervisor-based tools, and we wanted to
+determine the energy overhead caused by executing a hypervisor on the Viliv.
+We conducted two experiments for each workload, one by executing the workload
+on a kernel executing directly on the Viliv (the \textit{native} setup)) and
+the second by executing the workload within a guest domain executing the same
+kernel in a paravirtualized environment. The hypervisor and the trusted domain
+used for this experiment were unmodified, and did not contain the mechanisms
+needed to implement Patagonix or Gibraltar. We then compared the energy
+dissipated in each case to measure the energy overhead of virtualization.
+
+Our experiments showed that for both the 3G and WiFi workloads, the energy
+dissipated throughout the workload was the same both in the native and
+paravirtualized setups.  For the lmbench workload, we found that executing the
+workload in a paravirtualized setup dissipated 10\% \textit{less} energy than
+in the native setup.
+% TODO: Can we explain WHY this is the case in a sentence or two?
+
+
+% TODO: (1)~Refer back to this figure repeatedly in this section, putting the
+% energy numbers in context. (2)~fill numbers for netperf, or modify the text
+% and the caption suitably. (3)~CHECKME: duration of the phone call, size of
+% SMS message?
+%
+\subsubsection{Energy dissipated by common operations.}
+%
+\figref{fig:phonetests} presents the energy dissipated by operations that are
+common to mobile phones. These include operations such as sending/receiving a
+60-second phone call, sending a \todo{} character SMS message. For
+completeness, we also included a benchmark that transferred messages of various
+sizes using the netperf benchmark~\cite{}. In the rest of this section, we will
+refer back to \figref{fig:phonetests} to place the energy overheads in context
+by comparing them to the cost of common mobile phone operations.
+%
+\begin{figure}[h!]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Operation} & \textbf{Energy}\\
+\hline
+\hline
+Send/Recieve Phone Call   &     1.1 mWh/s\\
+Send/Recieve SMS          &     6.2 $\pm$ 1 mWh per SMS\\
+\hline
+\end{tabular}
+\end{center}
+\mycaption{Energy measurements for common mobile phone operations.}{}
+\label{fig:phonetests}
+\end{figure}
+
+% \subsection{Original Detection Algorithms}
+% 
+% Security mechanisms commonly developed for server-class and desktop machines
+% tend to check everything possible at a continuous rate. The kernel data 
+% integrity monitor we have studied, Gibraltar, was specifically designed to
+% continuously monitor all kernel data structures. In our first set of 
+% experiments, we studied our two security tools in their original form in 
+% order to measure the energy overhead on a resource constrained device.
+% 
+% 
+% \begin{figure}[t!]
+% \centering
+% \includegraphics[keepaspectratio=true,width=\linewidth]{figures/original.pdf}
+% \caption{
+% Energy dissipated using orignal security algorithms.
+% }
+% \label{figure:original}
+% \end{figure}
+
+% \figref{figure:original} presents the total energy dissipated while executing
+% three workloads in three different environments: no security executing in
+% dom0, Patagonix executing in dom0, and Gibraltar executing in dom0. In its
+% original form, every time a page of code executes, Patagonix pauses the guest
+% domain and verifies the integrity of that page before allowing the guest
+% domain to continue execution. Gibraltar continuously verifies all instances
+% of 3,442 kernel data structure types against 131,201 data structure
+% invariants.  Gibraltar essentially requires 100\% CPU utilization at all
+% times.
+
+% A continuously executing security mechanism like Gibraltar is not acceptable
+% for energy constrained devices. The battery on the Viliv device is rated at
+% 24,000 mWh. While Linux is idle, the device consumes .7 mWh/s on average.
+% Executing Gibraltar on an idle system would results in an increase to 1.1
+% mWh/s. This results in a 37\% decrease in battery life without the user even
+% running any applications. 
+
+% Because of the high energy overhead required for security mechanisms,
+% especially ones that execute continuously, modifications are required to
+% reduce energy overhead. Section 3 proposed two techniques to reduce the
+% energy overhead of our security tools. The subsequent sections present
+% results in an effort to reduce the energy overhead required.
+
+% TODO in this section:
+% 1. Relate overheads back to common operations.
+% 2. Not clear about the "after initial checks" bar. Clarify the text.
+% 3. Other points, inline.
+%
+\subsection{Modifying the Attack Surface}
+%
+The energy dissipated by a security tool can be reduced by decreasing the
+fraction of the attack surface monitored by the tool. We quantify this
+observation considering the attack surface of both code and data.
+
+\noindent\textbf{Impact on code-integrity.} We configured Patagonix to monitor
+three subsets of the attack surface: (a)~kernel code only; (b)~kernel code and
+root processes; and (c)~all code on the system, including kernel code, root and
+non-root processes. We set up Patagonix to check each code page as soon as it
+was scheduled for execution.  The Patagonix daemon verified 309 pages of kernel
+code as it executed the Wifi and 3G workloads; this number rose to 749 code
+pages on average, when we included user-space code as well, 90 pages of which
+corresponded to root processes. During the execution of the lmbench workload,
+Patagonix verified 301 kernel code pages and 1602 user-space code pages, 11 of
+which were those belonging to root processes.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[keepaspectratio=true,width=\linewidth]{figures/patarangeevery.pdf}
+\mycaption{
+%Checking code integrity for various attack surfaces
+%each time a page of code executes.
+Total energy dissipated while executing code integrity checks.}{
+Each time a page of code is executed, dom0 initiates an integrity
+check. Percentages indicate the energy overhead with respect to the
+case with no security. Experiments across different attack spaces
+produce similar energy overheads.
+}
+\label{figure:patarangeevery}
+\end{figure}
+
+\figref{figure:patarangeevery} illustrates the energy dissipated by each of the
+three workloads. We present results for each subset of the attack surface
+considered. For each workload, the leftmost column is the baseline, which shows
+the energy dissipated by the workload executing in an environment with no
+security checks enabled (\ie~in a hypervisor without Patagonix). Percentages
+reported above columns represent the extra energy dissipated (over the baseline
+value) when monitoring the corresponding subset of the attack surface.
+
+% TODO: 1. Why are we reporting average number of verifications across all
+% three workloads? Why not for individual workloads?  2. What do you mean when
+% yuo say tha most pages do not end up corresponding to a verifiable code page?
+%
+% I did not modify the following paragraph since it did not make sense to me.
+The increase in energy dissipated depends on both the the number of times a
+code verification is initiated. Across the three workloads, the trusted domain
+was notified.  During the workloads, trusted domain was notified 14,900 times
+on average to verify a page a code.  Since most of these pages do not end up
+corresponding to a verifiable code page (data pages or ???), they are not
+hashed or checked against the database.  For wifi and 3g workloads, the total
+time spent in the Patagonix deamon was between 3s (kernel) to 5s (all code).
+Lmbench produced a range of 1s to 11s. This is, at maximum, a 5\% increase in
+the overall workload time. This is not enough to produce the overheads observed
+by Patagonix.
+
+% TODO: Did not edit, since this paragraph seems to be incomplete.
+To observe the energy overhead caused by the Patagonix hypervisor modifications
+we performed experiments without any user space daemon running (add column
+tonight).  This represents the energy increase caused by the hypervisor
+modifications alone.  This also corresponds to the case where an application is
+executed multiple times after its code was previously verified. Once an
+application has been verified, there is no longer a need to verify it again as
+long as the appliation  still resides in memory.  (verifying my experiments for
+this part to add a conclustion).
+
+\noindent\textbf{Impact on data-integrity.} We configured Gibraltar to monitor
+five classes of kernel data, containing: (a)~static kernel data, \ie~data that
+is initialized during kernel boot-up and is never freed during the execution of
+the kernel; (b)~data structures representing the process list; (c)~all linked
+lists; (d)~all kernel data structures that store function pointers; and (e)~all
+data structures. Each class is inclusive, \ie~data structures verified in each
+class also include the previous class as a subset. We set up Gibraltar to
+continuously monitor data integrity, \ie~it continuously traverses the kernel's
+heap, reconstructing data structures and verifying the integrity. We refer to
+one complete traversal of the kernel's heap as a \textit{detection round}
+(so the window
+of vulnerability is simply the time between detection rounds).
+
+% TODO: complete TODO below.
+\figref{figure:energyperround} presents the amount of energy disspated per
+detection round when Gibraltar monitors the execution of each of our three
+workloads.  This figure shows that limiting the attack surface decreases the
+overall energy overhead per detection round. As data classes are added to
+Gibraltar's detection range, each round requires more data structure
+verifications (TODO modify figure). This causes an increase in detection round
+time and results in an increase in energy overhead per round.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[keepaspectratio=true,width=\linewidth]{figures/energyperround.pdf}
+\mycaption{
+Tradeoff between kernel data attack surface and energy
+dissipated per round.}{Each data class includes the pervious class
+on the x-axis. This figure concludes that verifying the 
+integrity of all kernel data is expensive, but restricting the
+amount of data structures verified can decrease the energy
+dissipated per round up to 95\% (3g case).
+}
+\label{figure:energyperround}
+\end{figure}
+
+% TODO: Jeff, how did you get the numbers that you reported below: 21%, 68% and
+% 82%. I commented them out since they did not make sense.
+%
+The key point to note from \figref{figure:energyperround} is that the energy
+required to verify the integrity of kernel static data, linked lists and
+function pointers is significantly less than checking all data.  This is fact
+is especially evident for the 3G and WiFi workloads, which dissipate
+approximately 3$\times$-5$\times$ more energy when Gibraltar monitors all data
+structures. This result is significant because in a recent study of 25
+rootkits~\cite{}, Petroni \etal\ observed that 24 operate by violating the
+integrity of static data, linked lists or function pointers. As a consequence,
+Gibraltar can protect against most known attacks with modest energy dissipation
+if configured to simply monitor simply these data structures.
+%
+% These rootkits maliciously modify data within the three data classes: static
+% data, all lists, and function pointers. Our results show that we can protect
+% 96\% of data attacks with a 21\% decrease in energy per round while executing
+% lmbench, 82\% decrease while executing the 3g workload, and 68\% decrease
+% while executing the wifi workload. Because we can detect 96\% of all attacks,
+% we do not sacrifice security for the significant energy savings.
+
+Recall that Gibraltar uses a database of automatically-inferred invariants to
+check kernel data structure integrity. The size of this database determines the
+number of CPU cycles that the Gibraltar daemon must expend to verify the
+integrity of the guest, and can potentially affect energy dissipation. To study
+the effect of varying the size of this database, we configured Gibraltar in two
+modes as it checked all kernel data: in the first mode, it executed with an
+empty database (\ie~no invariants), while in the second mode, it checked kernel
+data structures against a database of 131,201 automatically-inferred
+invariants. We observed that the energy disspation in both cases was the same.
+This is because the number of CPU cyles needed to algorithms that Gibraltar
+uses to traverse data structures dominates the CPU cycles needed to check
+invariants. Since the traversal algorithm is the same, irrespective of the
+contents of the invariant database, the energy disspated does not change with
+the size of the invariant databse.
+
+Note that \figref{figure:energyperround} only shows a decrease in the energy
+consumed \textit{per detection round} as the fraction of the attack surface
+monitored is reduced. For this experiment, Gibraltar was configured to start a
+second detection round as soon as one detection round was complete. The
+following section reconfigures this aspect of Gibraltar, and varies the
+interval between detection rounds (with a corresponding increase in the window
+of vulnerability).
+
+% TODO: VG -- I have to modify from here on...
+%
+\subsection{Modifying Check Frequency}
+
+In previous experiments, we observed that Patagonix requires 14,900 notifications to the
+daemon executing in dom0. This means on average there are 14,900 context switches
+caused by Patagonix in order to verify code pages. To decrease the amount of 
+context switches to dom0, instead of instantly performing a verification, the hypervisor can
+add pages to a queue before notifying dom0. Once this queue is full, the hypervisor 
+notifies the daemon running in dom0 to verify all pages in the queue.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[keepaspectratio=true,width=\linewidth]{figures/patawhentocheck.pdf}
+\mycaption{
+Impact of varying the frequency of code integrity checks.}{This figure shows
+batching integrity checks together reduces the energy overhead caused by Patagonix.
+}
+\label{figure:patawhentocheck}
+\end{figure}
+
+\figref{figure:patawhentocheck} displays the energy required for this Patagonix
+optimization. Due to our implementation, the queue size is limited to 341 pages. 
+In relation to the original Patagonix implementation, batching code integrity
+checks together results in a decrease in energy overhead. In these cases, 
+Patagonix causes 72 context switches on average in order to verify code. This 99\%
+decrease in context switches results in a slight decrease in energy overhead.
+The bulk of the energy required by Patagonix is still due to the Patagonix
+code in the hypervisor.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[keepaspectratio=true,width=\linewidth]{figures/patarangewait.pdf}
+\mycaption{
+Impact of batching code integrity checks for various attack surfaces.}{
+Similar to the original case, energy overhead over all attack surfaces 
+is the same, though the overall energy overhead is smaller when comparing
+against the original version of Patagonix.
+}
+\label{figure:patarangewait}
+\end{figure}
+
+In order to observe the effect of batching integrity checks over various attack surfaces,
+\figref{figure:patarangewait} combines both concepts together. Again across all three
+different attack surfaces, the energy overhead is relatively the same, though the
+overhead has decreased from \figref{figure:patarangeevery}. The results conclude that batching
+code integrity checks reduces energy overhead within an acceptable range
+for energy constrained devices. 
+
+Following along the lines of this same approach, we modified Gibraltar
+to trigger data verifications after $N$ pages have been modified. Previously
+defined in section 2, the shadow page table optimization added to
+Gibraltar reduces the number of data structures Gibraltar must
+verify (only structures that reside on modified pages). This optimization
+also introduces a period between rounds where Gibraltar is waiting for
+a notification from the hypervisor and not using any energy.   
+
+\begin{figure*}[t]
+\begin{center}
+\subfigure[Lmbench]{
+\includegraphics[scale=0.2]{figures/lmnotify.pdf}
+\label{fig:lmnotify}
+}
+\subfigure[3G]{
+\includegraphics[scale=0.2]{figures/notify3g.pdf}
+\label{figure:3gnotify}
+}
+\subfigure[WiFi]{
+\includegraphics[scale=0.2]{figures/wifinotify.pdf}
+\label{figure:wifinotify}
+}
+\mycaption{
+Tradeoff between energy and security for event-based data integrity checks
+for each workload.}{Gibraltar is triggered every time $N$ pages change, where
+$N$ is represented on the x-axis. Horizontal lines indicate the worst case
+energy usage when Gibraltar runs continuously and the best case energy usage 
+when no security tool runs. The figures show as the total energy dissipated
+decreases the window of vulnerability increases.
+}
+\label{fig:notify}
+\end{center}
+\end{figure*}
+
+We present results for each workload executing Gibraltar with various $N$ values.
+in \figref{figure:notify}. In the experiments we use $N$ values of 10, 50, 75, 100,
+and 120. The horizontal dotted lines represent the worst case energy dissipated
+when Gibraltar is executing continuously and the best case energy dissipated when
+there is no security executing. Both lmbench and 3g workloads do not trigger a
+detection round for 100 and 120 pages. This is due to the fact that these workloads
+only modify between 75 to 99 pages.
+
+The solid curve represents the total energy dissipated throughout the workload. As
+$N$ increases, the amount of time between detection rounds decreases. Since 
+Gibraltar is using less CPU cycles, the energy dissipated is directly reduced.
+Because there is now a period of time that Gibraltar is not monitoring kernel data,
+there is a period of time where an attacker can remain undetected. The dotted line
+corresponds to this period of time, defined as the window of vulnerability.
+For Gibraltar, the window of vulnerability is defined as the average time
+between subsequent checks of a single data structure, over all data structures
+checked by the system. We observe that as the energy dissipated decreases,
+the window of vulnerability increases due to more time between data verifications.
+
+\begin{figure*}[t]
+\begin{center}
+\subfigure[Lmbench]{
+\includegraphics[scale=0.2]{figures/lmshadow.pdf}
+\label{fig:lmshadow}
+}
+\subfigure[3G]{
+\includegraphics[scale=0.2]{figures/shadow3g.pdf}
+\label{figure:3gshadow}
+}
+\subfigure[WiFi]{
+\includegraphics[scale=0.2]{figures/wifishadow.pdf}
+\label{figure:wifishadow}
+}
+\mycaption{
+Tradeoff between energy and security for periodic data integrity checks
+for each workload.}{Gibraltar is triggered every time $T$ seconds elapse
+between detection rounds, where $T$ is represented on the x-axis.
+Horizontal lines indicate the worst case energy usage when Gibraltar runs 
+continuously and the best case energy usage when no security tool runs.
+The figures show as the total energy dissipated decreases the window of 
+vulnerability increases. Window of vulnerability increases at a linear
+rate dependent on the time between detection rounds.
+}
+\label{fig:timebetween}
+\end{center}
+\end{figure*}
+
+Instead of triggering Gibraltar when $N$ pages change, we can use
+an intuitive approach which triggers Gibraltar after $T$ seconds. 
+We present results executing Gibraltar with $T$ values of 5, 15,
+30, 45, 60, and 120 seconds. \figref{figure:timebetween} displays
+the tradeoff between energy and security for data integrity checks with
+a specific $T$ between detection rounds. Similar to the previous set 
+of graphs, total energy dissipated decreases as the time between 
+checks increases. The window of vulnerability is directly influenced
+by the time between checks. Due to the shadow page table optimization,
+the amount of time required to perform a detection round is small, but
+not exactly 0. Since the time required to perform a detection round also
+influences the time between subsequent checks of a data structure, the window 
+of vulnerability curve is not a perfect one-to-one line.
+
+Both code and data integrity monitors can be optimized by varying
+the time between verifications. This introduces a period of time where
+the security tool is idle, thus supplying a vulnerability window where
+an attack could occur. The result is a tradeoff between energy and security.
+If a user requires full security, they must be willing to use a 
+significant amount of battery life.
+

@@ -1,0 +1,33 @@
+Mem  SD (09/16/11)
+
+Configurations:
+---------------
+
+Dom0 and MemSD: 2GB, 2vcpus
+
+
+
+params: 
+1. memory size (512MB, 1GB, 2GB)
+
+Note:
+I am running dirty workload by which I mean to read a large file (containing random data) to make VM memory pages to have different hash values and don't cause our hash table in daemon to be in worst case scenario.
+
+The two DomUs, of which we are calculating hashes, will have same configuration.
+
+
+Dom0:
+-----
+
+512 :  6.9482 sec, 0.18703 SD
+1GB : 15.6066 sec, 0.84119 SD
+2GB : 36.6476 sec, 0.03986 SD
+
+MemSD:
+-----
+
+512 :  6.9412 sec, 0.04536 SD
+1GB : 15.7882 sec, 0.65943 SD
+2GB : 36.8556 sec, 0.56874 SD
+
+

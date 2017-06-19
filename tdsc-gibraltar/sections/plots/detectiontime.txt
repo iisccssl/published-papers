@@ -1,0 +1,6 @@
+Plot (sort in ascending order)
+Detection time v/s # of objects
+
+Stacked bars
+One series - Total # of objects and # of objets containing function pointers
+Another series - Total # of symbols and Total # of function pointers

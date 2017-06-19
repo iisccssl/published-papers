@@ -1,0 +1,2 @@
+5. Change arguments about memory consumption.
+7. Cite more Becchi-Crowley papers.

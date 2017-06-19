@@ -1,0 +1,146 @@
+* One main concern with this paper is the technical contribution
+  from the proposed approach. In particular, the information flow propagation
+  implemented at the javascript engine is almost identical with the one
+  proposed in Vogt et al. [40]. Note that in addition to dynamic tainting
+  propagation, [40] also has a complementary static analysis to handle
+  implicit information flow while static analysis is simply missing in Sabre.
+  In this regard, it is felt that the authors need to clarify the contribution
+  when compared with these prior work.
+
+Status: 
+1. Modified the Introduction to more directly address comparisons with
+   prior work.
+2. Modified related work also to do the same.
+3. Also clarified differences in implementation section.
+
+* In the meantime, it is widely known that dynamic taint propagation
+  and analysis has a number of limitations (see one reference below).
+  The paper can be enhanced with a thorough discussion on possible limitations
+  and the implications on the proposed scheme. A dedicated discussion
+  section will help.
+
+[1] Lorenzo Cavallaro, Prateek Saxena, and R. Sekar, "On the Limits
+    of Information Flow Techniques for Malware Analysis and Containment",
+    Detection of Intrusions, Malware and Vulnerability Analysis (DIMVA)
+    July, 2008.
+
+Status: I looked over this paper and the attacks described in this paper are
+   mainly applicable to shared memory extensions in which the extension can
+   modify pointers in the browser. This is not possible in JSEs, at least it
+   is not within our threat model.  
+TODO!!! Need to address in related work.
+
+* As a practical system, Sabre is useful in identifying potential information
+  flow violations at the javascript level. However, the paper contains
+  little or even no specific/concrete details on how it is being implemented
+  in Firefox. It is believed the efforts involved in building a system like
+  Sabre is non-trivial. However, it is better to be conveyed in the paper.
+
+Status: I am not sure how to convey this better. We have provided examples
+  of the key complications to be addressed at several locations in the paper.
+  This probably should be organized differently with a more top-level view of
+  the main changes needed followed by a lower-level description, but I don't
+  feel confident making these changes myself.
+
+* Also, the evaluation results indicate that the proposed information flow
+  has quite high false positives that demand manual declassification. It is
+  unclear whether it will be problematic or not.
+
+Status: I am slightly concerned about this comment. The definition of false
+  positives that we used is controversial. The third reviewer did not like
+  our definition and the first reviewer also calls these high false positives.
+  To address the "problematic" part, I mentioned that declassification policies
+  took on the order of a few minutes to create.
+
+* (1) pp. 4, the sentence "...Greasemonkey would then inject and execute
+  user-defined scripts on the web page, which could avail of GM API functions..."
+  is hard to understand.
+
+Status: Clarified this better.
+
+* (2) As reported in the evaluation, Sabre incurs high runtime overhead.
+  It is not convincing to claim that "Sabre can be an "always-on" tool to detect
+  information flow violations." 
+
+Status: Removed claims about "always-on".
+
+* 1) Sabre does not track implicit information flows.  A malicious
+  extension can circumvent Sabre checks using simple control
+  dependencies.
+
+Status: The above comment is wrong. Nevertheless, I fixed it by explicitly
+calling out with a paragraph where we address implicit flows. Also, note
+that the definition of implicit information flows in the Cavallaro paper
+excludes control dependencies. Even then the comment by the above reviewer 
+is wrong.
+
+* 2) Sabre does not prevent a malicious extension from simply writing an
+  EXE to the user's file system and executing it with the user's
+  privileges.  Sabre does block this if the bytes of the EXE come from
+  the network, but a malicious extension can simply store the malicious
+  EXE statically in the extension.
+
+Status: We can't defend against these, but this is not in our threat model.
+  Such an extension can easily be detected using a traditional virus scanner.
+  Nevertheless, this is a valid point, since it shows that we should not trust
+  bytes that come from untrusted extensions.
+
+* Worse, the suggested scheme had a 100% false positive rate on the 20
+  benign extensions the authors tested.  The authors suggest dealing with
+  this fatal flaw by white listing, but extensions are already white
+  listed before they appear on addons.mozilla.org.
+
+Status: Again, this reviewer is misled about the definition of false 
+  positives. Also, whitelisting on addons.mozilla.org does not prevent
+  vulnerabilities in extensions from being exploited.
+
+* The scheme is also unworkably slow, incurring 236% overhead on the V8
+  benchmark and 610% overhead on the SunSpider benchmark.  The authors
+  claim that despite these results "Sabre can be an 'always-on' tool to
+  detect information flow violations."  This is patently ridiculous
+  given the extensive engineering effort browser vendors invest in
+  optimizing the performance of these benchmarks.
+
+Status: Removed claims about "always-on". 
+
+* There aren't really JSEs for Internet Explorer.  This claim is a bit
+  disingenuous.
+
+Status: Addressed.
+
+* XmlHttpRequest is spelled XMLHttpRequest 
+
+Status: Addressed.
+
+* The authors have not really convinced me of the overall novelty of the
+  research project.  The description seems to be a straight-forward
+  application of information flow. This does not mean that the work may
+  not be of value, e.g., to security companies trying to find
+  vulnerabilities.  
+
+Status: I hope that the concerns of novelty are now addressed, given that 
+  we're stressing on cross-domain information flow.
+
+* The performance was not unexpected given previous work.  The
+  qualitative judgement that it 'feels ok' isn't well enough
+  supported. As I understand it, there is a race between Mozilla,
+  Chrome, etc. to have the fastest javascript performance.  I would
+  expect this to mean that such high overhead would be a serious issue
+  in normal operation.
+
+Status: We can't do much about this. I have removed the claims about 
+  "always-on".
+
+* The false positive rate is stated in a self-serving manner. The
+  authors define 'non-whitelisted suspicious flows' as false
+  positives. This is silly; of course you can white-list away false
+  positives.  The authors should remove this paragraph.
+
+Status: I removed the term "false positives" and instead reported these 
+  results differently.
+
+* This paper is well written. I only found one type-o: the word 'is' is
+  missing on page 11 (because init [is] not...), and that they need to
+  underline the 'r' in explanation of the acronym. 
+
+Status: Fixed. 

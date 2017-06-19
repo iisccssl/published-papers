@@ -1,0 +1,218 @@
+\mysection{Related Work}
+\label{section:relatedwork}
+
+This paper builds upon the idea of extending \js\ with transactions, which was
+proposed in a recent position paper~\cite{plas10}.  While that paper focused on
+the semantics of the extended language, this paper is the first to report the
+design and implementation of a complete speculative execution system for \js.
+
+There is much prior work in the broad area of isolating untrusted guests.
+\txjs\ is unique because it allows hosts to recover cleanly and easily from the
+effects of malicious or buggy guests (\figref{figure:relatedwork}). In exchange
+for requiring no modification to the guest, \txjs\ requires modifications both
+to the host (\ie~the server side) and to the browser (\ie~the client side) to
+enhance the \js\ language.
+
+\myparagraph{Static analysis}
+%
+Despite the dynamic nature of \js, there have been a few efforts at statically
+analyzing \js\ code. Gatekeeper~\cite{gatekeeper:sec09} presents a static
+analysis to validate widgets written in a subset of \js. It does so by matching
+widget source code against a database of patterns denoting unsafe programming
+practices.
+  Guha \etal~\cite{guha} developed static techniques to improve AJAX
+security. Their work uses static analysis to enhance a server-side proxy with
+models of AJAX computation on the client. The proxy then ensures that AJAX
+requests from the client conform to these models. 
+
+Chugh \etal~\cite{stagedif:pldi09} developed a staged information-flow tracking
+framework for \js\ to protect hosts from untrusted guests. Its static analysis
+identifies constraints on host variables that can be read or written by guests.
+It validates these constraints on code loaded at runtime via \code{eval} or
+\html{script} tags, and rejects such code if it violates these constraints. 
+Unlike \txjs, which tracks changes to both the heap and DOM, Chugh \etal's work
+only tracks changes to the heap.
+
+%\begin{wrapfigure}{rh}{0.6\textwidth}
+\begin{figure*}[t]
+%\vspace*{-3.5ex}
+\setlength{\tabcolsep}{1pt}
+\centering
+\fontsize{6.5}{6.5} \selectfont %\addtolength{\tabcolsep}{-2pt}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{System} & 
+  \textbf{Recovery} & 
+  \shortstack{\textbf{Unrestricted}\\\textbf{guest}} & 
+  \shortstack{\textbf{Unmodified}\\\textbf{browser}} & 
+  \shortstack{\textbf{Policy}\\\textbf{coverage}}\\
+\hline
+%
+Transcript         
+                   & \yes     & \yes      & \no      & Heap + DOM\\
+%
+Conscript \cite{conscript:oak10}   
+                   & \no      & \yes      & \no      & Heap + DOM\\
+%
+AdJail \cite{adsandbox}      
+                   & \no      & \yes      & \yes     & DOM$^{(1)}$\\
+%
+Caja \cite{caja}
+                   & \no      & \no       & \yes     & Heap + DOM\\
+%
+Wrappers \cite{wrappers:esorics09,mmt10,views:www10}
+                   & \no      & \yes$^{(2)}$ & \yes  & Heap + DOM\\
+%
+Info. flow \cite{stagedif:pldi09}
+                   & \no      & \yes      & \yes     & Heap\\
+%
+IRMs \cite{phung:asiaccs09,corescript:popl07,browsershield}
+                   & \no      & \yes      & \yes     & Heap + DOM\\
+%
+Subsetting \cite{mmt10,adsafe,fbjs} 
+                   & \no      & \no       & \yes     & Static policies$^{(3)}$\\
+%
+\hline
+\end{tabular}
+\remove{
+\mycaptionsquish{Techniques to confine untrusted guests.
+\describecaption{(1)~Adjail executes guests in a separate \html{iframe}
+from the host and disallows guests from executing in the host's context.
+%
+(2)~Some wrapper-based solutions~\cite{wrappers:esorics09} restrict \js\
+constructs allowed in guests.
+%
+(3)~Subsetting is a static technique and its policies are not enforced at
+runtime.}}{\label{figure:relatedwork}}
+}
+\add{
+\mycaptionsquish{Techniques to confine untrusted guests.
+\describecaption{(1)~Adjail uses a separate \html{iframe} to disallows guests
+from executing in the host's context.
+%
+(2)~Some wrapper-based solutions~\cite{wrappers:esorics09} restrict \js\
+constructs allowed in guests.
+%
+(3)~Subsetting is a static technique and its policies are not enforced at
+runtime.}}{\label{figure:relatedwork}}
+}
+%\vspace*{-3.5ex}
+%\end{wrapfigure}
+\end{figure*}
+
+\myparagraph{Language restriction} 
+%
+Several projects have defined subsets of \js\ that omit dynamic constructs, such
+as \code{eval}, \code{with} and \code{this}, to make it amenable to static
+analysis \cite{adsafe,fbjs,caja,gatekeeper:sec09}. However, designing
+safe subsets of \js\ is non-trivial
+\cite{language:csf09,semantics:aplas08,mmt10,leaks:ndss10}, and also prevents
+code developers from using arbitrary constructs of the language in their
+applications. \txjs\ places no such restrictions on guest code.
+
+\myparagraph{Object capabilities, wrappers, and code rewriting} 
+%
+Object capability and wrapper-based solutions
+(\eg~\cite{views:www10,mmt10,wrappers:esorics09}) create wrapped versions of
+\js\ objects to be protected, and ensure that such objects can only be accessed
+by code that has the capability to do so. In contrast to these techniques,
+which provide isolation by wrapping the host's objects, \txjs\ wraps guest code
+using  transactions, and mediates its actions with the host via
+iblocks.  Prior research has also developed solutions to inline
+runtime checks into untrusted guests. These include
+BrowserShield~\cite{browsershield}, CoreScript~\cite{corescript:popl07}, and
+the work of Phung \etal~\cite{phung:asiaccs09}. Unlike these works, \txjs\
+simply wraps untrusted code in a transaction, and does not modify it. These
+works also do not explicitly address recovery.
+
+
+\myparagraph{Aspect-oriented policy enforcement}
+%
+Aspect-oriented programming (AOP) techniques have previously been used to
+enforce cross-cutting security
+policies~\cite{evans:oak99,polymer:pldi05,ulfarthesis}. Among the AOP-based
+frameworks for \js~\cite{conscript:oak10,washizaki}, our work is most closely
+related to Conscript~\cite{conscript:oak10}, which uses runtime aspect-weaving
+to enforce policies on untrusted guests.  Both Conscript and \txjs\ require
+changes to the browser to support their policy enforcement mechanisms. However,
+unlike \txjs, Conscript does not address recovery from malicious guests, and
+also requires guests to be written in a subset of \js.  While recovery may also
+be possible in hosts that use Conscript, the hosts would have to encode these
+recovery policies explicitly.  In contrast, hosts that use \txjs\ can simply
+discard the speculative changes made by a policy-violating guest.
+
+\myparagraph{Browser-based sandboxing}
+%
+Both BEEP~\cite{beep} and Mashup\-OS~\cite{mashupos} enhance the browser with
+new HTML constructs. BEEP's constructs allow the browser to detect
+script-injection attacks, while MashupOS provides sandboxing constructs to
+improve the security of client-side mashups. While \txjs\ requires modified
+\html{script} tags as well, it provides the ability to speculatively execute
+and observe the actions of untrusted code, which neither BEEP nor MashupOS
+provide. 
+
+AdJail aims to protect hosts from malicious advertisements~\cite{adsandbox}. It
+confines advertisements by executing them in a separate \html{iframe}, and uses
+\code{postMessage} to allow the \html{iframe} to communicate with the host.
+Hosts use access control policies to determine the set of DOM modifications
+allowed by an advertisement. AdJail is effective at confining advertisements,
+which cannot affect the host's heap.  However, it is unclear whether this
+approach will work in scenarios where hosts and guests need to interact
+extensively, \eg~in the case where the guest is a library that the host wishes
+to use. \newadd{The forthcoming EcmaScript 6 / Harmony modules
+\cite{harmony_modules} and HTML5 \html{iframe sandbox} attribute
+\cite{html5_sandbox} also enable new isolation mechanisms by constraining the
+way guest code interacts with the host, but unlike \txjs\ they do not address
+recovery.}
+
+\myparagraph{Sandboxing through speculation}
+\newadd{
+Blueprint~\cite{blueprint:oak09} and Virtual Browser~\cite{virtualbrowser:ccs10}
+confine guests by setting up a virtual environment for their execution. This
+environment is itself written in \js\ and parses HTML and script content,
+thereby mediating the execution of guests on unmodified browsers. However,
+unlike \txjs, they do not address recovery. \txjs\ is most closely related
+to Worlds \cite{warth:ecoop11} in its motivation to provide first-class
+primitives that enable programmers to contain side-effects. However, there are
+major design and implementation differences including \txjs's ability to enforce
+fine-grained security policies and its implementation in SpiderMonkey.}
+
+\myparagraph{Using transactions for performance}
+\newadd{
+Crom \cite{crom:nsdi10} applies speculation to event handlers and takes
+non-speculative event handlers to create speculative versions, running them in a
+cloned browser context. ParaScript \cite{parascript:hpca11} implements a
+selective checkpointing scheme which avoids JavaScript constructs that allow
+code injection like document.write, innerHTML, etc., and stops speculation if
+checkpointing becomes expensive. Both, Crom and ParaScript use speculation to
+improve performance. In contrast, \txjs\ addresses all scenarios in the design
+and implementation of a fully speculative JavaScript engine and required several
+new contributions, such as the ability to suspend/resume transactions and wrap
+event handlers.
+}
+
+%\myparagraph{Using transactions for security}
+%
+%Transactions and speculative execution mechanisms have previously been used to
+%improve software security and reliability
+%(\eg~\cite{Seltzer:osdi96,porter:operating:sosp:2009,tmi-ccs08,txbox}) and Web
+%browser performance~\cite{crom:nsdi10}. The work most closely related to \txjs\
+%is the one by Sun \etal~\cite{see:ndss05} on one-way isolation. This work
+%describes a sandboxing mechanism that allows isolated execution of untrusted
+%code. As in \txjs, code within the sandbox cannot modify the state of code
+%outside, but the reverse is possible. However, their work focused on
+%implementing such a sandbox at the granularity of OS-level artifacts, such as
+%processes and files. In contrast, \txjs\ applies a similar approach to the
+%problem of isolating \js\ code. Our work therefore required several new
+%contributions, such as the ability to suspend/resume transactions and wrap
+%event handlers.
+
+
+% Erlingsson \cite{end-to-endweb} et al proposed inlined reference monitors in
+% the browser for monitoring security sensitive events. Their solution also
+% required the web application to first declare its policies before the rest of
+% the web application code executes. Though \txjs also needs to modify the web
+% browser to support transactions, the web application developer is free to
+% specify the policies at any point following the transaction construct.
+% Further, \txjs\ is flexible enough to enforce different security policies for
+% different transactions within the same web application.

@@ -1,0 +1,185 @@
+\mycomment{
+
+
+
+In this section, we present the evaluation results of our prototype \txint\
+against two real-world benchmarks written in the C programming language - (a)
+The virus scanner, ClamAV and (b) A distributed memory object caching system,
+Memcached. We also evaluate the performance of our system with a linked list
+micro benchmark and benchmarks from the Splash suite ~\cite{splashv2}. Overall,
+our evaluation goals can be stated as follows:
+
+\begin{enumerate}
+
+\item\textbf{Effectiveness of invariant specification and enforcement.} We
+demonstrate the power of this technique in two primary areas. First, the
+technique can be used to specify different classes of data structure
+properties. Second, it can be used to specify and enforce different types of
+programmer defined checks. We evaluate the strength of \txint\ in  both these
+areas by manually identifying program properties and annotating the benchmark
+code to enforce these properties. We demonstrate the effectiveness of
+enforcement by synthetically introducing faults in the heap data of the two
+benchmarks.
+
+\item \textbf{Performance.} We evaluate the performance overhead of \txint\ on
+the two macrobenchmarks, ClamAV and Memcached. We also analyze the overheads of
+enforcing data structure property checks using a linked list micro benchmark
+and a subset of benchmarks from the LogTM Splash microbenchmark suite.
+
+\item \textbf{Ease of use.} The goal here is to evaluate the effort required on
+part of the developer to manually identify program properties and modify the
+source code to place transactions and data structure property checks.
+
+\end{enumerate}
+
+% Also, have to talk about
+% a) Long running transactions, nested transactions
+% b) Roll backs and side-effects
+% c)
+
+
+\subsection{Effectiveness of Invariant Specification and Enforcement} 
+
+We evaluate the expressiveness of invariant specification using two metrics.
+The first metric used is the ability of \txint\ to enforce different classes of
+program properties. The second metric is the flexibility of \txint\ API for
+specification of data structure properties ranging from fairly simple
+properties, such as equality, to fairly complex properties, such as verifying
+if one linked list is contained within another linked list, which require the
+traversal of data structures within the heap.
+
+For the first metric, we are interested in the following two classes of data
+structure properties.
+
+\begin{itemize}
+
+\item Global properties: are properties that can be specified on global data
+structures. They do not typically change during program execution. One such
+example that is used in our microbenchmarks is the immutability of the size
+fields within the heap meta data.
+
+\item Pre/post conditions: are properties on data structures that are true only
+at certain points in the program. 
+
+\end{itemize}
+
+Below, we describe the data structure properties that we identified in ClamAV
+and Memcached and our experience in specifying and enforcing these properties.
+
+\subsubsection{ClamAV Virus Scanner} 
+
+
+
+%\begin{figure}
+%\begin{center}
+%\begin{tabular}{|l|}
+%\hline
+% \texttt{engine->dboptions \& CL\_DB\_COMPILED == CL\_DB\_COMPILED}\\
+%\hline
+%\end{tabular}
+%\end{center}
+%\mycaption{The pre-condition ensures that the CL\_DB\_COMPILED bit, which indicates that the \texttt{engine} data structure is compiled is always set before the scanning functions are run.}{\label{enginecompile}}
+%\end{figure}
+%
+%\begin{figure}
+%\begin{center}
+%\begin{tabular}{|l|}
+%\hline
+% \texttt{engine->ignored == NULL}\\
+%\hline
+%\end{tabular}
+%\end{center}
+%\mycaption{The post-condition ensures that the head of the ignored list is set to NULL after a call to the function \texttt{cli\_freeign}.}{\label{freeignlist}}
+%\end{figure}
+
+
+
+\subsubsection{Memcached} 
+
+\subsubsection{Effectiveness against attacks} For all invariants that we
+described, we generated synthetic faults that corrupted the state of the heap
+data, violating the invariant. This was achieved by modification of the code to
+generate the fault. We noticed that in all our experiments, the invariant
+violation was correctly detected by \txint.
+
+\subsection{Performance Evaluation} We evaluate the overhead imposed by \txint\
+in checking invariants in applications. 
+
+\subsubsection{Microbenchmarks} We demonstrate the overhead with a custom
+designed linked list micro benchmark, and a subset of benchmarks from the
+Splash-v2 test suite ~\cite{splash}.
+
+%Function call cost = 615 ns
+%System call cost = ?
+%Get read-write set cost = 2851ns
+
+\paragraph{Linked list micro benchmark.} We designed the linked list micro
+benchmarks to measure (a) The cost associated with different kinds of
+programmer specified checks and (b) To evaluate scalability of the system when
+the number of data structures to be checked is increased . This benchmarks
+primarily creates linked lists based on an input parameter and performs
+different kinds of checks on either a single linked list or pairs of linked
+list (see Table ~\ref{costpercheck}). The experiment varies the number of
+linked lists that are created and monitored. This basically simulates
+increasing the number of data structures and the checks associated with them.
+
+\begin{table*}[!t]
+\input{sections/tables/costpercheck.tab}
+\end{table*}
+
+Table ~\ref{costpercheck} shows the cost per check associated with different
+types of checks. In each experiment, we vary the number of linked lists from 5
+up to 300, with a step size of 50. The cost associated with each check is
+averaged over all readings. Each node in the linked list consists of a simple
+integer value and a pointer to the next node. 
+
+\paragraph{Splash benchmarks.} This section evaluates \txint\ on a subset of
+the Splash-2 benchmarks. The benchmark performance is shown in Fig
+~\ref{splash}.  We compared the performance of the modified Splash benchmarks
+with the original version that uses locks. The modifications that we made were:
+
+\begin{itemize}
+
+\item Splash-2 with transactions: This version replaces locks with
+begin\_transaction and commit\_transaction calls. Other synchronization
+mechanisms are unchanged.
+
+\item Splash-2 with transactions and invariants: This version adds our data
+structure checks in addition to transactions. The checks that we added was heap
+meta data size checks for all objects that are created on the heap.
+
+\end{itemize}
+
+{\todo Explain results}
+
+\subsubsection{Macro benchmarks}
+
+Figure {\todo graph} shows the evaluation of the two benchmarks that we used,
+ClamAV and Memcached. We compare the base case of running each of the
+benchmarks without any transactions. We then show the overhead of running the
+benchmarks with transactions only and then measure the overhead of invariant
+enforcement. In ClamAV, we enforced a total of 23 invariants. We annotated a
+total of 23 functions within ClamAV to include the transaction primitives. 
+
+{\todo Need similar paragraph for memcached}
+
+\subsection{Ease of Use}
+
+\subsubsection{Specifying Program Properties}
+
+\subsubsection{Enforcing Properties with Transactions} Program invariants are
+enforced when a transaction is committed. On commit, the \txint\ invokes the
+Checker function and passes the read-write set of memory addresses accessed
+within the transaction. The checker function checks if any user-specified
+invariants exist for the accessed data structures and performs invariant
+checking.
+
+Placement of transactions within the application is therefore crucial because
+it dictates when the checks are invoked. With ClamAV and memcached, we placed
+transactions at function boundaries. For invariants that are specified on a
+given data structure, we placed transactions in all functions that read from or
+wrote to the data structure. We had 23 functions within ClamAV that we modified
+to include the BEGIN\_TRANSACTION and COMMIT\_TRANSACTION macros. All of them
+accessed the \texttt{engine} object on the heap. In \texttt{memcached}, we
+placed {\todo x} transactions.
+}

@@ -1,0 +1,191 @@
+\mysection{Implementation and Evaluation}
+\label{section:evaluation}
+
+We implemented our policy enforcement mechanism atop a Freescale i.MX53 Quick
+Start Board as our guest device. This TrustZone-enabled board has a 1GHz ARM
+Cortex A8 processor with 1GB DDR3 RAM. We chose this board as the guest device
+because it offers open, programmable access to the secure world. In contrast,
+the vendors of most commercially-available TrustZone-enabled devices today lock
+down the secure world and prevent any modifications to it. A small part of main
+memory is reserved for exclusive use by the secure world. On our i.MX53 board,
+we assigned the secure world 256MB of memory, although it may be possible to
+reduce this with future optimizations. The normal world runs Android 2.3.4 atop
+Linux kernel version 2.6.35.3.
+
+We built a bare-metal runtime environment for the secure world, just enough to
+support the components shown in \figref{figure:overall}. This environment has a
+memory manager, and a handler to parse and process commands received from the
+host via the normal world. To implement cryptographic operations, we used
+components from an off-the-shelf library called PolarSSL
+(v1.3.9)~\cite{polarssl}.  Excluding the cryptography library, our secure world
+consists of about 3,500 lines of C code, including about 250 lines of inline
+assembly.  
+%
+% \todo{Add if we don't implement \kdev\ encryption}{The only deviation in our
+% prototype is that our REM-suspend implementation does not store \ks\ on disk
+% encrypted under \kdev. This is because our experimental board is not
+% currently provisioned with \kdev.}
+%
+
+%\begin{wrapfigure}{lt}{1.5in}
+\begin{figure}[t!]
+\footnotesize
+\renewcommand{\arraystretch}{0.5}
+\centering
+%\indent\vspace{-0.5cm}
+\begin{tabular}{|l|r|}
+\hline
+\multicolumn{1}{|c|}{\bf Component Name} & \multicolumn{1}{|c|}{\bf LOC}\\
+\hline
+\hline
+\multicolumn{2}{|c|}{\bf Secure World (TCB)}\\
+\hline
+Memory manager                  & 1,381\\
+Authentication                  & 1,285\\
+Memory ops. \& verif. tokens    & 305\\
+REM-suspend                     & 609\\
+\hline
+SHA1+HMAC                       & 861\\
+X509                            & 877\\
+RSA                             & 2,307\\
+\hline
+\hline
+\multicolumn{2}{|c|}{\bf Normal World}\\
+\hline
+Kernel module                   & 93\\
+UI app                          & 72\\
+\hline
+\end{tabular}
+\indent\vspace{-0.1cm}
+\mycaption{Sizes of components executing on the guest.}
+{\label{table:loc}}
+\end{figure}
+%\end{wrapfigure}
+%
+
+\figref{table:loc} shows the sizes of various components.  We used PolarSSL's
+implementation of SHA1 and HMACs, RSA and X509 certificates.  As shown in
+\figref{table:loc}, the files implementing these components alone comprise only
+about 4,000 lines of code. In addition to these secure world components, we
+built the kernel module and the UI app (written as a native daemon) for the
+normal world, comprising 165 lines of code.  We implemented a host policy
+server that authenticates guest devices, and performs remote memory operations.
+We conducted experiments to showcase the utility of remote reads and writes to
+enforce the host's policies on the guest. The guest and the host communicate
+over WiFi.
+%
+% Host's policy server: 1756 (plus 48LOC of python for memory analysis). 
+
+\myparagraph{Guest Device Analysis}
+%
+To illustrate the power of remote memory read operations to perform device
+analysis, we wrote a simple rootkit that infects the guest's normal world
+kernel by hooking its system call table. In particular, it replaces the entry
+for the \textsf{close} system call to instead point to a malicious function
+injected into the kernel. The malicious functionality ensures that if the
+process invoking \textsf{close} calls it with a magic number, then the process
+is elevated to \textsf{root}.  Although simple in its operation, Petroni and
+Hicks~\cite{sbcfi:ccs07} show that over 95\% of all rootkits that modify kernel
+data operate this way.
+
+We were able to detect this rootkit on the host by remotely reading and
+analyzing the guest's memory pages. We remotely read pages containing the
+\textsf{init}, \textsf{text} and \textsf{data} sections of kernel memory. Our
+analyzer, a 48 line Python script, reads the addresses in the system call table
+from memory, and compares these entries with addresses in \textsf{System.map}.
+If the address is not included, \eg~as happens if the entry for the
+\textsf{close} system call is modified, it raises an error. For more
+sophisticated rootkits that modify arbitrary kernel data structures, the host
+can use complex detection algorithms~\cite{sbcfi:ccs07,gib:tdsc11,kop:ccs09}
+based on the recursive snapshot traversal method outlined in
+\sectref{section:policy}.
+
+For the above experiment, it took the secure world 54 seconds to create an HMAC
+over the memory pages that were sent to the host (9.2MB in total). It takes
+under a second to copy data from the normal world to the secure world and vice
+versa. It may be possible to accelerate the performance of the HMAC
+implementation using floating point registers and hardware acceleration, but we
+have not done so in our prototype.
+
+
+
+\begin{figure}[t!]
+\footnotesize
+\newcommand{\centcol}[1]{\multicolumn{1}{c|}{#1}}
+\centering
+\renewcommand{\arraystretch}{0.5}
+\begin{tabular}{|c|p{0.8in}|p{0.7in}|p{0.3in}|}
+\hline
+\textbf{Peripheral} 
+  & \textbf{Method Used (see \figref{figure:uninstall})} 
+  & \textbf{Bytes modified or added} 
+  & \textbf{Device used}\\
+\hline
+USB (webcam) & \textsc{null}ification     & \centcol{104} & i.MX53\\
+USB (webcam) & Dummy driver               & \centcol{302} & i.MX53\\
+Camera       & \textsc{null}ification     & \centcol{140} & Nexus\\
+Camera       & Dummy driver               & \centcol{212} & Nexus\\
+WiFi         & Dummy driver               & \centcol{338} & Nexus\\
+3G (Data)    & Dummy driver               & \centcol{252} & Nexus\\
+3G (Voice)   & Dummy driver               & \centcol{224} & Nexus\\
+Microphone   & Dummy driver               & \centcol{184} & Nexus\\
+Bluetooth    & Dummy driver               & \centcol{132} & Nexus\\
+\hline
+\end{tabular}
+\mycaption{Peripherals uninstalled using remote write operations to a guest
+device.}{\label{table:uninstall}}
+%\indent\vspace{-0.4cm}
+\end{figure}
+
+\input{sections/robustness-table}
+
+\myparagraph{Guest Device Control}
+%
+We evaluated the host's ability to dynamically reconfigure a guest device via
+remote memory write operations. For this experiment, we attempted to disable a
+number of peripherals from the guest device. However, the i.MX53 board only
+supports a bare-minimum number of peripherals. As proof-of-concept, we
+therefore tested the effectiveness of remote writes on a Samsung Galaxy Nexus
+smart phone with a Texas Instruments OMAP 4460 chipset. This chipset has a
+1.2GHz dual-core ARM Cortex-A9 processor with 1GB of RAM, and runs Android 4.3
+atop Linux kernel version 3.0.72. This device has a rich set of peripherals,
+but its chipset comes with TrustZone locked down, \ie~the secure world is not
+accessible to third-party programmers.  We therefore performed remote writes by
+modifying memory using a kernel module in its (normal world) OS.  Thus, while
+remote writes to this device do not enjoy the security properties described in
+\sectref{section:mechanism}, they allow us to evaluate the ability to uninstall
+a variety of peripherals from a running guest device.
+
+\figref{table:uninstall} shows the set of peripherals that we uninstalled, the
+method used to uninstall the peripheral (from \sectref{section:policy}), the
+size of the write operation (\ie~the number of bytes that we had to
+modify/introduce in the kernel), and whether the operation was performed on the
+i.MX53 or the Nexus. We were able to uninstall the USB on the i.MX53 and the
+camera on the phone by \textsc{null}ifying the peripheral interface. For other
+peripherals, we introduced dummy drivers designed according to the safety
+criterion from \sectref{section:vetting}. We also used dummy drivers for the
+USB and the camera to compare the size of the write operations. In this case,
+the size of the write includes both the bytes modified in the peripheral
+interface and the dummy driver functions. For the 3G interface, we considered
+two cases: that of disabling only 3G data and that of only disabling calls. Our
+experiment shows it is possible to uninstall peripherals without crashing the
+OS by just modifying a few hundred bytes of memory on the running device. 
+
+Installing a dummy driver disables the peripheral, but how does it affect the
+user app that is using the peripheral? To answer this question, we conducted
+two sets of experiments involving a number of client user apps that leverage
+the peripherals shown in \figref{table:uninstall}.  In the first set of
+experiments, which we call the \textit{passive setting}, we start with a
+configuration where the client app is not executing, replace the device driver
+of the peripheral with a dummy, and then start the app. In the second set of
+experiments, called the \textit{active setting}, we replace the peripheral's
+device driver with the dummy as the client app that uses the peripheral is
+executing. 
+
+\figref{table:robustness} shows the results of our experiments. For both the
+passive and active settings, we observe that in most cases, the user app
+displays a suitable error message or changes its behavior by displaying a blank
+screen or creating an empty audio file. In some cases, particularly in the
+passive setting, the app fails to start when the driver is replaced, and the
+Android runtime displays an error that it is unable to start the app.
+

@@ -1,0 +1,202 @@
+Action items to revise WSBAC paper for NDSS'09.
+
+---
+
+Based upon questions that we've received, we need to address the following
+common concerns:
+
+1. What if a user wants to read files that are not in his working set?
+
+Action items: We present the user with a web interface via which he can
+   add files to his working set. Because this interface is decoupled
+   from the network file system, the user conciously adds new files 
+   to his working set. Moreover, malware cannot add new files to the
+   working set because it requires the user to authenticate to the 
+   web server in order to add files to the working set.
+
+2. Won't users game the system by putting all their files in the working
+   set?
+
+Action items: What to do about this? Can we say that POLEX can use
+   heuristics to identify such cases? Or that the user just affects the
+   integrity of the files that he owns? (This is less convincing in the
+   case where these files are corporate assets, e.g., a spreadsheet with
+   salaries of all employees).
+
+3. What happens if a user is away from office (i.e., a trusted terminal) 
+   for a long time? His working set will change - how will he add files
+   to his working set without access to a trusted terminal?
+
+Action item: The answer to this is similar to the answer to (1), but
+   we need to call this out and answer these.
+
+4. Instead of talking about remote versus corporate machines, we should
+   instead talk about trusted versus untrusted machines. This will also
+   consider the case of untrusted machines within the corporate intranet.
+   Moreover, this allows us to talk about propagation of "taint", allowing
+   trusted machines to become untrusted if they have read speculative state.
+   We should also discuss what we mean by "trusted machine". Perhaps one
+   that uses the TPM chip so the company can measure the integrity of that
+   system?
+
+5. We should talk about the design options available to share speculative
+   state. A common concern that reviewers had was "what if multiple users
+   are working on a shared file? How will other users see the modifications
+   made by a user not on a trusted machine?"
+
+Action item: We should talk about the design option where we share
+   speculative changes. Plus points: speculative changes visible.
+   Minus points: Trusted machines may become untrusted, and will have
+   to be santized to make them trusted once again.
+
+6. What are we protecting? Confidentiality or integrity? This needs to be
+   made clear in the paper.
+
+---
+
+Specific concerns by reviewers.
+
+[1.1] What is the impact of a 1% false positive rate for users? What
+      is the usage model? (i.e., Batch updates?) How to know whether
+      to approve an update
+
+Action item: Can we talk about the web interface in more detail to 
+  discuss the usage model?
+
+[1.2] There is certainly a non-zero probability that the users will game 
+      the system by writing scripts to keep the working set sufficient.
+
+Action item: Already discussed in point (2) above.
+
+[1.3] Might we want to protect some of the files in the working set when
+      we leave the office?  I work think that this would be plausible.
+
+Action item: Interesting case: can we make writes to these files speculative?
+
+[1.4] The approach ignores system integrity entirely.  It simply adds more
+      work if you access a file from home/road that you did not access 
+      recently from the office.
+
+Action item: I think that the system is specifically designed to protect
+  integrity of corporate assets by limiting the damage caused by malware
+  on the user's untrusted machine. This comment shows that we did not do
+  enough to clarify this in the paper.
+
+[1.5] Yes, I know that my company could learn anything about my usage on 
+      their systems, but this seems to be a bit more intrusive than the 
+      user community would like. 
+
+Action item: Specifically talk about privacy concerns.
+
+    
+[2.1] Handling of encrypted or signed traffic and the keys needed where 
+      the authors suggest keeping the keys both on the servers and on 
+      the sniffer needed to construct the working set. This is a highly 
+      unsatisfactory solution that will introduce strong security concerns
+      especially if many different networked file systems are accessed. 
+      
+Action item: Specifically need to talk about how we address end-to-end
+  encryption.
+
+[2.2]  The proposed use of ip numbers as a switch on whether the access 
+      is remote or local is a bit dubious without a proper signing or 
+      authentication mechanism. 
+      
+Action item: Trusted vs. untrusted ought to address this.
+
+[2.3]  These types of mechanisms come with potential privacy concerns. 
+      These problems are not discussed at all in the paper. 
+      
+Action item: Related to [1.5].
+
+[2.4]  Thirdly, the solution creates inconsistency problems which, to some
+    extent, have to be handled manually by the user after entering the secure
+    network. This fact makes me wonder how well the solution would behave in an
+    environment with a dynamic cooperative environment. 
+
+Action item: I think we need to talk about this by discussing the design
+  options that we'd discussed to share speculative state. We should do this
+  selectively because of the problems associated with sharing speculative
+  state.
+
+[2.5] And finally, it would have been nice to see a more in-depth analysis on
+    the effectiveness and the impact(regarding acceptance and the impact on 
+    the working environment) of the solution in a real working environment. 
+
+Action item: In the absence of a real evaluation, not much we can do about
+this.
+
+
+[3.1] The approach does not deal with the situation that the user uses the same
+     laptop both through intranet and remotely.  When a user extensively accesses 
+     files remotely, I suspect that this is the more common case.  A laptop 
+     compromised remotely can have malicious code that can access sensitive files
+     while in intranet.
+     
+Action item: This ought to be addressed by the trusted/untrusted stuff.
+
+[3.2] Writing to files not in the working set is handled speculatively.
+    Updates will be committed later when the user connects securely.  I see 
+    two problems with this.  First, the update cannot be seen by other users,
+    making collaborations impossible.  Think about the situation of several
+    persons working on a paper remotely before the deadline; one wouldn't want
+    to use such system.
+    
+Action items: This can be handled by talking about sharing speculative state.
+     
+[3.3] Second, try to visualize what a user does when committing the changes.
+     Is the user likely to check what changes she has made?  Or the user simply
+     clicks okay and commits all the updates?  I think the it will be the latter
+     case. All malicious updates are still committed.  No protection is offered.
+
+Action item: Can we handle this by saying that an anomaly detection system can
+    be used to analyze the changes and possibly warn the user of possibly
+    malicious-looking changes? (The con of doing so is that the reviewer may
+    ask why we can't do this all the time on all the file system traffic).
+
+[3.4] The approach denies any read access not in the working set.  I think this
+   will make it very inconvenient for the users.  I didn't find a discussion 
+   about this.
+
+Action item: Hooray for the web interface that a user can use to add files to
+   the working set.
+
+[3.5] The evaluation considers accuracy by comparing the second days' access with
+   the first day's access.  What about the situation that a user travels for days
+   or weeks without being able to connect to intranet?
+
+Action items: Addressed by the new set of experiments.
+
+
+[4.1] The creation of the working set is based on the recently accessed
+     files/directories while the user is within the corporate network. It is 
+     not clear if users prefer this type of arrangement especially now that 
+     more and more work is being done remotely. What if the file to be accessed 
+     is not one of the recently accessed one? Users, who can legitimately access 
+     the data could be denied.  There could be many false denials that annoy users. 
+
+Action items: Web interface to add files to the working set!
+
+[4.2] The paper presents the details of the system and its components rather than 
+     the methodology. The underlying methodologies to derive working sets is 
+     simplistic. Although authors mention that they use some inference mechanism, 
+     it does not appear to be based on any inference.
+
+Action items: I think we need to make it clear that there is no inference at
+  present.
+
+[4.3] The notion of using speculation is also simple; any write operation on a
+     file that is not in the working set is considered spectulative. No specific
+     automatic reconcilation is not presented. If this has to be done manually, that
+     could be a problem. 
+
+Action item: Not clear how to handle this. As with [3.3], can we talk about an
+  anomaly detection system that monitors speculative writes?
+
+[4.4] Accuracy is one of the major issues. The strategies to derive working
+     sets could be different for different users, for different organizations. The
+     paper does not present how well the results are in a realistic environment. 
+
+Action items: Other than the comment on realistic environments, this comment
+  makes no sense, since the notion of working sets is well-defined.
+

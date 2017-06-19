@@ -1,0 +1,96 @@
+\begin{thebibliography}{10}\setlength{\itemsep}{-1ex}\small
+
+\bibitem{ahmad-08}
+D.~Ahmad.
+\newblock The confused deputy and the domain hijacker.
+\newblock {\em IEEE Security and Privacy}, 6(1):74--77, January/February 2008.
+
+\bibitem{ajax-tutorial}
+Asynchronous JavaScript and XML Tutorials.
+  \url{http://developer.mozilla.org/en/docs/AJAX}.
+
+\bibitem{postmessage}
+A.~Barth, C.~Jackson, and J.~C. Mitchell.
+\newblock Securing browser frame communication.
+\newblock In {\em Proceedings of the 17th USENIX Security Symposium}, 2008.
+
+\bibitem{close-08}
+T.~Close.
+\newblock Web-key: Mashing with permission.
+\newblock In {\em W2SP 2008: Web 2.0 Security and Privacy. Held in conjunction
+  with the 2008 IEEE Symposium on Security and Privacy}, 2008.
+
+\bibitem{crossframe}
+CrossFrame, JavaScript Yahoo API.
+
+\bibitem{omash-08}
+S.~Crites, F.~Hsu, and H.~Chen.
+\newblock Omash: Enabling secure web mashups via object abstractions.
+\newblock In {\em 15 ACM Conference on Computer and Communicatios Security},
+  2008.
+
+\bibitem{dojo}
+DOJO Library. Part 5. \url{http://dojotoolkit.org/book/dojo-book-0-4/}.
+
+\bibitem{facebook-api}
+Facebook API. \url{http://developers.facebook.com/}.
+
+\bibitem{op-browser}
+C.~Grier, S.~Tang, and S.~T. King.
+\newblock Secure web browsing with the op web browser.
+\newblock In {\em IEEE Symposium on Security and Privacy}, May 2008.
+
+\bibitem{jackson-barth-08}
+C.~Jackson and A.~Barth.
+\newblock Beware of finer-grained origins.
+\newblock In {\em W2SP 2008: Web 2.0 Security and Privacy. Held in conjunction
+  with the 2008 IEEE Symposium on Security and Privacy}, 2008.
+
+\bibitem{SOP}
+C.~Jackson, A.~Bortz, D.~Boneh, and J.~C. Mitchell.
+\newblock Protecting browser state from web privacy attacks.
+\newblock In {\em WWW '06: Proceedings of the 15th international conference on
+  World Wide Web}, pages 737--744, New York, NY, USA, 2006. ACM.
+
+\bibitem{subspace-07}
+C.~Jackson and H.~J. Wang.
+\newblock Subspace: secure cross-domain communication for web mashups.
+\newblock In {\em Proceedings of the 16th International Conference on World
+  Wide Web}, pages 611--620, 2007.
+
+\bibitem{json-spec}
+JSON-RPC 1.1 Specification.
+  \url{http://json-rpc.org/wd/JSON-RPC-1-1-WD-20060807.html}.
+
+\bibitem{smash-08}
+F.~D. Keukelaere, S.~Bhola, M.~Steiner, S.~Chari, and S.~Yoshihama.
+\newblock {SMash}: Secure component model for cross-domain mashups on
+  unmodified browsers.
+\newblock In {\em Proceedings of the 17th International Conference on World
+  Wide Web}, 2008.
+
+\bibitem{singh-lee-08}
+K.~S.~W. Lee.
+\newblock On the design of a web browser: Lessons learned from operating
+  systems.
+\newblock In {\em W2SP 2008: Web 2.0 Security and Privacy. Held in conjunction
+  with the 2008 IEEE Symposium on Security and Privacy}, 2008.
+
+\bibitem{windows-live}
+Microsoft Windows Live Contacts.
+  \url{htp://dev.live.com/mashups/trypresencecontrol/}.
+
+\bibitem{openmashup}
+OpenMashupOS,\url{http://OpenMashupOS.com/}.
+
+\bibitem{opensocial-api}
+OpenSocial API. \url{http://code.google.com/apis/opensocial/}.
+
+\bibitem{mashupos-07}
+H.~J. Wang, X.~Fan, J.~Howell, and C.~Jackson.
+\newblock Protection and communication abstractions for web browsers in
+  mashupos.
+\newblock In {\em ACM Symposium on Operating Systems Principle (SOSP)}, pages
+  1--16. ACM Press, 2007.
+
+\end{thebibliography}

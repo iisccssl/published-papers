@@ -1,0 +1,124 @@
+Here's what we must do to improve the Oakland submission.
+This is irrespective of whether the paper gets in or not.
+We must make these changes for the camera-ready version if
+it gets accepted, or for the USENIX security submission if
+it gets rejected.
+
+1. We found root causes at the function call level.
+   Can we find root causes at the struct field level?
+   THat will reflect more precisely what is going on.
+   It is just an addition over and above what we've
+   already done.
+
+2. A better evaluation of the false negative rate of
+   AID. In particular, can we compare what we've done
+   against the solution manual by NSA?
+
+3. Policies need to be implemented and enforced using
+   Tresys Polserver and the SELinux policy language.
+
+4. How well does our root-cause finding algorithm work
+   for the Linux kernel. For example, will we catch the
+   fact that rmdir also does a WRITE and EXEC?
+
+5. There are algorithms in genetics to locate things in
+   one string, not in the other. Can we use them?
+
+6. Better evaluation of the static part: we do not have
+   actual evaluation because we've not written all the
+   idioms. For instance, is Window_Enumerate the only
+   one for which there is imprecision in AID/static?
+
+7. What about variables in scope?
+
+8. Are CHILD Windows really what we made them to be?  
+   (e.g., menu windows of browsers?) CHECK THIS.
+
+9. DrawEvent: CHECK THIS!!!!! (Root-cause). 
+
+10. USE THE X11PERF BENCHMARKS TO EXERCISE SOME CONCEPTUAL OPERATIONS.
+    TEST YOUR EXPERIMENTS USING THIS.
+
+11. Re-implement the CUT-n-PASTE and the rate-limiting attacks.
+    Do CUT-n-PASTE attacks with 3 users.
+
+12. Have a comprehensive policy and stuff.
+
+13. Comparing our placement against the NSA folks.
+
+14. Will AID work on the Linux kernel? With DIR_RMDIR?
+
+15. Need to re-evaluate the runtime overhead.
+
+16. We need to implement the label storage mechanism exactly as 
+    mentioned in the paper. I had some problems, and X server was
+    dumping core when I added extra fields to Window and Client.
+    That needs to be resolved first. As a hack, I stored a hash
+    with the pointer value and the security label in the reference
+    monitor, but that is a hack.
+
+    Similarly, I stored the label of the cut-buffer in the ref mon.
+    I need to associate it with the primitive object that denotes
+    the cut buffer: namely an object of type Atom.
+
+    While these bugs are specific to the X server, there may be a 
+    bigger lesson here: that retrofitting code can cause it to crash.
+
+17. Currently, the reference monitor sits in the same address space as
+    the application itself. We might get away with this because we assume
+    that it is secured using CCured. But ideally, it should be implemented
+    as a separate process, with decisions being returned by IPC.
+
+
+
+-------------------------------------------------------------------
+Thoughts, as of 24/Jan/2006:
+
+1. Remove references to "automation"
+
+2. Remove too many references to Chinese-Wall policy.
+
+3. Mention that in currently implementation of ALPEN, you mantain
+   labels in a table.
+4. Read and cite papers on secure GUIs
+
+5. All "security-relevant" changes must go via system calls.
+   For example, mapping a window must proceed via a system call
+   (or should it?). Why should we not protect at the level of
+   syscalls? Why should our language be expressed in terms of
+   code-patterns, and not system calls?
+
+
+
+
+-------------------------------------------------------------------
+REDO THE EXPERIMENTS AND TAKE FRESH MEASUREMENTS!
+   
+Fresh measurements for Oakland paper:
+
+1. Collect traces afresh, and document technique used to collect traces.
+
+2. Do manipulations with set equations, and obtain the set of functions
+   in the trace. Document the exact technique used to do so.
+
+3. Measure the number of distinct functions per trace.
+
+4. Measure the number of elements in the resulting root-cause set.
+
+5. Find out about the concept of subwindows, and enumeration.
+
+6. Find out about the precision of elements in the RC result set.
+
+7. Measure afresh the variables in scope of type client and window in
+   the x-server (use CSCOPE)
+
+8. Repeat the attacks, and prevent them afresh. This time try to put
+   labels in fields of data structures, and make it more robust.
+
+9. Measure the overhead afresh.
+
+10. Compare your hooks against XACE and XSELinux hooks.
+
+11. CHECK THE RUNNING EXAMPLE (FIGURE 2 CAREFULLY ONCE AGAIN, ALSO AGAINST
+    NSA's INSTRUMENTATION).
+

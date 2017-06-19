@@ -1,0 +1,19 @@
+\begin{center}
+\begin{tabular}[!t]{|l|l|l|l|l|l|l|}
+\hline
+{\bf{Attack Name}} &  {\bf{Data Structures Affected}} &  {\bf{Invariant Type}} & {\bf{Template}}\\
+\hline\hline
+{Entropy Pool Contamination} & {struct poolinfo}  & {Collection}& {Membership}\\ \hline
+{Hidden Process} & {all-tasks list}  & {Collection} & {Subset} \\ \hline
+{Linux Binfmt} & {formats list}  &  {Collection} & {Length} \\ \hline
+{Resource Wastage} & {struct zone\_struct}& {Object} & {Membership (constant)}  \\ 
+%{Disable Firewall} & {struct nf\_hooks[]} & {Object} & {Membership (constant)}  \\
+%{Disable PRNG} & {struct random\_state\_ops}& {Object} & {Membership %(constant)}  \\
+%{} &  {struct urandom\_state\_ops} & {} &{} \\
+\hline
+\end{tabular}
+\mycaption{Rootkits that modify non-control data ~\cite{stealthattacks,dynspec,binfmt}.
+This table also shows the data structure modified by the attack, the type of
+the invariant violated by the attack, and the template that this invariant
+conforms to.}{\label{stealthattacks}}
+\end{center}

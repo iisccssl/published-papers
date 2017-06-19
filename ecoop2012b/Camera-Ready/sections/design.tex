@@ -1,0 +1,420 @@
+\mysection{Design of Transcript}
+\label{section:design}
+
+%==============================================================================
+% Workflow figure moved here for correct placement!
+%==============================================================================
+\begin{figure*}[t!]
+%\vspace*{-3.5ex}
+\centering
+%\includegraphics[keepaspectratio=true,width=0.8\textwidth]{
+%figures/transcript.png}
+\begin{tabular}{cc}
+%\hline
+\begin{minipage}{0.37\textwidth}
+\centering
+\includegraphics[keepaspectratio=true,width=0.85\textwidth]
+{figures/workflow-1.pdf}\\
+\textbf{\scriptsize (a)~Locations of traps/returns to/from \txjs.}
+\end{minipage} &
+\begin{minipage}{0.6\textwidth}
+\centering
+\includegraphics[keepaspectratio=true,width=0.91\textwidth]
+{figures/workflow-2.pdf}\\
+\textbf{\scriptsize(b)~Corresponding actions within the \txjs\ runtime system
+for a trap/return.}
+\end{minipage}\\
+\hline
+\end{tabular}
+\mycaptionsquish{Workflow of a \txjs-enhanced host.
+\describecaption{Part~(a) of the figure shows a host enclosing a guest within a
+transaction and an inlined introspection block, while part~(b) shows the \js\
+runtime and the DOM subsystem. The labels \ding{172}-\ding{177} in the figure
+show: 
+%
+\ding{172}~the host's DOM being cloned at the start of the transaction,
+%
+\ding{173}~the host's call stack before a call that suspends the transaction,
+%
+\ding{174}~the call stack after suspension,
+%
+\ding{175}~the host's call stack when the transaction is about to resume; the
+speculative DOM has been updated with the requested changes,
+%
+\ding{176}~the host's call stack just after resumption,
+%
+\ding{177}~shows the transaction committing, which copies all speculative
+changes to the host's DOM and \js\ heap.
+%
+The thick lines on the call stacks denote transaction delimiters.  Arrows show
+control transfer from the transaction to the iblock and back.}}
+{\label{figure:workflow}} 
+%\vspace*{-3.0ex}
+\end{figure*}
+%==============================================================================
+
+We now describe the design of \txjs's mechanisms using
+\figref{figure:workflow}, which summarizes the workflow of a \txjs-enhanced
+host. The figure shows the operation of the \txjs\ runtime system at key points
+during the execution of the host, which has included an untrusted guest akin to the one in
+\figref{figure:motivate} using a transaction.
+
+When a transaction begins execution, \txjs\ first provides the transaction with
+its private copy of the host's DOM tree. It does so by cloning the current
+state of the host's DOM, including any event handlers associated with the nodes
+of the DOM (\ding{172} in \figref{figure:workflow}). When a guest references
+nodes in the host's DOM, \txjs\ redirects these references to the corresponding
+nodes in the transaction's private copy of the DOM. 
+
+Next, the \txjs\ runtime pushes a \textit{transaction delimiter} on the \js\
+call stack. \txjs\ places the activation records of methods invoked within the
+transaction above this delimiter. It also records the locations of \js\ objects
+accessed/modified within the transaction in read/write sets.  If the
+transaction executes an external operation, the runtime suspends the
+transaction.  To do so, it creates a transaction object and (a)~initializes the
+object with the transaction's read/write sets; (b)~pops all the activation
+records on the \js\ call stack until the topmost transaction delimiter;
+(c)~stores these activation records in the transaction object; (d)~saves the
+program counter; and (e)~sets the program counter to immediately after the end
+of the transaction, \ie~the start of the iblock (steps \ding{173} and \ding{174}
+in \figref{figure:workflow}).
+
+The iblock logically extends from the end of the transaction to the last
+\code{resume} or \code{commit} call on the transaction object (\eg~lines
+\lnobig{A}--\lnobig{R} in \figref{figure:iblock}). The iblock can access
+the transaction object and its read/write sets to make policy decisions.  If
+the iblock invokes \code{resume} on a suspended transaction, the \txjs\ runtime
+(a)~pushes a transaction delimiter on the current \js\ call stack; (b)~pushes
+the activation records saved in the transaction object; and (c)~restores the
+program counter to its saved value. Execution therefore resumes from the
+statement following the external operation (see \ding{175} and \ding{176}). If
+the iblock invokes \code{commit} instead, the \txjs\ runtime updates the \js\
+heap using the values in the transaction object's write set.  The \code{commit}
+operation also replaces the host's DOM with the cloned DOM (step~\ding{177}).
+
+The \txjs\ runtime behaves in the same way even when transactions are nested:
+\txjs\ pushes a new delimiter on the \js\ call stack for each level of nesting
+encountered at runtime. Each suspend operation only pops activation records
+until the topmost delimiter on the stack.  Nesting is important when a guest
+itself wishes to confine code that it does not trust. This situation arises
+when a host includes a guest from a first-tier advertising agency
+(\code{1sttier.com}), which itself includes code from a second-tier agency
+(\code{2ndtier.com}). Whether the host confines the advertisement using an
+\textit{outer} transaction, \code{1sttier.com} may itself confine code from
+\code{2ndtier.com} using an \textit{inner} transaction using its own security
+policies.  If code from \code{2ndtier.com} attempts to modify the DOM\@, that
+call suspends and traps to the iblock defined by \code{1sttier.com}.  If this
+iblock attempts to modify the DOM on behalf of \code{2ndtier.com}, the outer
+transaction suspends in turn and passes control to the host's iblock. In
+effect, the DOM modification succeeds only if it is permitted at \textit{each}
+level of nesting.
+
+%------------------------------------------------------------------------------
+\mysubsection{Components of an iblock} 
+\label{section:design:iblock}
+
+%
+As discussed in \sectref{section:motivation}, an iblock consists of two parts:
+a \textit{host-specific} part, which codifies the host's policies to mediate
+guests, and a \textit{mandatory} part, which contains functionality that is
+generic to all hosts. In our implementation, we have encoded the second part as a
+\js\ library (\code{libTranscript}) that can simply be included into the iblock
+of a host. %\footnote{The body of the \code{switch} statement in
+%\figref{figure:iblock} shows a snippet from this \js\ library.
+%\figref{figure:txwebapp} illustrates an iblock that simply includes and invokes
+%functions from the library.}
+This mandatory part implements two functionalities: gluing execution contexts
+and generating wrappers for event handlers.
+
+\mysubsubsection{Gluing execution contexts} 
+\label{section:design:iblock:gluing}
+%
+Guests often use \code{document.write} or similar calls to modify the host's
+DOM, as shown on line~\lnobig{9} of \figref{figure:motivate}.  When such guests
+execute within a transaction, the \code{document.write} call traps to the
+iblock, which must complete the call on behalf of the guest and render the
+HTML in the cloned DOM\@. However, the HTML code in \code{document.write} may
+contain scripts, \eg~\code{document.write('\html{script src = code.js}')}. The
+execution of \code{code.js}, having been triggered by the guest, must then be
+mediated by the same security policy that governs the guest. 
+
+Thus, \code{code.js} should be executed in the same context as the
+transaction where the guest executes.  To achieve this goal, the
+mandatory part of the iblock encapsulates the content of \code{code.js} into a
+function and uses a builtin \code{glueresume}
+method of the transaction object to
+instruct the \txjs\ runtime to invoke this function when it resumes the
+suspended transaction. The net effect is similar to fetching
+and inlining the content of \code{code.js} into the transaction. We call this
+operation \textit{gluing}, because it glues the code in
+\code{code.js} to that of the guest.
+
+To implement gluing, the iblock must recognize that the \code{document.write}
+includes additional scripts. This in turn requires the iblock to
+parse the HTML argument to \code{document.write}. We therefore exposed  the
+browser's HTML parser through a new \code{document.parse} API to allow
+HTML (and CSS) parsing in iblocks. This API accepts a
+HTML string argument, such as the argument to
+\code{document.write}, and parses it to recognize \html{script} elements and
+other HTML content. It also recognizes inline event-handler registrations, so
+that they can be wrapped as described in
+\sectref{section:design:iblock:wrapper}.  When the iblock invokes
+\code{document.parse} (in \figref{figure:iblock}, it is invoked within the
+call to \code{WriteToTxDOM} on line~\lnobig{M}), the parser creates new
+functions that contain code in \html{script} elements.  It returns these
+functions to the host's iblock, which can then invoke them
+by gluing. The parser also renders other (non-script) HTML
+content in the cloned DOM\@. 
+
+Guest operations involving \code{innerHTML} are handled simlarly. \txjs\
+suspends a guest that attempts an \code{innerHTML} operation, parses the
+new HTML code for any scripts, and glues their execution
+into the guest's context.
+
+\mysubsubsection{Generating wrappers for event handlers}
+\label{section:design:iblock:wrapper}
+%
+Guests executing within a transaction may attempt to register functions to
+handle asynchronous events.  For example, line~\lnobig{8} in
+\figref{figure:motivate} registers \code{displayAds} as an \code{onMouseOver}
+handler. Because \code{displayAds} is guest code, it is important to associate
+it with the iblock for the transaction that registered it and to subject it to
+the same policy checks.  \txjs\ does so by creating a new function
+\code{tx\_displayAds} that \textit{wraps} \code{displayAds} within a
+transaction guarded by the same iblock, and registering \code{tx\_displayAds}
+as the event handler for the \code{onMouseOver} event.
+
+To this end, the mandatory part of the iblock includes creating wrappers
+(such as \code{tx\_displayAds}) for event handlers. When the guest executes a
+statement such as \code{elem.addEventListener(...)}, it would trap to the
+iblock, which can then examine the arguments to this call and create a wrapper
+for the event handler.  Guests can alternatively use \code{document.write}
+calls to register event handlers \eg~\code{document.write ('\html{div
+onMouseOver="displayAds();"}')}.  In this case, the iblock recognizes that an
+event handler is being registered by parsing the HTML argument of the
+\code{document.write} call (using the \code{document.parse} API) when it
+suspends, and wraps the call. Our wrapper generator handles all the event
+ models  supported by Firefox~\cite{dom-level}.
+%  \remove{
+%We refer readers interested in the details to
+%Appendix~\ref{section:appendix:events}.
+%}
+
+Besides event handlers, \js\ supports other constructs for asynchronous
+execution: AJAX callbacks, which execute upon receiving network events
+(\code{XMLHttpRequest}), and features such as \code{setTimeOut} and
+\code{setInterval} that trigger code execution based upon timer events. The
+mandatory part of the iblock also handles these constructs by wrapping
+callbacks as just described.
+
+%------------------------------------------------------------------------------
+\mysubsection{Hiding sensitive variables} 
+\label{section:design:hiding}
+
+The iblock of a transaction checks the guest's actions against the host's
+policies. These policies are themselves encoded in \js, and may use methods and
+variables (\eg~\code{tx}, \code{tocommit} and \code{builtins} in
+\figref{figure:motivate}) that must be protected from the guest. Without
+precautions, the guest can use \js's extensive reflection capabilities to
+tamper with these sensitive variables.  \figref{figure:selfleak} presents an
+example of one such attack, a reference leak, where the malicious guest obtains
+a reference to the \code{tx} object by enumerating the properties of the
+\code{this} object, and redefines the method \code{tx.getWriteSet}
+speculatively.  As presented, the example in \figref{figure:motivate} is
+vulnerable to such a reference leak.
+
+\begin{wrapfigure}{rh}{0.42\textwidth}
+%\begin{center}
+%\vspace*{-3.0ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\renewcommand{\arraystretch}{0.75}
+%%\begin{tabular}{|rl|}
+%%\hline
+%%\lno{1}  & \codetiny{var tx = transaction \{} \codetiny{... //code that
+%%suspends ...}\\
+%%\lno{2}  & \mytab \codetiny{for (var x in this) \{}\\
+%%\lno{3}  & \mytab \mytab \codetiny{if (this[x] instanceof Tx\_obj) txref =
+%%this[x];}\\
+%%\lno{4}  & \mytab \codetiny{\}; txref.getWriteSet = function() \{~\};}\\
+%%\lno{5}  & \codetiny{\}}\\
+%%\hline
+%%\end{tabular}
+%\end{center}
+\begin{tabular}{|l|}
+\hline
+\codetiny{var tx = transaction \{} \codetiny{... //code that suspends ...}\\
+\mytab \codetiny{for (var x in this) \{}\\
+\mytab \mytab \codetiny{if (this[x] instanceof Tx\_obj) txref = this[x];}\\
+\mytab \codetiny{\}; txref.getWriteSet = function() \{~\};}\\
+\codetiny{\}}\\
+\hline
+\end{tabular}
+\mycaptionsquish{A guest that implements a reference leak.
+\describecaption{The \code{tx} object is created and attached to \code{this}
+when guest suspends.}}
+{\label{figure:selfleak}}
+%\vspace*{-3.0ex}
+\end{wrapfigure}
+
+To protect such sensitive variables, we adopt a defense called \textit{variable
+hiding} that eliminates the possibility of leaks by construction. This
+technique mandates that guests be placed outside the scope of the iblock's
+variables, such as \code{tx}. The basic idea is to place the guest and the
+iblock in separate, lexically scoped functions, so that variables such as
+\code{tx}, \code{tocommit} and \code{builtins} are not accessible to the guest.
+By so hiding sensitive variables from the guest, this defense prevents reference
+leaks. \figref{figure:txwebapp} illustrates this defense %with a code snippet,
+after introducing some more details of our implementation.
+
+%------------------------------------------------------------------------------
+\mysection{Security Assurances} 
+\label{section:analysis}
+%
+\txjs's ability to protect hosts from untrusted guests depends on two factors:
+(a)~the assurance that a guest cannot subvert \txjs's mechanisms, \ie~the
+robustness of the trusted computing base; and (b)~host-specific policies used to
+mediate guests. 
+
+\mysubsection{Trusted computing base}
+\label{section:analysis:tcb}
+
+\txjs's trusted computing base (TCB) consists of the runtime component
+implemented in the browser and the mandatory part of the host's iblock. The TCB
+provides the following security properties: (a)~\textit{complete mediation},
+\ie~control over all \js\ and external operations performed by a guest; and
+(b)~\textit{isolation}, \ie~the ability to confine the effects of the guest. 
+
+\begin{mylist}
+%
+\item \textbf{Complete mediation.} The \txjs\ runtime and the mandatory part of
+the host's iblock together ensure complete mediation of guest execution. The
+runtime: (a)~records all guest accesses to the host's \js\ heap in the
+corresponding transaction's read/write sets; (b)~causes a trap to the host's
+iblock when the guest attempts an external operation; and (c)~redirects all
+guest references to the host's DOM to the cloned DOM. The mandatory part of the
+iblock, consisting of wrapper generators and the HTML parser, ensures that any
+additional code fetched by the guest or scheduled for later execution
+(\eg~event handlers or callbacks for \code{XMLHttpRequest}) will itself be
+enclosed within transactions mediated by the same iblock. This process recurs
+so that the host's policies mediate all guest code, even event handlers
+installed by callbacks of event handlers.
+
+\item \textbf{Isolation.} \txjs\ isolates guest operations using speculative
+execution. It records changes to the host's \js\ heap within the guest
+transaction's write set, and changes to the host's DOM within the cloned DOM.
+The host then has the opportunity to review these speculative changes within
+its iblock and ensure that they conform to its security policies.  Observe that
+a suspended/completed transaction may provide the host with references to
+objects modified by the guest, \eg~in \figref{figure:motivate}, a reference to
+\code{elem} is passed to the iblock via the \code{getObject} API. Speculative
+execution ensures that if the transaction has not yet been committed, then
+accesses to the object's methods and fields via this reference will still
+resolve to their values at the beginning of the transaction.  Thus, for
+instance, a call to the \code{toString} method of the \code{elem} object in the
+iblock of \figref{figure:motivate} would still work as intended if even if the
+guest had redefined this method within the transaction.  Note that variables
+hidden from the guest cannot even be \textit{speculatively} modified, thereby
+automatically isolating them from the guest.
+%
+\end{mylist}
+
+Together, the above properties ensure the following invariant: At the point
+when a transaction suspends or completes execution and is awaiting inspection
+by the host's iblock, none of the host's \js\ objects or its DOM would have
+been modified by the guest. Further, host variables hidden from the guest will
+not be modified even after the transaction has committed.  Overall, executing a
+transaction never incurs any side effect, and any side effect that would be
+incurred by committing a transaction can be first vetted by inspecting the
+transaction.
+
+\mysubsection{Whitelisting for host policies}
+\label{section:analysis:bestpractice}
+
+Hosts can import the speculative changes made by a guest after inspecting them
+against their security policies. Even though complete mediation and isolated
+execution ensure that the core \textit{mechanisms} of \txjs\ cannot be
+subverted by guest execution (\ie~they ensure that all of the guest's
+speculative actions will be available for inspection by the host), the ability
+of the host to isolate itself from the guest ultimately depends on its
+\textit{policies}. 
+
+Host policies are necessarily domain-specific and have to be written manually
+in our current prototype. Though our experiments
+(\sectref{section:evaluation:policy}) suggest that the effort required to write
+policies in \txjs\ is comparable to that required in other systems, writing
+policies is admittedly a difficult exercise and further research is needed to
+develop tools for policy authors to debug/verify the completeness of their
+policies. \newadd{However, iblock policies once written can be reused across
+applications if applications share similar protection criteria. As a deployment
+model, we envision a vendor or community-driven curated database of
+commonly-used iblock policies, which hosts can use to secure untrusted guests.}
+
+We \add{suggest that iblock authors should employ a whitelist which
+specifies the host objects that can legitimately be modified by the guest and
+reject attempts to modify objects outside the whitelist. This guideline may
+cause false positives if the whitelist is not comprehensive. For example, both
+\code{window.location} and \code{window.location.href} can be used to change the
+location field of the host, but a whitelist that includes only one will reject
+guests that modify guest location using the other. Nevertheless, whitelisting
+allows hosts to be conservative when allowing guests to modify their objects.}
+
+\remove{outline a set of ``best practices'' below to avoid
+common pitfalls.} 
+
+\remove{
+\begin{mylist}
+%
+\item \textbf{Use whitelisting.} Iblocks should employ a whitelist that
+specifies host objects that can legitimately be modified by the guest and
+reject attempts to modify objects outside the whitelist. This guideline may
+cause false positives if the whitelist is not comprehensive. For example, both
+\code{window.location} and \code{window.location.href} can be used to change
+the location field of the host, but a whitelist that includes only one will
+reject guests that modify guest location using the other. Nevertheless,
+whitelisting allows hosts to be conservative when allowing guests to modify
+their objects.
+%
+The following two guidelines are subsumed if whitelisting is employed, but
+should be followed if it is not convenient to write a whitelist-based policy.
+%
+\item \textbf{Validate global objects and caller arguments.} A guest executing
+in a transaction can speculatively modify any objects visible in its scope.
+These may include host-defined global variables, as well as arguments passed to
+functions currently on the call stack (\eg~via \code{arguments.callee.caller}).
+The host must therefore check whether any of its objects that are visible to the
+guest appear in the write set of the transaction, and vet these changes against
+its security policy.
+
+Our prototype implementation provides a library of utilities that policy
+authors can use to detect modifications to objects that are in-scope. This
+library implements \code{modifGlobals}, \code{modifCallers} and
+\code{modifNatives}, which an iblock author can use to obtain a list of
+host-defined globals, caller arguments and native objects (\eg~\code{String},
+\code{Object}, \code{Array}) that the guest has speculatively modified. These
+utilities can ease the burden of writing iblocks.  As an example, the
+following snippet included in an iblock would reject guests that inspect and
+modify arguments on the call stack: 
+%
+\code{if (modifCallers(tx). length != 0) tocommit = false;}, 
+%
+where \code{tx} is the transaction object.
+%
+\item \textbf{Defend against prototype hijacks and type forgery.} A malicious
+guest can redefine builtin object properties to implement prototype hijacking
+and type forgery attacks. For example, a guest can redefine the \code{toString}
+and \code{valueOf} methods of an object to return entities of arbitrary type.
+If the host commits the transaction despite this redefinition, it will be
+vulnerable to type forgery when it subsequently invokes these methods.
+
+The host's iblocks must therefore include code to check the write set for
+redefinitions of builtin methods such as \code{toString} and \code{valueOf} or
+attempts to modify an object via its \code{prototype} field. We include this
+guideline as a best practice rather than including it as a defense in the
+mandatory part of the iblock because there may be domain-specific scenarios
+where violations are acceptable, \eg~in \figref{figure:motivate}, where the
+host allows limited modifications to the \code{Editor} object via its
+\code{prototype} field.
+%
+\end{mylist} 
+}

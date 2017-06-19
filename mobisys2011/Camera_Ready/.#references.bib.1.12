@@ -1,0 +1,395 @@
+@inproceedings{cloudavphone:mobivirt:08,
+  title = "{Virtualized In-Cloud Security Services for Mobile Devices}",
+  author = "J. Oberheide and K. Veeraraghavan and E. Cooke and J. Flinn and F. Jahanian",
+  booktitle = "Proc. Workshop on Virtualization in Mobile Computing",
+  month = "June",
+  year = 2008
+}
+
+@inproceedings{xenarm,
+	title = "{Xen on ARM: System Virtualization Using Xen Hypervisor for
+	ARM-Based Secure Mobile Phones}",
+	author = "J. Hwang and S. Suh and  S. Heo and  C. Park and J. Ryu and  S. Park and C. Kim",
+	booktitle = "Consumer Communications and Networking Conference",
+	month = "Jan",
+	year = "2008"
+}
+
+@inproceedings{lmbench,
+  author = {L. McVoy and C. Staelin},
+  title = {lmbench: Portable Tools for Performance Analysis},
+  booktitle = {Proc. USENIX Annual Technical Conference},
+  year = 1996
+}
+
+@article{intel-vtd,
+	title = "{Intel Virtualization Technology: Hardware Support for Efficient
+	Processor Virtualization}",
+	author = "G. Neiger and A. Santoni and F. Leung and D. Rodgers and R. Uhlig",
+	booktitle = "Intel Technology Journal",
+	volume = 10,
+	number = 3,
+	month = "Aug",
+	year = 2006
+}
+		
+
+@article{paladin:baliga:08,
+  author = "A. Baliga and L. Iftode and X. Chen",
+  title = "{Automated Defense from Rootkit Attacks}",
+  journal = "Computers and Security",
+  volume = 27,
+  number = "7-8",
+  month = "Dec",
+  year = 2008
+}
+
+@thesis{christodorescu:phd:07,
+  title = "{Behavior-based Malware Detection}",
+  author = "M. Christodorescu",
+  school = "University of Wisconsin-Madison",
+  month = "August",
+  year = 2007
+}
+
+@inproceedings{traynor:ccs05,
+  author = "W. Enck and P. Traynor and P. McDaniel and T. La Porta",
+  title = "{Exploiting Open Functionality in SMS-Capable Cellular Networks}",
+  booktitle = "Proc. ACM Conf. on Computer and Communications Security",
+  month = "Oct",
+  year = 2005
+}
+
+@inproceedings{traynor:ccs09,
+  author = "P. Traynor and M. Lin and M. Ongtang and V. Rao and T. Jaeger and T.
+  La Porta and P. McDaniel",
+  title = "{On Cellular Botnets: Measuring the Impact of Malicious Devices on a
+  Cellular Network Core}",
+  booktitle = "Proc. ACM Conference on Computer and Communications Security (CCS)",
+  month = "Nov",
+  year = 2009
+}
+
+@INPROCEEDINGS{Bickford10,
+ AUTHOR = "J. Bickford and R. O\' Hare and A. Baliga and V. Gannapathy and L. Iftode",
+ TITLE = "{Rootkits on Smart Phones: Attacks, Implications and Opportunities}",
+ BOOKTITLE = "{Proc. of the 11th International Workshop on Mobile Computing Systems and Applications (HotMobile)}",
+ MONTH = FEB,
+ PAGES = {22--23},
+ YEAR = 2010
+}
+
+@INPROCEEDINGS{Wang09,
+ AUTHOR = {Zhi Wang and Xuxian Jiang and Weidong Cui and Peng Ning},
+ TITLE = "{Countering Kernel Rootkits with Lightweight Hook Protection}",
+ BOOKTITLE = "{Proceedings of the {ACM} Conference on Computer and Communications Security (CCS)}",
+ MONTH = NOV,
+ YEAR = 2009
+}
+
+@INPROCEEDINGS{Shacham07,
+ AUTHOR = {H. Shacham},
+ TITLE = "{The Geometry of Innocent Flesh on the Bone: Return-into-libc without Function Calls (on the x86)}",
+ BOOKTITLE = "{Proci. {ACM} Conference on Computer and Communications Security (CCS)}",
+ MONTH = OCT,
+ PAGES = {552--561},
+ YEAR = 2007
+}
+
+@inproceedings{semantic:security:06,
+	author = "N. L. Petroni and T. Fraser and A. Walters and W. A. Arbaugh",
+	title = "{An Architecture for Specification-based Detection of Semantic
+	Integrity Violations of Kernel Dynamic Data}",
+	booktitle = "Proc. USENIX Security Symposium",
+	month = "Aug",
+	year = 2006
+}
+
+@INPROCEEDINGS{petroni07sbcfi,
+ AUTHOR = {N. Petroni and M. Hicks},
+ TITLE = "{Automated Detection of Persistent Kernel Control-Flow Attacks}",
+ BOOKTITLE = {Proc. {ACM} Conference on Computer and Communications Security (CCS)},
+ MONTH = OCT,
+ PAGES = {103--115},
+ YEAR = 2007
+}
+
+@inproceedings{non-control:usenix:05,
+  author = "S. Chen and J. Xu and E. C. Sezer and P. Gauriar and R. K. Iyer",
+  title = "{Non-control-data Attacks Are Realistic Threats}",
+  booktitle = "Proc. USENIX Security Symposium",
+  month = "Aug",
+  year = 2005
+}
+
+@inproceedings{shadows:oakland:07,
+  author = "A. Baliga and P. Kamat and L. Iftode",
+  title = "{Lurking in the Shadows: Identifying Systemic Threats to Kernel
+  Data}",
+  booktitle = "Proc. IEEE Symposium on Security and Privacy",
+  month = "May",
+  year = 2007
+}
+
+@article{gibraltar:acsac:2008,
+  author = "A. Baliga and V. Ganapathy and L. Iftode",
+  title = "{Automatic Inference and Enforcement of Kernel Data Structre
+  Invariants}",
+  booktitle = "Proc. Annual Computer Security Applications Conference",
+  month = "Dec",
+  year = 2008
+}
+
+@inproceedings{nozzle:security:2009,
+  author = "Paruj Ratanaworabhan and Benjamin Livshits and Benjamin Zorn",
+  title = "{Nozzle: A Defense Against Heap-spraying Code Injection Attacks}",
+  booktitle = "{Proc. 18th USENIX Security Symposium}",
+  month = aug,
+  year = 2009
+}
+
+@inproceedings{Klein09,
+  author = "{G. Klein and K. Elphinstone and G. Heiser and
+J. Andronick and D. Cock and P. Derrin and D. Elkaduwe and K. Engelhardt and
+R. Kolanski and M. Norrish and T. Sewell and H. Tuch and S. Winwood}",
+  title = "{seL4: Formal Verification of an OS Kernel}",
+  booktitle = "{Proc. 22nd ACM Symposium on Operating Systems Principles (SOSP)}",
+  month = nov,
+  year = 2009
+}
+
+@inproceedings{Seshadri07,
+  author = "Arvind Seshadri and Mark Luk and Ning Qu and Adrian Perrig",
+  title = "{SecVisor: A Tiny Hypervisor to Provide Lifetime Kernel Code Integrity for Commodity OSes}",
+  booktitle = "{Proc. 21st ACM Symposium on Operating Systems Principles (SOSP)}",
+  month = nov,
+  year = 2007
+}
+
+@inproceedings{Seshadri05,
+  author = "Arvind Seshadri and Mark Luk and Elaine Shi and Adrian Perrig and Leendert van Doorn and Pradeep Khosla",
+  title = "{Pioneer: Verifying Code Integrity and Enforcing Untampered Code Execution on Legacy Systems}",
+  booktitle = "{Proc. 20th ACM Symposium on Operating Systems Principles (SOSP)}",
+  month = oct,
+  year = 2005
+}
+
+@inproceedings{Racic06,
+  author = "{R. Racic and D. Ma and H. Chen}",
+  title = "{Exploiting MMS Vulnerabilities to Stealthily Exhaust Mobile Phone’s Battery}",
+  booktitle = "{Proc. 2nd Conference on Security and Privacy in Communication Network (SecureComm)}",
+  month = aug,
+  year = 2006
+}
+
+@inproceedings{Chun09,
+  author = "{B. Chun and P. Maniatis}",
+  title = "{Augmented Smartphone Applications Through Clone Cloud Execution}",
+  booktitle = "{Proc. 12th Workshop on Hot Topic in Operating Systems (HotOS)}",
+  month = may,
+  year = 2009
+}
+
+@inproceedings{Cuervo10,
+  author = "{E. Cuervo and A. Balasubramanian and D. Cho and A. Wolman and S. Saroiu and R. Chandra and P. Bahl}",
+  title = "{MAUI: Making Smartphones Last Longer with Code Offload}",
+  booktitle = "{Proc. 8th Conference onMobile Systems, Applications and Services (MobiSys)}",
+  month = jun,
+  year = 2010
+}
+
+@inproceedings{patagonix:security:2008,
+  author = "L. Litty and H. A. Lagar-Cavilla and D. Lie",
+  title = "{Hypervisor Support for Identifying Covertly Executing Binaries}",
+  booktitle = "{Proc. 17th USENIX Security Symposium}",
+  month = aug,
+  year = 2008
+}
+
+@inproceedings{copilot:security:2004,
+  author    = "N. L. Petroni Jr. and
+               T. Fraser and
+               J. Molina and
+               W. A. Arbaugh",
+  title     = "{Copilot - a Coprocessor-based Kernel Runtime Integrity Monitor}",
+  booktitle = "Proc. USENIX Security Symposium",
+  year      = "2004",
+}
+
+@inproceedings{zhang:sigops:2002,
+  author = "X. Zhang and L. van Doorn and T. Jaeger and R. Perez and R. Sailer",
+  title = "{Secure Coprocessor-based Intrusion Detection}",
+  booktitle = "Proc. 10th workshop on ACM SIGOPS European workshop: beyond the PC",
+  year = "2002",
+}
+
+@inproceedings{vmi:ndss:2003,
+  author = "T. Garfinkel and M. Rosenblum",
+  title = "{A Virtual Machine Introspection Based Architecture for Intrusion Detection}",
+  booktitle = "Proc. Network and Distributed Systems Security Symposium",
+  year = "2003",
+}
+
+@inproceedings{xen:sosp:2003,
+  author = "P. Barham and B. Dragovic and K. Fraser and S. Hand and T. Harris and A. Ho and R. Neugebauer and I. Pratt and A. Warfield",
+  title = "{Xen and the Art of Virtualization}",
+  booktitle = "In Proc. 19th ACM Symposium on Operating Systems Principles (SOSP)",
+  year = "2003",
+ }
+
+@inproceedings{daikon:2006,
+  author = "M. Ernst and J. Perkins and P. Guo and S. McCamant and C. Pacheco and M. Tschantz and C. Xiao",
+  title = "{The Daikon System for Dynamic Detection of Likely Invariants}",
+  booktitle = "Science of Computer Programming",
+  year = "2006",
+}
+
+@misc{SmartHome,
+  author = "{ABC News}",
+  title = "{Use Your Cell to Monitor Your Smart Home}",
+  howpublished = "\url{http://abcnews.go.com/Technology/video/monitor-home-cell-phone-9887403}",
+}
+
+@misc{ISIS,
+  author = "{AT\&T}",
+  title = "{AT\&T, T-Mobile and Verizon Wireless Announce Joint Venture to Build National Mobile Commerce Network}",
+  howpublished = "\url{http://www.att.com/gen/press-room?pid=18767&cdvn=news&newsarticleid=31369&mapcode=corporate|financial}",
+}
+
+@misc{TCG,
+  author = "{Trusted Computing Group}",
+  title = "{Mobile Trusted Computing Platform}",
+  howpublished = "\url{http://www.trustedcomputinggroup.org/developers/mobile}",
+}
+
+@misc{Hypponen07,
+  author = "{Mikko Hypponen}",
+  title = "{State of Cellphone Malware in 2007}",
+  howpublished = "\url{www.usenix.org/events/sec07/tech/hypponen.pdf}",
+}
+
+@misc{creditscheduler,
+  author = "{Xen Wiki}",
+  title = "{Xen Credit-based CPU Scheduler}",
+  howpublished = "\url{wiki.xensource.com/xenwiki/CreditScheduler}",
+}
+
+@misc{adore,
+  author = "{LWN.net}",
+  title = "{A New Adore Root Kit}",
+  howpublished = "\url{lwn.net/Articles/75990/}",
+}
+
+@misc{mitmo,
+  author = "{S21sec}",
+  title = "{Zeus Mitmo: Main-in-the-Mobile}",
+  howpublished = "\url{securityblog.s21sec.com/2010/09/zeus-mitmo-man-in-mobile-i.html}",
+}
+
+@misc{symantec,
+  author = "{Symantec}",
+  title = "{Windows Rootkit Overview}",
+  howpublished = "\url{www.symantec.com/avcenter/reference/windows.rootkit.overview.pdf}",
+}
+
+@misc{vmwaremobile,
+  title="{VMware Mobile Virtualization Platform}",
+  howpublished="\url{www.vmware.com/technology/mobile/}",
+}
+
+@misc{okl4microvisor,
+  title = "{OKl4} Microvisor",
+  howpublished = "\url{http://www.ok-labs.com/products/okl4-microvisor}",
+}
+
+@misc{vlivs5,
+  title = "{Viliv S5 Real Pocket PC}",
+  howpublished = "\url{http://www.myviliv.com/v4/product/s5/s5.asp}",
+}
+
+@misc{centosrepo,
+  title = "CentOS 5.5 Repository",
+  howpublished = "\url{http://mirror.centos.org/centos-5/5.5/os/i386/CentOS/}",
+}
+
+@misc{sqlite,
+  title = "SQLite",
+  howpublished = "\url{http://www.sqlite.org/}",
+}
+
+@misc{netperf,
+ title = "Netperf",
+ howpublished = "\url{http://www.netperf.org/netperf/}",
+}
+
+@misc{avertrep1,
+  title = "{Rootkits, Part 1 of 3: A Growing Threat}",
+  note = "MacAfee {AVERT} Labs Whitepaper",
+  month = Apr,
+  year = 2006
+}
+
+@misc{avertrep2,
+  title = "2010 Threat Predictions",
+  note = "MacAfee {AVERT} Labs Whitepaper",
+  month = Dec,
+  year = 2009
+}
+
+@misc{android-rootkit,
+  author = "N. Percoco and C. Papathanasiou",
+  title = "{This Is Not the Droid You're Looking For...}",
+  booktitle = "Defcon-18 Conference",
+  month = "July",
+  year = 2010,
+}
+
+@misc{iphone-rootkit,
+  booktitle = "ToorCon: San Diego's hacker conference",
+  author = "E. Monti",
+  title = "{iPhone Rootkit? There's an App for That}",
+  month = "October",
+  year = 2010
+}
+
+@inproceedings{Kim08,
+ author = "H. Kim and J. Smith and K. G. Shin",
+ title = "{Detecting Energy-greedy Anomalies and Mobile Malware Variants}",
+ booktitle = "{Proc. 6th Conference onMobile Systems, Applications and Services (MobiSys)}",
+ year = {2008},
+} 
+
+@inproceedings{Bose08,
+ author = "A. Bose and X. Hu and K. G. Shin and T. Park",
+ title = "Behavioral Detection of Malware on Mobile Handsets",
+ booktitle = "{Proc. 6th Conference onMobile Systems, Applications and Services (MobiSys)}",
+ year = {2008},
+}
+
+@inproceedings{Barrera10,
+ author = "D. Barrera and H. G. Kayacik and P. van Oorschot and A. Somayaji",
+ title = {A Methodology for Empirical Analysis of Permission-based Security Models and its Application to Android},
+ booktitle = "{Proc. ACM conference on Computer and Communications Security (CCS)}",
+ year = {2010},
+} 
+
+@inproceedings{paranoidandroid,
+ author = "G. Portokalidisi and P. Homburg and K. Anagnostakis and H. Bos",
+ title = "{Paranoid Android: Versatile Protection For Smartphones}",
+ booktitle = {Proc. 26th Annual Computer Security Applications Conference},
+ year = {2010},
+}
+
+@inproceedings{kirin,
+ author = "W. Enck and M. Ongtang and P. McDaniel",
+ title = "{On Lightweight Mobile Phone Application Certification}",
+ booktitle = {Proc. ACM conference on Computer and Communications Security (CCS)},
+ year = {2009},
+} 
+
+@inproceedings{smartsiren,
+ author = "J. Cheng and S. H. Y. Wong and H. Yang and S. Lu",
+ title = "{SmartSiren: Virus Detection and Alert for Smartphones}",
+ booktitle = "{Proc. 5th Conference onMobile Systems, Applications and Services (MobiSys)}",
+ year = {2007},
+} 

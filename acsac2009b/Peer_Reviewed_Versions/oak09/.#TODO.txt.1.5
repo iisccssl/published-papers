@@ -1,0 +1,62 @@
+TO be done before submission of the paper on Monday:
+1. Tone down the claims of the paper. [Mostly done].
+2. Better contrast against related work: Nexus; SafeDrive; VM-based.
+3. Rewrite the Introduction.
+4. Fit the paper withing four pages.
+5. Talk about weaknesses.
+
+---
+
+Based upon the NDSS'09 reviews, here are the enhancements that we need:
+
+Writing:
+[1] Tone down the claims in the paper, and do not refer to our security
+    checker as the reference monitor. We use heuristics, and we should 
+    make that perfectly clear in the paper.
+    [DONE]
+
+[2] Better compare against related work, even in the Introduction.
+    - Against Nexus. Clarify that they have 100% overheads.
+    - Against VM-based techniques. Clarify why this may not be applicable.
+    - Against SafeDrive. Harder to argue.
+
+[3] Better explain why we only have results on four drivers.
+    [DONE]
+
+[4] Better evaluation of the control hijacking exploits:
+    - Can we give ABF for the ioctl call?
+    - Can we give guarantees on function pointer-based invariants?
+
+[5] Can we tone down the weaknesses of the existing Control Checker?
+
+[6] Experimental evaluation for Daikon:
+    - Can we prove precision and completeness? (or at least give empirical
+      evidence of the same?)
+    [DONE]
+
+---
+
+Weaknesses in NDSS'09 Submission, that we should address in a revision:
+
+* Control Checker should work on sequences of ioctl calls, not sets of ioctl
+  calls. We need to evaluate this using metrics developed for syscall based
+  intrusion detection.
+
+* We need to talk about how the k-driver can be secured.
+
+* We need to make clear why removing code from the TCB makes the system
+  any more secure. That is, what do our techniques buy over SafeDrive?
+  We argue that the k-driver can possibly be secured using SafeDrive but
+  don't say why this is easier than securing the entire device driver
+  using SafeDrive. 
+
+  Action item: Possibly implement an attack that SafeDrive cannot prevent.
+  Download SafeDrive and show that the attack is STILL possible after
+  securing the driver with it.
+
+* We need to better analyze the false positive rate of our work. That
+  is, what if the invariants result in false positives during enforcement?
+  What workloads do we use for training and what for testing?
+
+* We need to do a better job of talking about the methodology used to mine
+  invariants.

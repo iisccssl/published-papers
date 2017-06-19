@@ -1,0 +1,52 @@
+\begin{tabular}{|l|p{5.15in}|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Attack}} & 
+	\multicolumn{1}{c|}{\textbf{Example invariants violated by the attack}}\\
+\hline
+%
+(\textbf{a}) Entropy pool contamination 
+(\S\ref{section:invariants:entropy})
+	& \texttt{poolinfo.tap1} $\in$ \{$26$, $103$\},
+    \texttt{poolinfo.tap2} $\in$ \{$20$, $76$\},
+    \texttt{poolinfo.tap3} $\in$ \{$14$, $51$\},
+    \texttt{poolinfo.tap4} $\in$  \{$7$, $25$\},
+    \texttt{poolinfo.tap5}   ==  $1$\\
+%
+(\textbf{b}) Process hiding 
+(\S\ref{section:invariants:hiding})
+	& \texttt{run-list} $\subseteq$ \texttt{all-tasks}\\
+%
+(\textbf{c}) Adding binary formats 
+(\S\ref{section:invariants:format})
+  & \textsc{Length}\texttt{(formats) == $2$}\\
+%
+(\textbf{d}) Resource wastage 
+(\S\ref{section:invariants:wastage})
+	& \texttt{zone\_table[1].pages\_min==$255$},
+	  \texttt{zone\_table[1].pages\_low==$510$},
+	  \texttt{zone\_table[1].pages\_high==$765$}\\
+%
+(\textbf{e}) Intrinsic denial of service 
+(\S\ref{section:invariants:dos})
+  & \texttt{max\_threads == $14,336$} \\
+%
+(\textbf{f}) Disabling firewalls 
+(\S\ref{section:invariant:firewall})
+  & \texttt{nf\_hooks[$2$][$1$].next.hook == 0xc03295b0} \\
+%
+(\textbf{g}) Disabling PRNG 
+(\S\ref{section:invariant:prng-disable})
+  & \texttt{random\_fops.read == 0xc028bd48},
+    \texttt{urandom\_fops.read == 0xc028bda8}\\
+%
+(\textbf{h}) Altering real-time clock 
+(\S\ref{section:invariant:rtclock})
+  & \texttt{rtc\_fops->ioctl == 0xc01a39e0}\\
+%
+(\textbf{i}) Defeating signature scans 
+(\S\ref{section:invariant:sigscan})
+  & \texttt{kmem\_fops->read == 0xc0186e00},
+    \texttt{mem\_fops->read == 0xc0186c40} \\
+\hline
+%
+\end{tabular}

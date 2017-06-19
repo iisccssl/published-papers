@@ -1,0 +1,193 @@
+Subject:
+CCS 2008 notification
+From:
+CCS 2008 <ccs2008@easychair.org>
+Date:
+Wed, 2 Jul 2008 22:18:42 +0100
+To:
+Vinod Ganapathy <vinodg@cs.rutgers.edu>
+
+Dear Author,                                                                    
+                                                                                
+We are sorry to inform you that your paper was not one of those                 
+accepted for this year's conference. We received 281 submissions and            
+accepted 51 of them; the selection criteria were very stringent.                
+                                                                                
+Below are (anonymous) referees' comments about your paper.  We hope             
+you will consider the comments and, if appropriate, submit a revised            
+version to this conference next year, or perhaps to another conference          
+or publication that might be more suitable for your paper.                      
+                                                                                
+On behalf of the Program Committee, we would like to thank you for              
+your submission to and support of ACM CCS 2008.  We hope to see you at          
+the conference.  Please contact us if you have any questions.                   
+                                                                                
+Sincerely,                                                                      
+Paul Syverson and Somesh Jha                                                    
+ACM CCS 2008 Program Chairs 
+
+
+---------------------------------------------
+
+Paper: 177
+Title: Securing Remote File Access using Working Set-Based Access Control
+
+
+-------------------- review 1 --------------------
+
+PAPER: 177
+TITLE: Securing Remote File Access using Working Set-Based Access Control
+    
+
+Area: Access control for Remote file access
+
+Problem: People increasingly access corporate files remotely via
+personal computers or mobile devices. Malware on these personal
+devices can compromise the integrity and confidentiality of files
+accessed.
+
+Solution: The proposed solution is to maintain a working set of files
+currently accessed by the user within the trusted corporate network
+and develop access control for remote access based on
+this. Specifically this consists of two modules (POLEX)- which
+automatically builds the working set by observing user access patterns
+on a continuous basis and POLEN which implements access control based
+on the policy built by POLEX.
+
+Contribution:
+1) The approach is clear, novel, and well-motivated
+
+2) I think that the PVN and Speculative write are good choices
+
+The Policy view namespace (PVN) provides a view of the files within
+the user's working set alone and allows the administrator to
+add/modify permissions on a per user basis. Remote writes that are not
+allowed by the WSBAC are done speculatively in a vault area and are
+committed when the user logs in from within the trusted network and
+authorizes it. This maintains the integrity of the files for which
+write access is not permitted explicitly by the WSBAC policy.
+
+Challenges:
+1) While there is a 1% error, how much work does this imply for users.  
+Are the users going to batch approve all updates?  How does the user
+know whether to approve an update?  More work is necessary here.
+
+2) There is certainly a non-zero probability that the users will game 
+the system by writing scripts to keep the working set sufficient.
+
+3) Might we want to protect some of the files in the working set when
+we leave the office?  I work think that this would be plausible.
+
+4) The approach ignores system integrity entirely.  It simply adds more
+work if you access a file from home/road that you did not access recently
+from the office.
+
+5) Yes, I know that my company could learn anything about my usage
+on their systems, but this seems to be a bit more intrusive than the user 
+community would like. 
+
+
+-------------------- review 2 --------------------
+
+PAPER: 177
+TITLE: Securing Remote File Access using Working Set-Based Access Control
+    
+
+The paper presents the idea of using a user's file working set
+to strengthen the access control to network file systems in
+remote working situations. The idea as such seems a good one
+and the authors present a prototype implementation and a
+practical evaluation showing that their solution has a limited
+implication on the network traffic. The language is good and
+the reasoning in the paper is easy to follow and clearly
+expressed. The authors also point out technical limitations and
+problems in a good manner. However, the solution implies other
+problems that are not so well discussed or even mentioned.
+Firstly, the solution introduces security issues that are
+mentioned but in my opinion quite superficially explained and
+treated. Among them is the handling of encrypted or signed
+traffic and the keys needed where the authors suggest keeping
+the keys both on the servers and on the sniffer needed to
+construct the working set. This is a highly unsatisfactory
+solution that will introduce strong security concerns
+especially if many different networked file systems are
+accessed. The proposed use of ip numbers as a switch on whether
+the access is remote or local is a bit dubious without a proper
+signing or authentication mechanism. Secondly, these types of
+mechanisms come with potential privacy concerns. These problems
+are not discussed at all in the paper. Thirdly, the solution
+creates inconsistency problems which, to some extent, have to
+be handled manually by the user after entering the secure
+network. This fact makes me wonder how well the solution would
+behave in an environment with a dynamic cooperative
+environment. And finally, it would have been nice to see a more
+in-depth analysis on the effectiveness and the impact(regarding
+acceptance and the impact on the working environment) of the
+solution in a real working environment. 
+
+
+-------------------- review 3 --------------------
+
+PAPER: 177
+TITLE: Securing Remote File Access using Working Set-Based Access Control
+    
+
+This paper proposes working set-based access control for remote file access.  The
+assumption is that users may access files in a more secure setting (namely intranet) and
+in a less secure setting (e.g., personal laptop via VPN or cell phone).  The approach
+records which files a user accesses in the intranet setting; this is called the working
+set.  When a user accesses files remotely, read access is limited to files read before in
+the secure setting. Writing to files not in the working set is logged and committed later
+when a user connects via the more secure setting again.  The paper describes an
+implementation for NFS and evaluates its performance.
+
+I am skeptical about the value of the proposed approach, for the following reasons.
+
+1. The approach does not deal with the situation that the user uses the same laptop both
+through intranet and remotely.  When a user extensively accesses files remotely, I
+suspect that this is the more common case.  A laptop compromised remotely can have
+malicious code that can access sensitive files while in intranet.
+
+2. Writing to files not in the working set is handled speculatively.  Updates will be
+committed later when the user connects securely.  I see two problems with this.  First,
+the update cannot be seen by other users, making collaborations impossible.  Think about
+the situation of several persons working on a paper remotely before the deadline; one
+wouldn't want to use such system.  Second, try to visualize what a user does when
+committing the changes.  Is the user likely to check what changes she has made?  Or the
+user simply clicks okay and commits all the updates?  I think the it will be the latter
+case.  All malicious updates are still committed.  No protection is offered.
+
+3. The approach denies any read access not in the working set.  I think this will make it
+very inconvenient for the users.  I didn't find a discussion about this.
+
+4. The evaluation considers accuracy by comparing the second days' access with the first
+day's access.  What about the situation that a user travels for days or weeks without
+being able to connect to intranet?
+
+
+Minor comments:
+
+Section 4.1 try to explain Algorithm 1 line by line.  I don't see why that is necessary.
+Basically, the system analyze the message and records which files have been successfully
+read/written.  Is that right?  If so, then just this explain this high level intuition is
+sufficient.  If not, then explain what other things need to be considered.
+
+Page 2:  "This includes a descriptions of" 
+
+
+-------------------- review 4 --------------------
+
+PAPER: 177
+TITLE: Securing Remote File Access using Working Set-Based Access Control
+    
+
+The paper proposes a scheme to securing resources while accessing from a remote location. It uses the concept of working set, and allows remote access only to this set. The working set is maintained for each user based on the resources the user accesses while the user is within the corporate network. The paper describes a system that can accomplish the above.
+
+Several questions arise with this approach. The creation of the working set is based on the recently accessed files/directories while the user is within the corporate network. It is not clear if users prefer this type of arrangement especially now that more and more work is being done remotely. What if the file to be accessed is not one of the recently accessed one? Users, who can legitimately access the data could be denied.  There could be many false denials that annoy users. 
+
+The paper presents the details of the system and its components rather than the methodology. The underlying methodologies to derive working sets is simplistic. Although authors mention that they use some inference mechanism, it does not appear to be based on any inference.
+
+The notion of using speculation is also simple; any write operation on a file that is not in the working set is considered spectulative. No specific automatic reconcilation is not presented. If this has to be done manually, that could be a problem. 
+
+Accuracy is one of the major issues. The strategies to derive working sets could be different for different users, for different organizations. The paper does not present how well the results are in a realistic environment. 
+

@@ -1,0 +1,48 @@
+CONCERN 1a: Description of data sets. 
+
+* We have expanded the description of the signatures.  Please see
+  Section 4: the first paragraph titled "Experimental Setup".
+
+* We have made the regular expression sets that we used available for
+  download and provided a URL in the paper.
+
+
+CONCERN 1b: Description of traffic traces.
+
+* Please see the second paragraph following "Experimental Setup", where we
+  describe the traces in more detail and provide a reason why we used 33 
+  traces instead of one large trace.
+
+
+CONCERN 2: How do these results compare against our NDSS'10 submission?
+
+* The differences in results were because of BDD variable ordering. Please 
+  see the third paragraph of Section 4 for a description of this.
+
+
+CONCERN 3: Paper length and redundant material.
+
+We cut the following material:
+* Background material on NFAs.
+* Background material on adapting 2-stride NFAs to the streaming model 
+  and on alphabet compression. We have instead provided citations.
+
+
+CONCERN 4: "Using Snort's regexp is a bit misleading ..."
+
+* Our work focuses on the regex matching part with the packet payload. We use
+  the regexps extracted from the PCRE part of Snort rules without changing their
+  semantics. We have clarified this in Section 4 (description of the regular
+  expression sets).
+
+
+CONCERN 5: "It would have been nice to see a comparison with a
+straight-forward DFA implementation" 
+
+* Please see footnote 3.
+
+
+CONCERN 6: "When comparing with NFAs, it would be good to say more
+about the specific implementation used."
+
+* Please see the paragraph following "Comparison with NFAs"

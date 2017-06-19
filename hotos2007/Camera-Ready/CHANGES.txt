@@ -1,0 +1,78 @@
+Concerns to be addressed in the final version of the paper:
+
+Review 1: [all points can be addressed easily]
+----------------------------------------------
+1. How to convince driver writers to use this system? They will choose
+   performance, not reliability.
+[Status: ???]
+   
+2. Coign introduced new fault boundaries that were previously unanticipated.
+   E.g., dangling locks across user/kernel boundary.
+[Status: addressed by adding a shortcomings para at the end of Section 2].
+
+3. Minix3 in related work? Difference between Mach and Minix3 in handling
+   drivers?
+[Status: added a citation to Minix in the introduction]
+
+
+Review 2: [cannot address anything in this review at this point]
+----------------------------------------------------------------
+1. No reliability experiments.
+[Status: ???]
+
+2. No real evaluation.
+[Status: ???]
+
+
+Review 3: [all points can be addressed]
+---------------------------------------
+1. No functional prototype.
+[Status: ???]
+
+2. Flexibility smells bogus - Nobody wants flexibility, just reliability and
+   performance.
+[Status: Removed para on flexibility. Instead added para on the use of
+ user-level tools such as profilers and debuggers].
+
+3. How does the kernel deal with kmalloc flags such as GFP_DMA?
+[Status: ??? We'll deal with this if and when we get a question about it in 
+our talk]
+
+4. Audit e1000 implementation to see if more functions need to be moved out of
+   the kernel (profiling argument not convincing for this reviewer)
+[Status: ???]
+
+** 5. How many annotations needed for the e1000 driver? 
+[Status: TODO]
+
+6. How much familiarity did the annotations require with the source code?
+[Status: ???. *This* is quite subjective]
+
+7. Why no real evaluation?
+[Status: ???]
+
+8. Why did you change default buffer sizes for TCP send/receive?
+[Status: ??? Ans: We used the same numbers as used by the Safedrive paper]
+
+
+Review 4: [can partly address concerns]
+---------------------------------------
+1. Basic premise: reduced code in kernel => fewer bugs. Not convincing without
+   real experiments.
+[Status: ???]
+
+** 2. "Mostly automated": quite subjective - reviewer claims each data structure 
+   needs annotation. Thus approach is impractical.
+[Status: TODO]
+	 
+3. No real implementation. Need upfront honesty.
+[Status: addressed. Mentioned that it is work in progress].
+
+4. Where do 60M cycles go?
+[Status: this is fairly clear in the paper]
+
+
+Review 5: 
+---------
+1. Will this actually reduce the number of crashes?
+[Status: ???]

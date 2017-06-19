@@ -1,0 +1,125 @@
+With three Weak-Rejects, we realize that it's an uphill battle to defend 
+our paper. Nevertheless, we will try.
+
+=================================[Reviewer-1]=================================
+
+Reviewer-1: Privacy considerations are a show-stopper for you. They are for
+us too; hence the vetting-service to safeguard guest privacy.
+
+[R1.Q1]-What does "checked-in" mean?
+
+    Checking-in means mutual authentication of the device/host, the host 
+    requesting snapshots of certain memory addresses, and the guest responding 
+    after suitably vetting this request. The host then sends updates to modify 
+    device memory, which the guest applies after vetting it.  All this is in 
+    Sections 2-5. What additional information are you seeking?
+    
+[R1.Q2]-Aspects of device we control? Privacy implications?
+
+    We control peripherals. Other applications enabled by memory modifications
+    are possible, but we haven't explored them. The host can read the memory
+    locations that it requests access to and also modify memory. The
+    implications are arbitrary reads/writes obviously put client privacy at
+    risk. This is precisely why our vetting-service only allows hosts to
+    access kernel code and data, and only allows conservative modifications to
+    insert dummy drivers.
+
+[R1.Q3]-Preventing hosts from obtaining information about me?
+
+    The vetting-service restricts memory accesses from hosts. Yet, hosts may
+    certainly "fingerprint" devices (e.g.,by inferring the camera's model).
+    This is the price guests have to pay to use the device within the
+    restricted space. If this feels intrusive, guests can opt to leave devices
+    out of restricted spaces.
+
+    You ask whether there is a clear characterization of what is acceptable as
+    a leak. Our work does not answer this question, which requires further
+    investigation. Our vetting-service prevents the most obvious leaks.  
+
+[R1.Q4]-How can end-users make informed choices?
+
+    In our model, end-users setup and trust the vetting-service. But one can
+    imagine a third-party setting up a vetting-service that guests subscribe
+    to. Much like you trust your antivirus software, purchased from a
+    third-party, to protect your machine from untrusted downloads.
+
+
+=================================[Reviewer-2]=================================
+[R2.Q1]-Unclear who provides vetting-service?
+
+    See [R1.Q4].
+
+[R2.Q2]-Unexpected behaviors/crashes?
+
+    We extensively evaluated this. See Figure-7.
+
+[R2.Q3]-Overheads?
+
+    Section-6 presents the performance of transferring memory to the host.
+    The host's analysis time depends on how deep the analysis is. For simple
+    analyses (e.g.,inspecting the system call table), the analysis will take
+    just a few microseconds. More complex analyses that involve data-structure
+    traversal will take longer (on the order of a few minutes for the kinds of
+    analyses in references [9,14,18,37]). But this is done on the host's
+    servers, not on guest devics.
+
+
+=================================[Reviewer-3]=================================
+[R3.Q1]-"Is raw access....a good security API?"
+
+    We take this assumption as given. It has been validated in prior work with
+    some success, especially for kernel integrity checks: references
+    [9,14,18,37,47], and work on VM introspection. With memory pages, system
+    integrity checks do not have to be restricted to page-hashes. A memory
+    dump can enable traversal of kernel data-structures to ensure compliance
+    with a variety of complex data-structure invariants.  Doing such a
+    traversal would obviously require some information on the normal-world's
+    build, but this information can be supplied to the host by the device's
+    secure-world (trusted and locked-down by TrustZone).
+
+[R3.Q2]-Device unregistration far behind shadow drivers.
+
+    We know, and state as such in the paper. Our mechanism can easily
+    incorporate shadow drivers with an associated increase in TCB size.
+
+[R3.Q3]-Figure-4?  
+
+    Figure-4 is just a simplified version of a TLS-handshake. We can just use
+    TLS-handshakes for our work, but wanted to show a simplified version to
+    demonstrate how various device keys are used for authentication.
+
+[R3.Q4]-Rollback-attack in REM-suspend?
+
+    As stated, yes, the guest can rollback to a previous snapshot. However,
+    note that even that snapshot will be compliant with the host's policies!
+    If the host changes its policies dynamically, it can simply invalidate any
+    active session-keys, ensuring that old snapshots (with the old
+    session-keys) no longer correspond to valid check-ins. Thanks for this
+    observation. Our next iteration will include versioning within the 
+    secure-world to fix this rollback attack.
+
+[R3.Q5]-"...does not confine guests but seeks to minimize damage..."
+
+    Spot-on. During check-in, the host does ensure that the guest device isn't
+    malicious (using memory snapshots). The restricted space regulates
+    external network connections to minimize the chances of the device
+    inadvertantly getting infected from the outside world. But malicious users
+    obviously can infect their devices. Our current approach is to confine
+    guest devices, but it would certainly be interesting to investigate
+    attack prevention.
+
+[R3.Q6]-"...protections are virtually addressed..."
+
+    The host can check the page table from the memory snapshot. During remote
+    memory writes, the host can ensure that certain page table entries are not
+    modified. That operation *is* atomic since the normal-world is paused when
+    the secure-world executes.
+
+Finally...[R3.Q7]-"I fear....with an ASPLOS publication."  
+
+    Yes, somewhat-controversial approach raises many questions, as identified
+    in these reviews. Admittedly, some of these questions are deeper than can
+    be explored within the confines of one paper. But if conferences such as
+    ASPLOS are not the place to publish controversial ideas, ask such
+    questions, and open the door for further exploration, then what is the
+    right venue?

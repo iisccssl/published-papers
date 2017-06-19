@@ -1,0 +1,728 @@
+%%
+%% This is file `datetime.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% datetime.dtx 
+%% Copyright (C) 2000 Nicola Talbot, all rights reserved.
+%% If you modify this file, you must change its name first.
+%% You are NOT ALLOWED to distribute this file alone. You are NOT
+%% ALLOWED to take money for the distribution or use of either this
+%% file or a changed version, except for a nominal charge for copying
+%% etc.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{datetime}[2002/10/30 Date Time Package version 2.0]
+\newcount\@DT@modctr
+\def\@modulo#1#2{%
+\@DT@modctr=#1\relax
+\divide \@DT@modctr by #2\relax
+\multiply \@DT@modctr by #2\relax
+\advance #1 by -\@DT@modctr}
+\newcommand{\fmtord}[1]{#1}
+\newcount\@ordinalctr
+\newcount\@orgargctr
+\def\@ordinal#1{%
+\@orgargctr=#1\relax
+\@ordinalctr=#1%
+\@modulo{\@ordinalctr}{100}%
+\ifnum\@ordinalctr=11
+\the\@orgargctr\fmtord{th}%
+\else
+\ifnum\@ordinalctr=12
+\the\@orgargctr\fmtord{th}%
+\else
+\ifnum\@ordinalctr=13
+\the\@orgargctr\fmtord{th}%
+\else
+\@modulo{\@ordinalctr}{10}%
+\ifcase\@ordinalctr
+\the\@orgargctr\fmtord{th}%      case 0
+\or \the\@orgargctr\fmtord{st}%  case 1
+\or \the\@orgargctr\fmtord{nd}%  case 2
+\or \the\@orgargctr\fmtord{rd}%  case 3
+\else
+\the\@orgargctr\fmtord{th}%      default case
+\fi
+\fi
+\fi
+\fi
+}
+\newcommand{\@@unitstring}[1]{%
+\ifcase#1\relax
+zero%
+\or one%
+\or two%
+\or three%
+\or four%
+\or five%
+\or six%
+\or seven%
+\or eight%
+\or nine%
+\fi
+}
+
+\newcommand{\@@tenstring}[1]{%
+\ifcase#1\relax
+\or ten%
+\or twenty%
+\or thirty%
+\or fourty%
+\or fifty%
+\or sixty%
+\or seventy%
+\or eighty%
+\or ninety%
+\fi
+}
+
+\newcommand{\@@teenstring}[1]{%
+\ifcase#1\relax
+ten%
+\or eleven%
+\or twelve%
+\or thirteen%
+\or fourteen%
+\or fifteen%
+\or sixteen%
+\or seventeen%
+\or eighteen%
+\or nineteen%
+\fi
+}
+
+\newcommand{\@@Unitstring}[1]{%
+\ifcase#1\relax
+Zero%
+\or One%
+\or Two%
+\or Three%
+\or Four%
+\or Five%
+\or Six%
+\or Seven%
+\or Eight%
+\or Nine%
+\fi
+}
+
+\newcommand{\@@Tenstring}[1]{%
+\ifcase#1\relax
+\or Ten%
+\or Twenty%
+\or Thirty%
+\or Fourty%
+\or Fifty%
+\or Sixty%
+\or Seventy%
+\or Eighty%
+\or Ninety%
+\fi
+}
+
+\newcommand{\@@Teenstring}[1]{%
+\ifcase#1\relax
+Ten%
+\or Eleven%
+\or Twelve%
+\or Thirteen%
+\or Fourteen%
+\or Fifteen%
+\or Sixteen%
+\or Seventeen%
+\or Eighteen%
+\or Nineteen%
+\fi
+}
+
+\newcount\strctr
+\newcommand{\@@numberstring}[1]{%
+\ifnum#1>99000
+\PackageError{datetime}{Out of range}%
+{This macro only works for values less than 100000}%
+\else
+\ifnum#1<0
+\PackageError{datetime}{Negative numbers not permitted}%
+{This macro does not work for negative numbers, however
+you can try typing "minus" first, and then pass the modulus of
+this number}%
+\fi
+\fi
+\strctr=#1\relax \divide\strctr by 1000\relax
+\ifnum\strctr>9
+\divide\strctr by 10
+\ifnum\strctr>1
+\@tenstring{\strctr}%
+\strctr=#1 \divide\strctr by 10000
+\ifnum\strctr>0 -\@unitstring{\strctr}\fi
+\else
+\strctr=#1 \divide\strctr by 1000
+\@teenstring{\strctr}%
+\fi
+\ \@thousand%
+\else
+\ifnum\strctr>0 \@unitstring{\strctr}\ \@thousand\fi
+\fi
+\strctr=#1\relax \@modulo{\strctr}{1000}%
+\divide\strctr by 100
+\ifnum\strctr>0
+\ifnum#1>1000 \ \fi\@unitstring{\strctr}\ \@hundred%
+\fi
+\strctr=#1\relax \@modulo{\strctr}{100}%
+\ifnum#1>100 \ifnum\strctr>0 \ and \fi\fi
+\ifnum\strctr>19
+\divide\strctr by 10
+\@tenstring{\strctr}%
+\strctr=#1\relax \@modulo{\strctr}{10}%
+\ifnum\strctr>0
+-\@unitstring{\strctr}%
+\fi
+\else
+\ifnum\strctr<10
+\ifnum\strctr=0
+\ifnum#1<100 \@unitstring{\strctr}\fi
+\else
+\@unitstring{\strctr}%
+\fi
+\else
+\@modulo{\strctr}{10}%
+\@teenstring{\strctr}%
+\fi
+\fi
+}
+
+\newcommand{\@numberstring}[1]{%
+\let\@unitstring=\@@unitstring \let\@teenstring=\@@teenstring \let\@tenstring=\@@tenstring
+\def\@hundred{hundred}\def\@thousand{thousand}%
+\@@numberstring{#1}}
+
+\newcommand{\@Numberstring}[1]{%
+\let\@unitstring=\@@Unitstring \let\@teenstring=\@@Teenstring \let\@tenstring=\@@Tenstring
+\def\@hundred{Hundred}\def\@thousand{Thousand}%
+\@@numberstring{#1}}
+\newcommand{\@@unitthstring}[1]{%
+\ifcase#1\relax
+zeroth%
+\or first%
+\or second%
+\or third%
+\or fourth%
+\or fifth%
+\or sixth%
+\or seventh%
+\or eighth%
+\or nineth%
+\fi
+}
+
+\newcommand{\@@tenthstring}[1]{%
+\ifcase#1\relax
+\or tenth%
+\or twentieth%
+\or thirtieth%
+\or fourtieth%
+\or fiftieth%
+\or sixtieth%
+\or seventieth%
+\or eightieth%
+\or ninetieth%
+\fi
+}
+
+\newcommand{\@@teenthstring}[1]{%
+\ifcase#1\relax
+tenth%
+\or eleventh%
+\or twelfth%
+\or thirteenth%
+\or fourteenth%
+\or fifteenth%
+\or sixteenth%
+\or seventeenth%
+\or eighteenth%
+\or nineteenth%
+\fi
+}
+
+\newcommand{\@@Unitthstring}[1]{%
+\ifcase#1\relax
+Zeroth%
+\or First%
+\or Second%
+\or Third%
+\or Fourth%
+\or Fifth%
+\or Sixth%
+\or Seventh%
+\or Eighth%
+\or Nineth%
+\fi
+}
+
+\newcommand{\@@Tenthstring}[1]{%
+\ifcase#1\relax
+\or Tenth%
+\or Twentieth%
+\or Thirtieth%
+\or Fourtieth%
+\or Fiftieth%
+\or Sixtieth%
+\or Seventieth%
+\or Eightieth%
+\or Ninetieth%
+\fi
+}
+
+\newcommand{\@@Teenthstring}[1]{%
+\ifcase#1\relax
+Tenth%
+\or Eleventh%
+\or Twelfth%
+\or Thirteenth%
+\or Fourteenth%
+\or Fifteenth%
+\or Sixteenth%
+\or Seventeenth%
+\or Eighteenth%
+\or Nineteenth%
+\fi
+}
+
+\newcommand{\@@ordinalstring}[1]{%
+\ifnum#1>99000
+\PackageError{datetime}{Out of range}%
+{This macro only works for values less than 100000}%
+\else
+\ifnum#1<0
+\PackageError{datetime}{Negative numbers not permitted}%
+{This macro does not work for negative numbers, however
+you can try typing "minus" first, and then pass the modulus of
+this number}%
+\fi
+\fi
+\strctr=#1\relax \divide\strctr by 1000\relax
+\ifnum\strctr>9
+\divide\strctr by 10
+\ifnum\strctr>1
+\@tenstring{\strctr}%
+\strctr=#1 \divide\strctr by 10000
+\ifnum\strctr>0 -\@unitstring{\strctr}\fi
+\else
+\strctr=#1 \divide\strctr by 1000
+\@teenstring{\strctr}%
+\fi
+\strctr=#1\relax \@modulo{\strctr}{1000}%
+\ifnum\strctr=0\ \@thousandth\else\ \@thousand \fi
+\else
+\ifnum\strctr>0\relax
+\@unitstring{\strctr}%
+\strctr=#1\relax \@modulo{\strctr}{1000}%
+\ifnum\strctr=0\ \@thousandth\else\ \@thousand\fi
+\fi
+\fi
+\strctr=#1\relax \@modulo{\strctr}{1000}%
+\divide\strctr by 100
+\ifnum\strctr>0
+\ifnum#1>1000 \ \fi\@unitstring{\strctr}%
+\strctr=#1\relax \@modulo{\strctr}{100}%
+\ifnum\strctr=0\ \@hundredth\else\ \@hundred\fi
+\fi
+\strctr=#1\relax \@modulo{\strctr}{100}%
+\ifnum#1>100 \ifnum\strctr>0\ and \fi\fi
+\ifnum\strctr>19
+\@dtctr=\strctr
+\divide\strctr by 10
+\@modulo{\@dtctr}{10}%
+\ifnum\@dtctr=0 \@tenthstring{\strctr}\else \@tenstring{\strctr}\fi
+\strctr=#1\relax \@modulo{\strctr}{10}%
+\ifnum\strctr>0
+-\@unitthstring{\strctr}%
+\fi
+\else
+\ifnum\strctr<10
+\ifnum\strctr=0
+\ifnum#1<100 \@unitthstring{\strctr}\fi
+\else
+\@unitthstring{\strctr}%
+\fi
+\else
+\@modulo{\strctr}{10}%
+\@teenthstring{\strctr}%
+\fi
+\fi
+}
+
+\newcommand{\@ordinalstring}[1]{%
+\let\@unitthstring=\@@unitthstring \let\@teenthstring=\@@teenthstring \let\@tenthstring=\@@tenthstring
+\let\@unitstring=\@@unitstring \let\@teenstring=\@@teenstring \let\@tenstring=\@@tenstring
+\def\@hundred{hundred}\def\@thousand{thousand}%
+\def\@hundredth{hundredth}\def\@thousandth{thousandth}%
+\@@ordinalstring{#1}}
+
+\newcommand{\@Ordinalstring}[1]{%
+\let\@unitthstring=\@@Unitthstring \let\@teenthstring=\@@Teenthstring \let\@tenthstring=\@@Tenthstring
+\let\@unitstring=\@@Unitstring \let\@teenstring=\@@Teenstring \let\@tenstring=\@@Tenstring
+\def\@hundred{Hundred}\def\@thousand{Thousand}%
+\def\@hundredth{Hundredth}\def\@thousandth{Thousandth}%
+\@@ordinalstring{#1}}
+\newcommand{\ordinal}[1]{\expandafter\protect\expandafter\@ordinal{\expandafter\the\csname c@#1\endcsname}}
+\newcommand{\ordinalstring}[1]{\expandafter\protect\expandafter\@ordinalstring{\expandafter\the\csname c@#1\endcsname}}
+\newcommand{\Ordinalstring}[1]{\expandafter\protect\expandafter\@Ordinalstring{\expandafter\the\csname c@#1\endcsname}}
+\newcommand{\numberstring}[1]{\expandafter\protect\expandafter\@numberstring{\expandafter\the\csname c@#1\endcsname}}
+\newcommand{\Numberstring}[1]{\expandafter\protect\expandafter\@Numberstring{\expandafter\the\csname c@#1\endcsname}}
+\providecommand{\monthname}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month numbers should go from 1 (January) to 12 (December)}%
+\or January%
+\or February%
+\or March%
+\or April%
+\or May%
+\or June%
+\or July%
+\or August%
+\or September%
+\or October%
+\or November%
+\or December%
+\else \PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month numbers should go from 1 (January) to 12 (December)}%
+\fi}
+\newcommand{\shortmonthname}[1][\month]{%
+\@orgargctr=#1\relax
+\ifcase\@orgargctr
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month numbers should go from 1 (Jan) to 12 (Dec)}%
+\or Jan%
+\or Feb%
+\or Mar%
+\or Apr%
+\or May%
+\or Jun%
+\or Jul%
+\or Aug%
+\or Sept%
+\or Oct%
+\or Nov%
+\or Dec%
+\else%
+\PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month numbers should go from 1 (Jan) to 12 (Dec)}%
+\fi}
+
+\newcount\@dtctr
+
+\newif\ifleapyear
+
+\newcommand{\testifleapyear}[1]{%
+\leapyearfalse
+\@year=#1\relax
+\@dtctr=\@year
+\@modulo{\@dtctr}{400}%
+\ifnum\@dtctr=0\relax
+\leapyeartrue %         year mod 400 = 0 => leap year
+\else
+\@dtctr=\@year
+\@modulo{\@dtctr}{100}%
+\ifnum\@dtctr=0\relax
+\leapyearfalse %        year mod 100 = 0 && year mod 400 != 0 => not a leap year
+\else
+\@dtctr=\@year
+\@modulo{\@dtctr}{4}%
+\ifnum\@dtctr=0\relax
+\leapyeartrue %         year mod 4 = 0 && year mod 100 != 0 => leap year
+\fi
+\fi
+\fi
+}
+
+\newcount\dayofyear
+
+
+\newcommand{\computedayofyear}[3]{%
+\testifleapyear{#3}%
+\dayofyear=0\relax
+\@day=#1\relax \@month=#2\relax \@year=#3\relax
+\ifcase\@month
+\or
+\or \advance\dayofyear by 31\relax
+\or \advance\dayofyear by 59\relax
+\or \advance\dayofyear by 90\relax
+\or \advance\dayofyear by 120\relax
+\or \advance\dayofyear by 151\relax
+\or \advance\dayofyear by 181\relax
+\or \advance\dayofyear by 212\relax
+\or \advance\dayofyear by 243\relax
+\or \advance\dayofyear by 273\relax
+\or \advance\dayofyear by 304\relax
+\or \advance\dayofyear by 334\relax
+\else
+\PackageError{datetime}{Invalid month number}{The second argument to \protect\computedayofyear
+should lie in the range 1-12}
+\fi
+\ifnum\@month>2\relax
+\ifleapyear\advance\dayofyear by 1\relax\fi
+\fi
+\advance\dayofyear by \@day\relax
+}
+
+\newcount\dayofweek
+
+
+\newcommand{\computedayofweek}[3]{%
+\computedayofyear{#1}{#2}{#3}%
+\@dtctr=#3\relax
+\advance\@dtctr by -1901\relax
+\@modulo{\@dtctr}{28}%
+\dayofweek=\@dtctr
+\divide\dayofweek by 4\relax
+\advance\dayofweek by \@dtctr
+\advance\dayofweek by 2\relax
+\@modulo{\dayofweek}{7}%
+\advance\dayofweek by \dayofyear
+\advance\dayofweek by -1\relax
+\@modulo{\dayofweek}{7}%
+\advance\dayofweek by 1\relax}
+
+\newcommand{\dayofweekname}[3]{%
+\computedayofweek{#1}{#2}{#3}%
+\ifcase\dayofweek
+\or Sunday%
+\or Monday%
+\or Tuesday%
+\or Wednesday%
+\or Thursday%
+\or Friday%
+\or Saturday%
+\fi}
+
+\newcommand{\shortdayofweekname}[3]{%
+\computedayofweek{#1}{#2}{#3}%
+\ifcase\dayofweek
+\or Sun%
+\or Mon%
+\or Tue%
+\or Wed%
+\or Thu%
+\or Fri%
+\or Sat%
+\fi}
+\newif\ifshowdow % show the day of week if true
+
+\newcommand{\formatdate}[3]{}
+
+\renewcommand{\today}{\formatdate{\day}{\month}{\year}}
+
+\newcount\@day
+\newcount\@month
+\newcount\@year
+
+\newcommand{\longdate}{%
+\renewcommand{\formatdate}[3]{\ifshowdow\dayofweekname{##1}{##2}{##3} \fi
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@ordinal{\@day}\ \monthname[\@month], \the\@year}}
+
+\newcommand{\shortdate}{%
+\renewcommand{\formatdate}[3]{\ifshowdow\shortdayofweekname{##1}{##2}{##3} \fi
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@ordinal{\@day}\ \shortmonthname[\@month], \the\@year}}
+
+\newcommand{\ddmmyyyydate}{%
+\renewcommand{\formatdate}[3]{\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\ifnum\@day<10 0\fi\the\@day/%
+\ifnum\@month<10 0\fi\the\@month/%
+\the\@year}}
+
+\newcommand{\dmyyyydate}{%
+\renewcommand{\formatdate}[3]{\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\the\@day/\the\@month/\the\@year}}
+
+\newcommand{\ddmmyydate}{\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\ifnum\@day<10 0\fi\the\@day/%
+\ifnum\@month<10 0\fi\the\@month/%
+\ifnum\@dtctr<10 0\fi\the\@dtctr}}
+
+\newcommand{\dmyydate}{\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\the\@day/\the\@month/\ifnum\@dtctr<10 0\fi\the\@dtctr}}
+
+\newcommand{\textdate}{%
+\renewcommand{\formatdate}[3]{\ifshowdow\dayofweekname{##1}{##2}{##3} the \fi
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@Ordinalstring\@day\ of \monthname[\@month], \@Numberstring\@year}}
+
+\newcommand{\usdate}{%
+\renewcommand{\formatdate}[3]{\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\monthname[\@month]\ \the\@day, \the\@year}}
+
+\newcommand{\mmddyyyydate}{%
+\renewcommand{\formatdate}[3]{\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\ifnum\@month<10 0\fi\the\@month/%
+\ifnum\@day<10 0\fi\the\@day/%
+\the\@year}}
+
+\newcommand{\mdyyyydate}{%
+\renewcommand{\formatdate}[3]{\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\the\@month/\the\@day/\the\@year}}
+
+\newcommand{\mmddyydate}{\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\ifnum\@month<10 0\fi\the\@month/%
+\ifnum\@day<10 0\fi\the\@day/%
+\ifnum\@dtctr<10 0\fi\the\@dtctr}}
+
+\newcommand{\mdyydate}{\renewcommand{\formatdate}[3]{%
+\@day=##1\relax\@month=##2\relax\@year=##3\relax
+\@dtctr=\@year%
+\@modulo{\@dtctr}{100}%
+\the\@month/\the\@day/\ifnum\@dtctr<10 0\fi\the\@dtctr}}
+
+\DeclareOption{long}{\longdate}
+\DeclareOption{short}{\shortdate}
+\DeclareOption{ddmmyyyy}{\ddmmyyyydate}
+\DeclareOption{dmyyyy}{\dmyyyydate}
+\DeclareOption{ddmmyy}{\ddmmyydate}
+\DeclareOption{dmyy}{\dmyydate}
+\DeclareOption{text}{\textdate}
+\DeclareOption{us}{\usdate}
+\DeclareOption{mmddyyyy}{\mmddyyyydate}
+\DeclareOption{mdyyyy}{\mdyyyydate}
+\DeclareOption{mmddyy}{\mmddyydate}
+\DeclareOption{mdyy}{\mdyydate}
+\DeclareOption{level}{\renewcommand{\fmtord}[1]{#1}}
+\DeclareOption{raise}{\renewcommand{\fmtord}[1]{\textsuperscript{#1}}}
+\DeclareOption{dayofweek}{\showdowtrue}
+\DeclareOption{nodayofweek}{\showdowfalse}
+
+\ExecuteOptions{long,raise,dayofweek}
+\ProcessOptions
+\newcommand{\xxivtime}{%
+\@dtctr=\time%
+\divide\@dtctr by 60
+\ifnum\@dtctr<10 0\fi\the\@dtctr:%
+\@dtctr=\time%
+\@modulo{\@dtctr}{60}%
+\ifnum\@dtctr<10 0\fi\the\@dtctr%
+}
+
+\newcommand{\ampmtime}{%
+\@dtctr=\time%
+\divide\@dtctr by 60
+\ifnum\@dtctr>12
+\advance\@dtctr by -12
+\the\@dtctr:%
+\@dtctr=\time%
+\@modulo{\@dtctr}{60}%
+\ifnum\@dtctr<10 0\fi\the\@dtctr pm%
+\else
+\the\@dtctr:%
+\@dtctr=\time%
+\@modulo{\@dtctr}{60}%
+\ifnum\@dtctr<10 0\fi\the\@dtctr am%
+\fi
+}
+
+\newcommand{\amstring}{in the morning}
+\newcommand{\pmstring}{in the afternoon}
+\newcommand{\halfpast}{Half past}
+\newcommand{\quarterpast}{Quarter past}
+\newcommand{\quarterto}{Quarter to}
+\newcommand{\noon}{Noon}
+\newcommand{\midnight}{Midnight}
+\newcommand{\oclockstring}{O'Clock}
+
+\newcount\@hours
+\newcount\@minutes
+
+\newcommand{\oclock}{%
+\ifnum\time=0
+\midnight
+\else
+\ifnum\time=720
+\noon
+\else
+\@dtctr=\time%
+\divide\@dtctr by 60
+\ifnum\@dtctr>12
+\advance\@dtctr by -12
+\@hours=\@dtctr
+\@dtctr=\time%
+\@modulo{\@dtctr}{60}%
+\@minutes=\@dtctr
+\ifnum\@minutes=30
+\halfpast\ \@Numberstring{\@hours}\ \pmstring
+\else
+\ifnum\@minutes<30
+\ifnum\@minutes=0
+\@Numberstring{\@hours} \oclockstring \pmstring
+\else
+\ifnum\@minutes=15
+\quarterpast\ \@Numberstring{\@hours}\ \pmstring
+\else
+\@Numberstring{\@minutes}\
+\ifnum\@minutes=1\relax minute\else minutes\fi\ past
+\@Numberstring{\@hours}\
+\pmstring%
+\fi
+\fi
+\else
+\multiply\@minutes by -1\relax
+\advance\@minutes by 60\relax
+\advance\@hours by 1\relax
+\ifnum\@minutes=15
+\quarterto\ \@Numberstring{\@hours}\ \pmstring
+\else
+\@Numberstring{\@minutes}\
+\ifnum\@minutes=1\relax minute\else minutes\fi\ to
+\@Numberstring{\@hours}\ \pmstring
+\fi
+\fi
+\fi
+\else
+\@hours=\@dtctr
+\@dtctr=\time%
+\@modulo{\@dtctr}{60}%
+\@minutes=\@dtctr
+\ifnum\@hours=0 \@hours=12\fi
+\ifnum\@minutes=30
+\halfpast\ \@Numberstring{\@hours}\ \amstring
+\else
+\ifnum\@minutes<30
+\ifnum\@minutes=15
+\quarterpast\ \@Numberstring{\@hours}\ \amstring
+\else
+\ifnum\@minutes=0
+\@Numberstring{\@hours}\ \oclockstring\ \amstring
+\else
+\@Numberstring{\@minutes}\
+\ifnum\@minutes=1\relax minute\else minutes\fi\ past
+\@Numberstring{\@hours}\
+\amstring%
+\fi
+\fi
+\else
+\multiply\@minutes by -1\relax
+\advance\@minutes by 60\relax
+\advance\@hours by 1\relax
+\ifnum\@minutes=15
+\quarterto\ \@Numberstring{\@hours}\ \amstring
+\else
+\@Numberstring{\@minutes}\
+\ifnum\@minutes=1\relax minute\else minutes\fi\ to
+\@Numberstring{\@hours}\ \amstring
+\fi
+\fi
+\fi
+\fi
+\fi
+\fi
+}
+\endinput
+%%
+%% End of file `datetime.sty'.

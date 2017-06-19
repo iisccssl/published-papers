@@ -1,0 +1,9 @@
+Comments on journal paper submission/status of revisions.
+
+Abstract: 
+  -> done.
+
+Introduction:
+
+RElated work: K-Tracer.
+

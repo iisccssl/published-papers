@@ -1,0 +1,19 @@
+Most modern web browsers support an extensible architecture that allows
+third-party add-on code to enhance the basic functionality of the browser.  To
+support useful functionality in extensions, this architecture exports a rich
+API that endows these extensions with access to privileged browser objects.
+Unfortunately, such access can also be misused by attacks directed against
+vulnerable extensions. Web browser vendors have therefore recently developed
+new extension frameworks aimed at better isolating extensions while still
+allowing them access to privileged browser state. Examples of such frameworks
+include the Google Chrome extension architecture and Mozilla's Jetpack
+extension framework.
+
+In this paper, we present \tool, a tool to systematically port legacy browser
+extensions to these new frameworks. Specifically, \tool\ targets legacy
+extensions for the Mozilla Firefox browser, and ports them to the \jp\
+framework. We describe the key techniques used by \tool\ to analyze legacy
+extensions, and the transformation pipleline that rewrites these extensions so
+that they conform to the constraints imposed by \jp. Finally, we present an
+experimental evaluation of \tool\ by applying it to port 10 popular legacy
+Firefox extensions to the \jp\ framework.

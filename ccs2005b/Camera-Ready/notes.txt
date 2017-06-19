@@ -1,0 +1,36 @@
+
+Please add any words or phrases you think must be used consistently
+throughout the text. While editing the paper, please ensure that you
+pay special attention to these consistency rules.
+
+Use "laptop" instead of "notebook".
+
+Use "hard-disk" instead of "hard-drive"
+
+All numerals to appear in math mode: e.g., $2005$ instead of 2005. (note
+the font difference between the two).
+
+Use "price inflation" instead of "price-inflation".
+
+Use "price inflated" instead of "price-inflated".
+
+Use "he" rather than "she".
+
+abnormal vs. anomalous? 
+
+buyer or bidder?
+
+7-days or seven-days
+
+95\% or ninty-five percent
+
+acronyms rmb or RMB
+
+when do we use "cumulative bidder presence" curve and when CBP curve
+
+why bPr and not BPR?
+why aMb and not AMB?
+
+use of \em - for definitions only? SR vote for yes.
+
+top-seller or high-volium seller? 

@@ -1,0 +1,6 @@
+% Provides the widow macro.  This sets the document to use ragged vertical
+% spacing with widow and orphan control.
+\ProvidesPackage{widow}
+\raggedbottom
+\widowpenalty=10000
+\clubpenalty=10000

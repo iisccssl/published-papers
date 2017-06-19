@@ -1,0 +1,46 @@
+Latest TODO for CCS:
+
+* In section 3.1, talk about limitations only after you have talked about how
+ the system works.
+
+
+* Make sure that we consistently use "bookkeeping", "logs" or "read/write sets"
+
+
+TODO List for final polishing of the paper:
+
+* Consistent use of STM, STM runtime, STM techniques, and TM.
+  
+	We should use STM as just an abbreviation, STM runtime to refer to 
+	the set of mechanisms such as read/write sets, commit/abort, etc.,
+	and STM techniques for different algorithms/designs that have been
+	proposed in the literature.
+
+
+* Design section to be made more abstract.
+  
+	Fingerprints to be moved into a separate subsection.
+	Reduce implementation detail in the I/O and Library subsections.
+
+
+* Implementation:
+  
+	FreeCS: Make several commands transactional (no policies, though).
+	        Ensure that our old policies are still enforced.
+  Claros: To be ported. 
+
+
+* Introduction:
+  To address Liviu's comments. Abstract to be modified too?
+
+* X server example in Intro: Change to chat server example?
+
+* STM runtime vs STM runtime system
+
+* multi-threaded vs concurrency.
+
+* transaction{...} vs. transactional code segments.
+
+* Change motivation section to use chat server example instead.
+
+* Cite One way isolation.

@@ -1,0 +1,244 @@
+===== The Case for Transactions =====
+Transactions are more reliable for monitoring program state in a
+multithreaded scenario \cite{bir13}.
+
+Professor Daniel Lemire of the University of Montreal Computer Science
+(http://lemire.me/blog/archives/2013/10/04/genuinely-useful/)
+includes "database transactions" on his short list of "genuinely useful
+ideas in programming." Why have transactions not worked their way into
+imperative programming; might it be the next "genuinely useful idea?"
+
+People make mistakes => people make programs that make mistakes
+
+===== Shortcomings of Transcript =====
+Some related works \cite{access} as well as the authors of the Transcript
+system itself \cite{transcript} have noted difficulties inherent in
+manually instrumenting a program with transactions with the goal of
+security policy enforcement.
+
+The first such difficulty is in choosing the placement of transaction
+entries and exits. \cite{transcript} proceeds with the strategy of
+enclosing each guest code module (delimited as individual script files
+included in the HTML header) in its own transaction, while leaving the
+trusted host code unprotected.  While this is a natural and
+straightforward way to approach the placement of transactions, it does
+leave open some opportunities for subversion by the guest code. For
+example, if the security policy aims to prevent all calls to
+\verb{document.write}, within the given paradigm it can indeed prevent
+all calls within the guest code. However, if the malicious authors of a
+guest module know, for example, that the host code will call
+\verb{String.prototype.indexOf} a some point, then subversion of the
+policy may occur if the guest code makes the assignment
+\verb{String.prototype.indexOf = document.write} in the course of
+execution. It has then, in effect, ``tricked'' the unprotected host code
+into breaking its own intended policy.
+
+The second difficulty in relying on manual effort for the protection of
+code is in the formulation of the so-called ``i-block,'' or inspection
+block, that is needed to review the actions that were recorded during
+the transaction and determine whether any policy violation had occurred.
+
+%%% Does the Transcript paper approach the issue of temporal policies?
+
+===== The Case for Static Analysis =====
+In many systems that attempt to monitor and mediate access violations,
+the code require to to handle violations can be large and error-prone
+\cite{bir13}. Generating this code automatically based on first-class
+security primitives is a way to boil the complexity down to its core by
+offering a declarative language for specifying cross-cutting concerns.
+
+===== Protection of Instrumentation =====
+The JAMScript library and generated policy files are safe from
+manipulation by guest code by construction. For sound enforcement, it is
+required that the policy file be included first in the HTML page,
+followed immediately by the JAMScript library. The policy file produces
+a single object, which is consumed by the library. During the creation
+of the policy object, all native objects that are needed for the
+evaluation of transaction executions are closed over, so that subsequent
+overwrites of those identifiers cannot subvert the policy.
+
+===== Usability =====
+Refactoring the transaction evaluation with a transaction "handler"
+function allows for more straightforward reasoning about the semantics
+of transactions. Rather than saving off guest stack frames and jumping
+back to a lower host frame on transaction suspension, the system now
+pushes a new frame with the host context onto the stack. This restricts
+the control flow to a traditional call/return paradigm; transaction
+suspension (and the final call to the transaction handler at the end of
+each transaction) can be viewed as an implicit function call.
+
+The JAM static analysis and resulting instrumentation goes even further
+solve the concerns that the semantics of Transcript makes effective and
+comprehensive policies too difficult to write. The user simply provides
+the policy automaton as input to the JAM analysis which translates the
+requirements to an enforcement mechanism in Transcript.
+
+To facilitate enforcement of the instrumentation produced by the JAM
+static analysis, the Transcript library implemented in JavaScript has
+been enhanced and extended. The new form of this library is more human-
+understandable, in such a way that policy-evaluating functions can be
+written and plugged in without much of a struggle. (%%% example needed)
+
+An important goal of the design of JAMScript was to define the semantics
+of transactions and their manipulations to be a simple and constrained
+as possible while still allowing the flexibility necessary for dynamic
+evaluation. Such constraint is particularly desirable in light of the
+intent of using transactions as the target of semantics-based analysis;
+constrained semantics lead to less complexity in the analysis.
+Constraint and flexibility are inherently conflicting (or complementery,
+or balanced) interests.
+
+To that end, many potential behaviors are intentionally not implemented
+or explicitly prohibited in JAMScript. Examples include
+  * The host code cannot dynamically alter the evaluator functions
+    for a transaction. From the start of the execution of a transaction,
+    the evaluators are set and immutable.
+  * Various properties of a Tx object in JavaScript are read-only
+    %%% List.
+    %%% Not implemented yet.
+
+===== Correctness =====
+In the previous formulation of transactions as spawning their own
+delimiter frame, there was a correctness issue with the declaration of
+new local variables. Specifically, any variables that were declared
+(via the "var" construct) within a transaction were not propagated to
+the intended frame, thereby changing the semantics of the guest code.
+It is generally safe, however, to implement the correct behavior by
+hoisting "var" declarations out of the guest code into the host scope,
+as would be expected if the guest code were not contained in a
+transaction block. This is even more important for granular transactions
+woven by JAM since part of the guest code (the statically determined
+"safe" part) will be executed in the host context, and will presumably
+need access to the variables declared within the guest code.
+
+Exceptions are another area where the original Transcript fell short.
+In particular, if an exception was thrown such that control flow breaks
+out of a transaction, all writes recorded within the transaction would
+be lost (%%% check this). In the new formulation, the transaction
+handler is called in between the throwing of the exception and any catch
+or finally block. This allows the transaction up to that point to be
+processed, maintaining the possibility that the speculative execution
+can mirror the execution in the absence of transactions.
+
+===== Facilitating Security Policy Enforcement (Integration with JAM) =====
+The JAM static analysis allows transactions to be focused on statements
+in the guest code that may potentially violate the policy, rather than
+all guest code.
+
+The default policy: protect the Transcript machinery from manipulation
+  by the guest. %%% Is this necessary at all? See ``Protection of
+  Instrumentation.''
+Plug-in policies: template various policies that are useful in common
+  scenarios
+
+===== Compatibility =====
+Question: is the addition of a new keyword to JavaScript really
+necessary? Could the same effect be realized with, say, a new native
+function?
+
+Addition of the ``transaction'' keyword to the JavaScript language may
+seem like an onerous barrier to acceptance of this formulation of
+JAMScript. This concern is, however, mitigated by the fact that it can
+be implemented as a keyword with syntactical context; that is, the
+syntax of transaction blocks as introduced in JAMScript is syntactically
+distinguishable from other statement types in the language and can thus
+be recognized uniquely even if ``transaction'' is used as an identifier
+elsewhere in the program. This means that legacy JavaScript code without
+transactional instrumentation will have exactly the same semantics when
+running in an environment that supports transaction blocks. Conversely,
+programs with transaction blocks will produce a syntax error when
+run in an environment that doesn't support transactions, which is
+preferable to running with some unexpected semantics due to confusion
+between ``transaction'' being a keyword or an identifier.
+
+The ``suspend'' keyword specified by Transcript has been removed in
+JAMScript. In addition to introducing further incompatibility with
+existing ECMAScript standards, ``suspend'' was counterproductive to the
+goal of securely executing untrusted guest code in a controlled manner.
+In short, the keyword provided more power to the guest code. It also
+introduced the possibility for more non-sequential control flow, which
+makes reasoning about a program, by humans or by machine, more complex.
+
+===== Applicability in Other Contexts =====
+While our implementation is directed at the specific case of JavaScript
+running in a web browser, the techniques described in this paper can be
+generalized to arbitrary languages, so long as those languages
+incorporate the concepts of memory reads and writes (the actions to be
+monitored within transactions) and functions (which serve as the
+mechanism to evaluate transactions). Functions need not be first-class
+objects; while JAMScript allows handler functions to be the result of
+an interpreted expression, an implementation could require an explicit
+reference to a function without loss of generality.
+
+===== Complexity =====
+The original Transcript only tracked the original and the current value
+of variables. This is limiting w.r.t. the evaluation of temporal
+policies as in JAM, because perhaps an intermediate value would be
+relevant. In order to play back, in order, the actions taken during a
+transaction, the updated Transcript keeps a sequential record of all
+actions. This increases the complexity of evaluating a policy predicate
+from constant time (in the number of state variables the policy is a
+function of) to linear time (in the number of updates that occurred
+during the transaction). This is one motivation for a more granular
+transaction regime. %%% Out of date, since we're also implementing a
+hashing scheme.
+
+The Transcript 1.0 kept an "original read" value value for each value
+that was overwritten during the transaction, and the final written value
+for each. JAMScript instead keeps a full sequence of writes (with
+the original value stored at each step), as well as a "most recent
+write" to avoid traversing the entire sequence to get the current value.
+This allows full reconstruction of the events that occurred in the
+transaction for accurate policy enforcement.
+
+JAMScript also includes a hash lookup for the latest value of any
+particular object/property pair. This allows near-constant time lookup
+of the current (speculative) value while the sequential action list
+enables full reconstruction of the transaction for policy evaluation
+purposes.
+
+===== Experiments =====
+Comparing performance for wide vs. narrow transactions
+Group contiguously monitored statements
+Revisit all benchmarks from JAM paper, and from Transcript paper
+Compare policy complexity to generated policy implementation code
+
+===== Related Work =====
+
+\cite{tmi} applies the principles of transactional instrumentation
+to multithreaded server software and demonstrates additional benefits
+of this approach in that context. The JavaScript language does not
+exhibit true multithreaded behavior (the proposed standardization of
+the \verb{WebWorkers} API allows for parallel execution, but with each
+thread in a natively isolated environment, with communication only via
+exchange of strings \cite{webworkers}), and thus parallelism does not
+factor in to our implementation, but this work demonstrates that
+transaction-based enforcement is viable and even preferable in a
+multithreaded context.
+
+\cite{access} applies speculative execution semantics (refered to as
+delimited histories) to untrusted code in an automatic but
+coarse-grained fashion, where untrustedness is based on the browser's
+same origin policy. Unlike in the JAM system, the entirety of the
+third-party code is speculatively executed, which, as we have shown,
+affects the performance profile of the execution. The assumption that
+the host code can be trusted may be reasonable in many contexts, though
+it always leaves open the possibility of indirect subversion of the
+policy by clever attackers that can manipulate the environment in such a
+way that coerces the host code into violating its own policy. It also
+precludes the practice of hosting copies of untrusted third-party code
+or integrating untrusted code snippets into the host program. Another
+differentiator is that the introspection code in \cite{access} is
+written on a case-by-case (albeit reusable) basis in C++ modules, with
+the intent of shielding the instrumentation from manipulation. On the
+other hand, JAM automatically produces introspection code as a
+translation of the policy automaton, and we provide a relatively simple
+scheme for protecting the integrity of the instrumentation.
+
+
+===== Insights =====
+
+
+===== Techniques =====
+
+

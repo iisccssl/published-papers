@@ -1,0 +1,15 @@
+Oakland vs. DSN debate:
+
+Pros of sending paper to Oakland:
+* It's out of our desk soon.
+* It's good to try the paper at a top venue for at least two times.
+* It's basically a good paper, and had some good comments from reviewers.
+
+Cons of sending to Oakland:
+* The paper is incremental in its contribution.
+* The paper was rejected from NDSS without discussion.
+* The paper may come back on Jan 30th with much the same reviews.
+* We don't have the stronger version of Control Checker.
+* We can't prevent against several classes of attacks that Nexus can prevent.
+* We don't have good experimental results for Daikon.
+* We don't have good results with the attacks.

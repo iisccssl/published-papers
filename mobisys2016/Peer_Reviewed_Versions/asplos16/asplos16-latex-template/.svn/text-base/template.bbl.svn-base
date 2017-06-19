@@ -1,0 +1,28 @@
+\begin{thebibliography}{1}
+
+\bibitem{lamport94}
+Leslie Lamport.
+\newblock {\em {\LaTeX: A Document Preparation System}}.
+\newblock Addison-Wesley, Reading, Massachusetts, 2nd edition, 1994.
+
+\bibitem{nicepaper1}
+Firstname1 Lastname1 and Firstname2 Lastname2.
+\newblock A very nice paper to cite.
+\newblock In {\em Proceedings of the 33rd Annual ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, 2012.
+
+\bibitem{nicepaper2}
+Firstname1 Lastname1, Firstname2 Lastname2, and Firstname3 Lastname3.
+\newblock Another very nice paper to cite.
+\newblock In {\em Proceedings of the 22nd ACM Symposium on Operating Systems
+  Principles}, 2011.
+
+\bibitem{nicepaper3}
+Firstname1 Lastname1, Firstname2 Lastname2, Firstname3 Lastname3, Firstname4
+  Lastname4, and Firstname5 Lastname5.
+\newblock Yet another very nice paper to cite, with many author names all
+  spelled out.
+\newblock In {\em Proceedings of the 38th Annual International Symposium on
+  Computer Architecture}, 2011.
+
+\end{thebibliography}

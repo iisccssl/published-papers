@@ -1,0 +1,782 @@
+\mysection{Evaluation}
+\label{section:evaluation}
+
+We evaluated four aspects of \txjs. First, in \sectref{section:evaluation:cases}
+we study the applicability of \txjs\ to real-world guests, which varied in size
+from about $1,\!400$ to $7,\!500$ lines of code. Second, we show in
+\sectref{section:evaluation:recovery} that a host that uses \txjs\ can protect
+itself and recover gracefully from malicious and buggy guests. Third, we report
+ a performance evaluation of \txjs\ in \sectref{section:evaluation:performance}.
+Last, in \sectref{section:evaluation:policy}, we study the complexity of
+writing policies for \txjs. All experiments were performed with Firefox
+v3.7a4pre on a 2.33Ghz Intel Core2 Duo machine with 3GB RAM and running Ubuntu
+7.10.
+\remove{We turned off \js\ JIT compilation support in the browser during
+these experiments.}
+
+\mysubsection{Case studies on guest benchmarks} 
+\label{section:evaluation:cases}
+
+\begin{wrapfigure}{rh}{0.45\textwidth}
+%\vspace*{-6.0ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\scriptsize
+\begin{tabular}{|rl|c|c|}
+\hline
+& \textbf{Benchmark}      & \textbf{Size (LoC)} & \textbf{\html{script} tags}\\
+%  & \textbf{Examples of policies enforced} \\ 
+\hline
+%
+\lno{1}  & \js\ Menu~\cite{jsmenu}       & $1,\!417$  & $1$ \\
+%& Disallow all network and cookie access \\
+%
+\lno{2}  & Picture Puzzle~\cite{picpuz}  & $1,\!709$      & $3$ \\
+%  & Disallow attaching event handlers for keys events \\ 
+%
+\lno{3}  & GoogieSpell~\cite{gspell}     & $2,\!671$      & $4$ \\
+%  & Disallow \code{XMLHttpRequest} if domain cookies were read \\ 
+%
+\lno{4}  & GreyBox~\cite{gbox}           & $2,\!338$      & $7$ \\
+%  & Create iframes to whitelisted URLs only \\ 
+%
+\lno{5}  & Color Picker~\cite{cpicker}   & $7,\!543$      & $6$ \\
+%  & Prevent modification to \code{innerHTML} property of arbitrary \html{div}
+%elements\\ 
+\hline
+\end{tabular}
+\mycaption{Guest benchmarks. \describecaption{We used transactions
+to isolate each of these benchmarks from a simple hosting Web page.}}
+{\label{figure:macrobenchmarks}}%\indent\vspace{-0.5cm}
+%\vspace*{-5.0ex}
+\end{wrapfigure}
+
+%------------------------------------------------------------------------------
+
+To evaluate \txjs's applicability to real-world guests, we experimented
+with five \js\ applications, shown in \figref{figure:macrobenchmarks}.  For
+each guest benchmark in \figref{figure:macrobenchmarks}, we played the role of
+a host developer attempting to include the guest into the host, \ie~we created
+a Web page and included the code of the guest into the page using \html{script}
+tags. Most of the guests were implemented in several files; the \html{script}
+column in \figref{figure:macrobenchmarks} shows the number of \html{script}
+tags that we had to use to include the guest into the host. We briefly describe
+these guest benchmarks and the domain-specific policies that were implemented
+for each iblock.
+
+\begin{figure*}[t]
+%\vspace*{-6.0ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\renewcommand{\arraystretch}{0.65}
+\begin{tabular}{|rl||rl|}
+\hline
+\lno{1}  & \htmltiny{script src="jsMenu.js" func="menu"}\htmltiny{/script} &
+\lno{5}  & \mytab \codetiny{var tx = transaction \{
+e(getFunctionBody(menu));\}}\\
+\lno{2}  & \htmltiny{script src="libTranscript.js}\htmltiny{/script} & \lno{6} &
+\mytab \codetiny{to\_commit = gotoIblock(tx);}\\
+\lno{3}  & \htmltiny{script}\codetiny{(function () \{} & \lno{7} & \mytab
+\codetiny{if(to\_commit) tx.commit();}\\
+\lno{4}  & \mytab \codetiny{var to\_commit = true, e = eval; \mytab // indirect
+eval} & \lno{8} & \codetiny{\})(); }\htmltiny{/script}\\
+\hline
+\end{tabular}
+\mycaptionsquish{Confining \js\ Menu.
+\describecaption{%This figure illustrates several concepts:
+%
+(a)~lines~\lnobig{1} and \lnobig{5} demonstrate the enhanced \html{script} tag
+and the host's use of indirect \code{eval} to include the guest, which is
+compiled into a function (called \code{menu}; line~\lnobig{1})
+(\sectref{section:implementation:auxiliary:script}). \code{getFunctionBody}
+extracts the code of the function \code{menu};
+%
+(b)~line~\lnobig{3} implements variable hiding
+(\sectref{section:design:hiding}), making \code{tx} invisible to the guest;
+%
+(c)~our supporting library \code{libTranscript} (line~\lnobig{2}) implements
+%\code{processDOMEvents} (called on line~\lnobig{7}). This function processes
+%the guest's DOM operations that trap into the iblock.
+the mandatory part of the iblock and is invoked from \code{gotoIblock}.
+}}
+{\label{figure:txwebapp}} 
+%\vspace*{-6.0ex}
+%
+\end{figure*}
+
+%\begin{wrapfigure}{rh}{0.45\textwidth}
+%\vspace*{-6.0ex}
+%\setlength{\tabcolsep}{2pt}
+%\centering
+%\renewcommand{\arraystretch}{0.65}
+%\begin{tabular}{|rl|}
+%\hline
+%\lno{1}  & \htmltiny{script src="jsMenu.js" func="menu"}\htmltiny{/script}\\
+%\lno{2}  & \htmltiny{script src="libTranscript.js}\htmltiny{/script}\\
+%\lno{3}  & \htmltiny{script}\codetiny{(function () \{} \\
+%\lno{4}  & \mytab \codetiny{var to\_commit = true, e = eval; \mytab // indirect
+%eval} \\
+%\lno{5}  & \mytab \codetiny{var tx = transaction \{
+%e(getFunctionBody(menu));\}}\\
+%%\lno{6} &  \mytab \codetiny{do \{ ... <application-specific-policies> ... }\\
+%%\lno{7} &  \mytab \mytab \codetiny{processDOMEvents(tx);}\\
+%%\lno{8} & \mytab \mytab \codetiny{tx = tx.resume();}\\
+%%\lno{9} & \mytab \codetiny{\} while(tx.isSuspended());}\\
+%\lno{6} & \mytab \codetiny{to\_commit = gotoIblock(tx);}\\
+%\lno{7} & \mytab \codetiny{if(to\_commit) tx.commit();}\\
+%\lno{8} & \codetiny{\})(); }\htmltiny{/script}\\
+%\hline
+%\end{tabular}
+%\mycaptionsquish{Confining \js\ Menu.
+%\describecaption{%This figure illustrates several concepts:
+%%
+%(a)~lines~\lnobig{1} and \lnobig{5} demonstrate the enhanced \html{script} tag
+%and the host's use of indirect \code{eval} to include the guest, which is
+%compiled into a function (called \code{menu}; line~\lnobig{1})
+%(\sectref{section:implementation:auxiliary:script}). \code{getFunctionBody}
+%extracts the code of the function \code{menu};
+%%
+%(b)~line~\lnobig{3} implements variable hiding
+%(\sectref{section:design:hiding}), making \code{tx} invisible to the guest;
+%%
+%(c)~our supporting library \code{libTranscript} (line~\lnobig{2}) implements
+%%\code{processDOMEvents} (called on line~\lnobig{7}). This function processes
+%%the guest's DOM operations that trap into the iblock.
+%the mandatory part of the iblock and is invoked from \code{gotoIblock}.
+%}}
+%{\label{figure:txwebapp}} 
+%\vspace*{-6.0ex}
+%%
+%\end{wrapfigure}
+
+\noindent
+\textit{(1) \js\ Menu} is a standalone widget that implements pull-down
+menus. \figref{figure:txwebapp} shows how we confined \js\ Menu using \txjs.
+The iblock for \js\ menu enforced a  policy that disallowed the guest
+from accessing the network (\code{XMLHttpRequest}) or domain cookies.
+
+\js\ Menu makes extensive use of \code{document.write} to build menus,
+with several of these calls used to register event handlers, as shown below
+%in the snippet in \figref{figure:jsmenu-evthdlr} 
+(event handler registrations are shown in bold). Each \code{document.write}
+call causes the transaction to suspend and pass control to the iblock. The
+iblock uses \code{document.parse} to (a)~parse the arguments to identify the
+HTML element(s) being created; (b)~identify whether any event handlers are being
+registered and wrap them; and (c)~write resulting HTML to the transaction's
+speculative DOM.
+\remove{
+%
+%\begin{figure}[t!]
+\begin{center}
+%\vspace*{-1.0ex}
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.65}
+\begin{tabular}{|p{0.6\textwidth}|}
+\hline
+\lno{1}~\codetiny{document.write("<" + blInfo.divType + ' id="' + mName);}\\
+\lno{2}~\codetiny{document.write('" class="' + mClass + '" ');}\\
+\lno{3}~\codetiny{document.write(setStyle(blInfo.divType, blInfo.fontSize, ... ,
+"inherit"));}\\
+\lno{4}~\codetiny{document.write(' \textbf{onclick="' + mAction + '"} ');}\\
+\lno{5}~\codetiny{... // more code elided ...}\\
+\lno{6}~\codetiny{document.write('\textbf{onmouseover="popMenu('+mLevel+",
+'"+mName+"','"+mPopup+"'"+');"} ');}\\
+\lno{7}~\codetiny{document.write('\textbf{onmouseout="setColorPassive(' + "'" +
+mName + "'" + ');"}>');}\\
+\hline
+\end{tabular}
+\end{center}
+}
+%\vspace*{-1.0ex}
+%\mycaptionsquish{Code from \js\ Menu.}{\label{figure:jsmenu-evthdlr}}
+%\end{figure}
+
+\noindent
+\textit{(2) Picture Puzzle} uses the drag-and-drop features provided by the
+AJS \js\ library~\cite{ajs} to build an application that prompts the user to
+arrange jumbled pieces of a picture within a $3\times3$ grid (we adapted this
+benchmark from \cite{picpuz}).  We ran the benchmark within a transaction and
+enforced a domain-specific security policy that prevented the transaction from
+committing its changes if it attempted to install a handler to capture the
+user's keystrokes (\eg~any event with \code{onkey} as a substring).
+
+\noindent
+\textit{(3) GoogieSpell} extends the AJS library to provide a spell-checking
+service. When a user clicks the ``check spelling'' button, GoogieSpell sends an
+\code{XMLHttpRequest} to a third-party server to fetch suggestions for
+misspelled words. We created a transactional version of GoogieSpell, whose
+iblock implemented a domain-specific policy that prevents an
+\code{XMLHttpRequest} once the benchmark has read domain cookies or if the
+target URL of \code{XMLHttpRequest} does not appear on a
+whitelist.\footnote{Such \textit{cross-origin resource sharing} permits
+cross-site \code{XMLHttpRequest}s, and is supported by Firefox-3.5 and
+higher~\cite{cross-origin-xhr}.}
+
+\noindent
+\textit{(4) GreyBox} is content-display application that also extends the AJS
+library. It can be used to display external pages, build image galleries,
+receive file uploads and even show video or Flash content. The application
+creates an \html{iframe} to load new content. Our transactional version of the
+GreyBox application encoded a domain-specific iblock policy that only allowed
+the creation of \html{iframe}s to whitelisted URLs.
+
+\noindent
+\textit{(5) Color Picker} builds upon the popular jQuery library~\cite{jquery}
+and lets a user pick a color by moving sliders depicting the intensities of
+red, blue and green. We executed the entire benchmark (including all the
+supporting jQuery libraries) as a transaction and encoded an iblock that
+disallowed modifications to the \code{innerHTML} property of arbitrary
+\html{div} nodes.
+
+However, for this guest, it turns out that an iblock that disallows any changes
+to the sensitive \code{innerHTML} property of \textit{any} \html{div} element
+is overly restrictive. This is because Color Picker modified the
+\code{innerHTML} property of a \html{div} element that it created. We therefore
+loosened our policy into a history-based policy that let the benchmark change
+\code{innerHTML} properties of \html{div} elements that it created. The iblock
+determines whether a \html{div} element was created by the transaction by
+querying its write set. The relevant snippet from the iblock is shown below;
+the \code{tx} variable denotes the transaction:
+%
+\begin{center}
+%\vspace*{-1.0ex}
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.55}
+\begin{tabular}{|l|}
+\hline
+\lno{1}~\codetiny{var ws = tx.getWriteSet(); ...}\\
+\lno{2}~\codetiny{if (tx.getCause().match("innerHTML") 
+                    \&\& ws.checkMembership(tx.getObject(), "*")}\\
+          \mytab \codetiny{\&\& !(tx.getObject() instanceof
+HTMLBodyElement))}\\
+\lno{3}~\mytab \codetiny{// perform action on behalf of untrusted code}\\
+\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+%\vspace*{-2.0ex}
+\end{center}
+
+
+%------------------------------------------------------------------------------
+\mysubsection{Fault injection and recovery} 
+\label{section:evaluation:recovery}
+%
+To evaluate how \txjs\ can help hosts detect and debug malicious guest
+activity, we performed a set of fault-injection experiments on a real Web
+application that allows integration of untrusted guest code. We used the Bigace
+Web content management system~\cite{bigace} running on our Web server as the
+host, and created a Web site that mashed content from Bigace with content
+provided by untrusted guests (each guest was included into the mashup using the
+\html{script} tag).  We wrote guests that emulated known attacks and studied
+host behavior when the host (1)~directly included the guest in its protection
+domain; and (2)~used \txjs\ to isolate the guest.
+
+Our experiments show that with appropriate iblock policies, speculative
+execution ensured clean recovery; neither the \js\ heap nor the DOM of the host
+was affected by the misbehaving guest.
+
+\begin{mylist}
+%
+\item \textit{Misplaced event handler.} \js\ provides a \code{preventDefault}
+method that suppresses the default action normally taken by the browser as a
+result of the event. For example, the default action on clicking a link is to
+fetch the
+page corresponding to the URL referenced in the link. Several sites use
+\code{preventDefault} to encode domain-specific actions instead, \eg~displaying
+a popup when a link is clicked. 
+
+In this experiment, we created a buggy guest that displays an advertisement
+within a \html{div} element. This guest mistakenly registers an \code{onClick}
+event handler that uses \code{preventDefault} with the \code{document} object
+instead of with the \html{div} element. The result of including this guest
+directly into the host's protection domain is that all hyperlinks on the Web
+page are rendered unresponsive.  We then modified the host to isolate the guest
+using a policy that disallows a transaction to commit if it attempts to
+register an \code{onClick} handler with the \code{document} object. This
+prevented the advertisement from being displayed, \ie~the \html{div} element
+containing the misbehaving guest was not even created, but otherwise allowed
+the host to function correctly. \js\ reference monitors proposed in prior work
+can prevent the registration of the \code{onClick} handler, but leave
+the \code{div} element of the misbehaving guest on the host's Web page.
+%
+\item \textit{Prototype hijacking.} We implemented a prototype hijacking attack
+by writing a guest that set the \code{Array.prototype.slice} function to
+\code{null}.  To illustrate the ill-effects of this attack, we modified the
+host to include two popular (and benign) widgets, namely Twitter \cite{twitter}
+and AddThis \cite{addthis}, in addition to the malicious guest. The prototype
+hijacking attack prevented both the benign widgets from functioning properly.
+
+However, when the malicious guest is enclosed within a transaction whose iblock
+prevents a commit if it detects prototype hijacking attacks, the host and both
+benign widgets worked normally. We further inspected the transaction's write
+set and verified that none of the heap operations attributed to the malicious
+guest were actually applied to the host. Although traditional \js\ reference
+monitors can detect and prevent prototype hijacking attacks by blocking further
+\html{script} execution, they do not allow the hosts to cleanly recover from
+all heap changes.
+
+\item \textit{Oversized advertisement.} We created a guest that displayed an
+interactive \js\ advertisement within a \html{div} element. In an unprotected
+host, this advertisement expands to occupy the full screen on a
+\code{mouseover} event, \ie~the guest registered a misbehaving event-handler
+that modifies the size of the \html{div}.  We modified the host to isolate this
+guest using a transaction and an iblock that prevents a \code{commit} if the
+size of the \html{div} element increased beyond a pre-specified limit. With
+this policy, we observed that the host could successfully prevent the undesired
+\html{div} modification by discarding the speculative DOM and \js\ heap changes
+made by the event handler executing within the transaction.
+
+% \item \textit{Logic error.} We wrote a buggy guest that emulated a
+% malfunction on the New York Times web site, which displayed a blank screen
+% for a couple of days in November 2008~\cite{opera_bug}. In that case, the
+% culprit was a buggy guest that injected another \html{script} using
+% \code{document.write} after the page had finished loading.  This caused the
+% browser to replace the contents of the existing page (\ie~the New York Times
+% page) with the injected \html{script}, which resulted in a blank screen.  We
+% replicated this scenario by including the buggy guest in our host's
+% protection domain, and verified that it displayed a blank screen. When
+% confined using an iblock that skips the execution of \code{document.write} if
+% the host page has been loaded completely.
+%
+\end{mylist}
+
+%------------------------------------------------------------------------------
+
+\mysubsection{Performance} 
+\label{section:evaluation:performance}
+%
+We measured the overhead imposed by \txjs\ both using guest benchmarks, to
+estimate the overall cost of using transactions, and with
+microbenchmarks, to understand the impact on specific \js\ operations. 
+
+\mysubsubsection{Guest benchmarks}
+%
+To evaluate the overall performance impact of \txjs, we measured the increase
+in the load time of each guest benchmark.  Recall that each benchmark is
+included in the Web page using a set of \html{script} tags; the version that
+uses \txjs\ executes the corresponding \js\ code within a single transaction
+using modified \html{script} tags.  The \code{onload} event fires at the end of
+the document loading process, \ie~when all scripts have completed execution. We
+therefore measured the time elapsed from the moment the page is loaded in the
+browser to the firing of the \code{onload} event.
+
+\begin{figure*}[t]
+%\vspace*{-7.0ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\includegraphics[keepaspectratio=true,width=0.6\textwidth]{figures/perf.png}
+\remove{
+\mycaptionsquish{Performance of guest benchmarks. \describecaption{This
+chart
+compares the time to load the unmodified version of each guest benchmark
+against the time to load the transactional version in the two variants of
+\txjs. On average, \txjs\ (JS only) increases the load time by just 0.11s,
+while \txjs\ (full) increases the load time by 0.16s.}}
+}
+\add{
+\mycaptionsquish{Performance of guest benchmarks. \describecaption{This
+chart compares the time to load the unmodified version of each guest benchmark
+against the time to load the transactional version in the two variants of
+\txjs.}}
+}
+{\label{figure:onloadperf}}
+%\vspace*{-5.0ex}
+\end{figure*}
+
+%\begin{wrapfigure}{rh}{0.6\textwidth}
+%%\vspace*{-7.0ex}
+%\setlength{\tabcolsep}{2pt}
+%\centering
+%\includegraphics[keepaspectratio=true,width=0.6\textwidth]{figures/perf.png}
+%\remove{
+%\mycaptionsquish{Performance of guest benchmarks. \describecaption{This
+%chart
+%compares the time to load the unmodified version of each guest benchmark
+%against the time to load the transactional version in the two variants of
+%\txjs. On average, \txjs\ (JS only) increases the load time by just 0.11s,
+%while \txjs\ (full) increases the load time by 0.16s.}}
+%}
+%\add{
+%\mycaptionsquish{Performance of guest benchmarks. \describecaption{This
+%chart compares the time to load the unmodified version of each guest benchmark
+%against the time to load the transactional version in the two variants of
+%\txjs.}}
+%}
+%{\label{figure:onloadperf}}
+%%\vspace*{-5.0ex}
+%\end{wrapfigure}
+
+To separately assess the impact of speculatively executing \js\ and DOM
+operations, each experiment involved executing the benchmarks on two separate
+variants of \txjs, namely \txjs\ (full) which supports both speculative DOM and
+\js\ operations and \txjs\ (JS only) which only supports speculative \js\
+operations (and therefore does not isolate DOM operations of the guest).
+\figref{figure:onloadperf} presents the results averaged over 25 runs
+of this experiment. On average, \txjs\ (JS only) increased load time by just
+$0.11$ seconds while \txjs\ (full) increased the load time by $0.16$ seconds.
+These overheads are typically imperceptible to end users. Only Color Picker
+had above-average overheads. This was because (a)~the guest heavily
+interacted with the DOM, causing frequent suspension of its transaction; and
+(b)~the guest had several \code{Array} operations that referenced the
+\code{length} of the array. Each such operation triggered a traversal of
+read/write sets to calculate the array length.
+
+Note that \txjs\ only degrades performance of \js\ code executing within
+transactions (\ie~guests). The performance of code executing outside
+transactions (\ie~hosts) is not affected by our prototype.
+
+% md : not relevant any more
+
+% However, \txjs\ increased the load time of the \js\ menu application by about
+% $1.1$ seconds. We found that the bulk of the overhead was because of the HTML
+% parser used in the iblock of the transaction used to confine the application.
+% As shown in \figref{figure:jsmenu-evthdlr}, \js\ menu makes extensive use of
+% \code{document.write} calls with incomplete HTML tags. Because the parser that
+% we used in our prototype did not accept incomplete HTML tags, the iblock
+% buffered arguments until it identified a complete tag before forwarding the
+% \code{document.write} to the parser. This buffering, in conjunction with the
+% fact that the \js-based HTML parser itself executes slower than the browser's
+% natively-implemented HTML parser, contributed to the increased load time for
+% the \js\ menu application.
+
+\begin{wrapfigure}{rh}{0.41\textwidth}
+%\vspace*{-5.0ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\scriptsize
+%\begin{tabular}{|l|c|c|r|}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Microbenchmark} %& \textbf{Suspends?} & \textbf{Gluing?} 
+& \textbf{Overhead} \\ 
+\hline
+\multicolumn{2}{|c|}{\textbf{Native Functions}}\\
+\hline
+\codetiny{eval("1")}                   %& \yes & \yes 
+& $6.69\times$ \\ 
+\codetiny{eval("if (true)true;false")} %& \yes & \yes 
+& $6.87\times$ \\ 
+\codetiny{fn.call(this, i)}            %& \no  & \yes 
+& $1.89\times$ \\ 
+\hline
+\multicolumn{2}{|c|}{\textbf{External operations}}\\
+\hline
+\codetiny{getElementById("checkbox")}                %& \yes & \no 
+& $6.78\times$ \\ 
+\codetiny{getElementsByTagName("input")}             %& \yes & \no 
+& $6.89\times$ \\ 
+\codetiny{createElement("div")}                      %& \yes & \no 
+& $3.69\times$ \\ 
+\codetiny{createEvent("MouseEvents")}                %& \yes & \no 
+& $3.82\times$ \\ 
+\codetiny{addEventListener("click", clk, false)}     %& \yes & \no 
+& $26.51\times$ \\ 
+\codetiny{dispatchEvent(evt)}                        %& \yes & \no 
+& $1.20\times$ \\
+\codetiny{document.write("$<$b$>$Hi$<$/b$>$")}       %& \yes & \no 
+& $1.26\times$
+\\
+\codetiny{document.write("$<$script$>$x=1;$<$/script$>$")}
+                                             %& \yes & \yes 
+& $2.01\times$ \\
+%\footnote{We performed only 1000 runs for this experiment.} 
+\hline
+\end{tabular}
+\mycaption{Performance of function call microbenchmarks.
+%\describecaption{The table also shows whether the microbenchmark caused its
+%transaction to suspend, and whether \txjs\ used gluing during its execution.}}
+% \describecaption{Note: The call to \code{document.write} on line \lnobig{11}
+% invokes gluing of the \html{script}'s execution context
+% (\sectref{section:design:iblock:gluing}) when it suspends, while call to
+% \code{document.write} on line \lnobig{10} only suspends.}
+}
+{\label{figure:microbenchmarkcost}}%\noindent\vspace{-0.5cm}
+%\vspace*{-5.5ex}
+\end{wrapfigure}
+
+\mysubsubsection{Microbenchmarks} 
+%
+We further dissected the performance of \txjs\ using microbenchmarks designed
+to stress specific functionalities.
+\add{We used two sets of microbenchmarks:
+function calls and event dispatchers.}
+\remove{We used three sets of
+microbenchmarks: function calls, event dispatchers, and the Sunspider suite.}
+In
+our experiments, we executed each microbenchmark within a transaction whose
+iblock simply permitted all actions and resumed the transaction without
+enforcing additional security policies, and compared its performance against the
+non-transactional version.
+
+\myparagraph{Function calls} 
+%
+\add{
+We devised a set of microbenchmarks (\figref{figure:microbenchmarkcost}) that
+}\remove{
+These microbenchmarks
+}stress the performance of \txjs's function call-handling code. Each benchmark
+invoked the code in first column of \figref{figure:microbenchmarkcost}
+$10,000$ times.
+
+Recall that \txjs\ suspends on function calls that cause external operations
+and for certain native function calls, such as \code{eval}. Each suspend
+operation requires \txjs\ to save the state of the transaction, execute the
+iblock, and restore the transaction state upon the execution of a \code{resume}
+call. Most of the benchmarks in \figref{figure:microbenchmarkcost} trigger a
+suspension, which induces significant overheads. In particular,
+\code{addEventListener} had an overhead of $26.51\times$. The bulk of the
+overhead was induced by code in the iblock that generates wrappers for the
+event handler registered using \code{addEventListener}.
+%
+% The overhead includes the cost of i) setting the transaction context, ii)
+% extracting the function body of the original event handler and wrapping it in
+% a \code{Transaction} construct, iii) appending the iblock to the
+% \code{Transaction} construct, and iv) attaching the new event handler to the
+% DOM node.
+%
+
+% md: commenting out, since this is not relevant now.
+
+% Note that \code{document.write} also incurs relatively high overheads of
+% $12.3\times$ and $9.38\times$. This overhead can be attributed to the HTML
+% parser, which processes the arguments to \code{document.write}. In the second
+% case, \txjs\ also used gluing to patch the execution of the \code{script} tag
+% to the current transaction.
+\begin{comment}
+\begin{figure*}
+\vspace*{-3.5ex}
+\setlength{\tabcolsep}{2pt}
+%
+\begin{minipage}[b]{0.48\textwidth}
+\centering
+\scriptsize %\addtolength{\tabcolsep}{-2pt}
+%\begin{tabular}{|l|c|c|r|}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Microbenchmark} %& \textbf{Suspends?} & \textbf{Gluing?} 
+& \textbf{Overhead} \\ 
+\hline
+\multicolumn{2}{|c|}{\textbf{Native Functions}}\\
+\hline
+\lno{1}
+\codetiny{eval("1")}                   %& \yes & \yes 
+& $6.69\times$ \\ 
+\lno{2}
+\codetiny{eval("if (true)true;false")} %& \yes & \yes 
+& $6.87\times$ \\ 
+\lno{3}
+\codetiny{fn.call(this, i)}            %& \no  & \yes 
+& $1.89\times$ \\ 
+\hline
+\multicolumn{2}{|c|}{\textbf{External operations}}\\
+\hline
+\lno{4}
+\codetiny{getElementById("checkbox")}                %& \yes & \no 
+& $6.78\times$ \\ 
+\lno{5}
+\codetiny{getElementsByTagName("input")}             %& \yes & \no 
+& $6.89\times$ \\ 
+\lno{6}
+\codetiny{createElement("div")}                      %& \yes & \no 
+& $3.69\times$ \\ 
+\lno{7}
+\codetiny{createEvent("MouseEvents")}                %& \yes & \no 
+& $3.82\times$ \\ 
+\lno{8}
+\codetiny{addEventListener("click", clk, false)}     %& \yes & \no 
+& $26.51\times$ \\ 
+\lno{9}
+\codetiny{dispatchEvent(evt)}                        %& \yes & \no 
+& $1.20\times$ \\
+\lno{10}
+\codetiny{document.write("$<$b$>$Hi$<$/b$>$")}       %& \yes & \no 
+& $1.26\times$
+\\
+\lno{11}
+\codetiny{document.write("$<$script$>$x=1;$<$/script$>$")}
+                                             %& \yes & \yes 
+& $2.01\times$ \\
+%\footnote{We performed only 1000 runs for this experiment.} 
+\hline
+\end{tabular}
+\mycaption{Performance of function call microbenchmarks.
+%\describecaption{The table also shows whether the microbenchmark caused its
+%transaction to suspend, and whether \txjs\ used gluing during its execution.}}
+% \describecaption{Note: The call to \code{document.write} on line \lnobig{11}
+% invokes gluing of the \html{script}'s execution context
+% (\sectref{section:design:iblock:gluing}) when it suspends, while call to
+% \code{document.write} on line \lnobig{10} only suspends.}
+}
+{\label{figure:microbenchmarkcost}}%\noindent\vspace{-0.5cm}
+\indent\vspace{0.25cm}
+\end{minipage}
+%
+\hfill
+\begin{minipage}[b]{0.48\textwidth}
+\centering
+\scriptsize
+\begin{tabular}{|l|c|c|}
+\hline
+                & \multicolumn{2}{c|}{\textbf{\underline{Overhead}}} \\ 
+\textbf{Event name}  & \textbf{Normalized} & \textbf{Raw ($\mu$s)}\\
+% & Normal (ms) & Transactional (ms) 
+\hline
+\lno{1} Drag Event     (\codetiny{drag})            & 1.71$\times$ & 97 \\ %& 136 & 233 
+\lno{2} Keyboard Event (\codetiny{keypress})        & 1.16$\times$ & 150 \\
+% \footnote{We performed only 100 runs for this experiment.} & 92 & 107 
+\lno{3} Message Event  (\codetiny{message})         & 1.17$\times$ & 85 \\ % & 515 & 600 
+\lno{4} Mouse Event    (\codetiny{click})           & 1.54$\times$ & 86 \\ % & 160 & 246 
+\lno{5} Mouse Event    (\codetiny{mouseover})       & 2.05$\times$ & 88 \\ % & 84 & 172 
+\lno{6} Mutation Event (\codetiny{DOMAttrModified}) & 2.14$\times$ & 88 \\ % & 77 & 165 
+\lno{7} UI Event       (\codetiny{overflow})        & 1.97$\times$ & 61 \\ % & 63 & 124 
+\hline
+\end{tabular}
+\mycaptionsquish{Performance of event dispatch microbenchmarks.}
+{\label{figure:txevents}}
+\indent\vspace{0.9cm}
+\end{minipage}
+\vspace*{-7.5ex}
+\end{figure*}
+\end{comment}
+
+\begin{wrapfigure}{rh}{0.47\textwidth}
+%\vspace*{-3.5ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\scriptsize
+\begin{tabular}{|l|c|c|}
+\hline
+                & \multicolumn{2}{c|}{\textbf{\underline{Overhead}}} \\ 
+\textbf{Event name}  & \textbf{Normalized} & \textbf{Raw ($\mu$s)}\\
+\hline
+% & Normal (ms) & Transactional (ms) 
+Drag Event     (\codetiny{drag})            & 1.71$\times$ & 97 \\ %&
+%136 & 233 
+Keyboard Event (\codetiny{keypress})        & 1.16$\times$ & 150 \\
+% \footnote{We performed only 100 runs for this experiment.} & 92 & 107 
+Message Event  (\codetiny{message})         & 1.17$\times$ & 85 \\ % &
+%515 & 600 
+Mouse Event    (\codetiny{click})           & 1.54$\times$ & 86 \\ % &
+%160 & 246 
+Mouse Event    (\codetiny{mouseover})       & 2.05$\times$ & 88 \\ % &
+%84 & 172 
+Mutation Event (\codetiny{DOMAttrModified}) & 2.14$\times$ & 88 \\ % &
+%77 & 165 
+UI Event       (\codetiny{overflow})        & 1.97$\times$ & 61 \\ % &
+%63 & 124 
+\hline
+\end{tabular}
+\mycaptionsquish{Performance of event dispatch microbenchmarks.}
+{\label{figure:txevents}}
+%\vspace*{-3.5ex}
+\end{wrapfigure}
+
+\myparagraph{User events} 
+%
+A \js\ application executing within a transaction may dispatch user events,
+such as mouse clicks and key presses, which must be processed by the event
+handler associated with the relevant DOM node. The promptness with which events
+are dispatched typically affects end-user experience.
+
+To measure the impact of transactions on this aspect of browser performance, we
+devised a set of microbenchmarks that dispatched user events such as clicking a
+checkbox, moving the mouse, pressing keys, etc. and measured the delay in
+handling them (\figref{figure:txevents}). \remove{
+ Each microbenchmark used \js\ code to simulate user actions, such as clicking
+on a checkbox, hovering and moving the mouse, pressing keys, and events such as
+\code{drag}, \code{message}, \code{DOMAttrModified} and \code{overflow}. 
+}
+
+In each case, code that generated and dispatched the event executed as a
+transaction with an iblock that allowed all actions. To measure overhead, we
+executed this code $1,\!000$ times and compared its performance against a native
+event dispatcher. \figref{figure:txevents} presents the results, which show the
+normalized overhead as well as the raw delay to process a single event. As this
+figure shows, although the normalized overheads range from 16\% to 114\%, the
+raw delays average about $94$ microseconds, which is imperceptible to end users.
+
+% Read-set logging was turned off, since we believe that in a real setting, the
+% cost of logging read accesses will get amortized across events. 
+\remove{
+\myparagraph{SunSpider} 
+%
+Finally, we also tested \txjs\ with the SunSpider \js\ benchmark suite by
+executing each of its benchmarks within a transaction. This benchmark suite
+reported an average overhead of $3.94\times$ across all benchmarks.  In
+particular, we observed high overheads for benchmarks that had tight loops
+operating over many array elements. The overhead primarily stems from having to
+consult the write set for every read operation and updating the read set itself
+even though the iblock's permissive security policy did not consult read/write
+sets.
+}
+%------------------------------------------------------------------------------
+
+\mysubsection{Complexity of policies} 
+\label{section:evaluation:policy}
+
+\begin{figure*}[t!]
+%\begin{wrapfigure}{rh}{0.57\textwidth}
+%\vspace*{-7.5ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+\scriptsize %\addtolength{\tabcolsep}{-1pt}
+\begin{tabular}{|l|c|c||l|c|c|}
+\hline 
+\textbf{Policy}  & \textbf{T-LOC} & \textbf{C-LOC} &
+  \textbf{Policy}  & \textbf{T-LOC} & \textbf{C-LOC}\\
+\hline
+  Conscript-\#1     & 7   & 2 
+& Conscript-\#2     & 5   & 6\\
+  Conscript-\#3     & 6   & 3 
+& Conscript-\#4     & 9   & 7\\
+  Conscript-\#5     & 9   & 9 
+& Conscript-\#6     & 5   & 8\\
+  Conscript-\#7     & 7   & 5 
+& Conscript-\#8     & 5   & 6\\
+  Conscript-\#10    & 9   & 16 
+& Conscript-\#11    & 12  & 17\\
+  Conscript-\#12    & 5   & 4 
+& Conscript-\#13    & 4   & 6\\ 
+  Conscript-\#14    & 3   & 5 
+& Conscript-\#15    & 6   & 7\\
+  Conscript-\#16    & 6   & 4 
+& Conscript-\#17    & 7   & 5\\
+\hline
+\end{tabular}
+\mycaptionsquish{Policy complexity. \describecaption{Comparing policies in
+\txjs\ (T-LOC) and Conscript (C-LOC). Policies are numbered as in
+Conscript~\cite{conscript:oak10}. We omitted Conscript-\#9 since it is
+IE-specific.}}
+{\label{figure:policies-LOC}}
+%\vspace*{-2.5ex}
+%\end{wrapfigure}
+\end{figure*}
+
+To study the complexity of writing policies in \txjs, we compared the number of
+lines of code needed to write policies in \txjs\ and in
+Conscript~\cite{conscript:oak10}.  We considered the policies discussed in 
+Conscript and wrote equivalent policies in \txjs;
+\figref{figure:policies-LOC} compares the source lines of code (counting number
+of semi-colons) of policies in \txjs\ and Conscript. This shows that the
+programming effort required to encode policies in both systems is comparable.
+
+
+% \begin{figure}[t!]
+% \centering
+% \scriptsize
+% \begin{tabular}{|l|c|c|}
+% \hline 
+% & \multicolumn{2}{c|}{\textbf{\underline{Lines of Code}}} \\ 
+% \textbf{Policy Description}  & \textbf{\txjs} & \textbf{ConScript}\\
+% \hline
+% \lno{1} No dynamic script  & 7 & 2\\ 
+% \lno{2} No string arguments to \code{setTimeout}, \code{setInterval}  & 5 & 6\\ 
+% \lno{3} Restrict \code{XMLHttpRequest} to secure connections  & 5 & 8\\ 
+% \lno{4} No foreign links after a cookie access  & 9 & 16\\ 
+% \lno{5} Disable dynamic \html{iframe} creation  & 5 & 4\\ 
+% \lno{6} Staged eval restrictions  & 7 & 5\\ 
+% \hline
+% \end{tabular}
+% \mycaptionsquish{Comparing policy complexity in \txjs\ and Conscript.}
+% {\label{figure:policies-LOC}}
+% \end{figure}

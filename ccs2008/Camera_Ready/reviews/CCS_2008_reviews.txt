@@ -1,0 +1,357 @@
+Date: Wed, 2 Jul 2008 22:15:19 +0100
+From: CCS 2008 <ccs2008@easychair.org>
+To: Vinod Ganapathy <vinodg@cs.rutgers.edu>
+Subject: CCS 2008 notification
+
+Dear Author,                                                                    
+                                                                                
+It is our pleasure to inform you that your paper has been accepted to           
+ACM CCS 2008. Out of 281 submitted papers, we accepted 51 papers.               
+Below are (anonymous) referees' comments about your paper.                      
+                                                                                
+Please confirm receipt of this email including the (possibly updated)           
+title and the complete list and affiliations of authors. This will              
+allow us to distribute the list of accepted papers. Please also                 
+confirm that at least one author will attend the conference and                 
+present the talk.                                                               
+                                                                                
+Within one week, you will receive the instructions for producing                
+and sending the final version. The firm deadline for the final version          
+is August 10, 2008.                                                             
+                                                                                
+Thank you very much for contributing to ACM CCS 2008. We are looking            
+forward to seeing you at the conference.  Please contact us if you              
+have any questions.                                                             
+                                                                                
+Sincerely,                                                                      
+Paul Syverson, Somesh Jha                                                       
+ACM CCS 2008 Program Chairs
+
+
+---------------------------------------------
+
+Paper: 106
+Title: Enforcing Authorization Policies using Transactional Memory Introspection
+
+
+-------------------- review 1 --------------------
+
+PAPER: 106
+TITLE: Enforcing Authorization Policies using Transactional Memory Introspection
+    
+
+SUMMARY:
+This paper describes TMI, a technique for augmenting a software
+transactional memory system (STM) with support for enforcing
+authorization policies. The main benefits of TMI are 1. a declarative
+means of enforcing a security policy which promotes separation of
+security code from application logic; 2. a transparent means of policy
+enforcement that offers complete mediation, simplifies error
+recovery, and protects against timing related bugs.
+
+In order to use TMI, programmers specify a policy by identifying the
+security-sensitive resources and authorization checks that must be be
+performed prior to operating on these resources. They then must
+enclose security-critical code within a "transaction" block. The TMI
+runtime (largely by virtue of the existing features of the STM system)
+can interpose on all the security-sensitive operations and ensure that
+the necessary authorization checks are performed.
+
+The paper describes an implementation of TMI as an extension of the
+DSTM2 library and discusses the application of TMI to four
+small-to-medium-sized Java server applications. The experiments
+indicate that the cost of including security policy enforcement in an
+STM system is small.
+
+EVALUATION: 
+I liked this paper a lot. This is a simple idea with clear benefits
+and leaves room for many possible directions of future enhancements.
+The discussion is interesting, the experimental evaluation is
+reasonable, and the writing is clear.
+
+One major weakness of this approach is that STMs don't have a
+convincing general story about I/O yet, and many security-sensitive
+operations involve I/O, e.g., the code snippet in Figure 2 from the
+Linux kernel.  However, I was ultimately quite impressed that the
+authors used a transactional file I/O system in their implementation,
+and so while I think there is still a weakness here, the paper is
+convincing enough.  I would like to see more discussion about I/O in
+the beginning of the paper, though; there is potentially a major
+stumbling block if transactional I/O is not available in a particular
+domain.
+
+Another major concern I have about the paper is that it starts one
+place and then ends somewhere else:  The first half of the paper is
+all about the ease of writing code using TMI, but then the second half
+of the paper is all about performance, and it's really unclear why the
+focus shifted from one to the other.  I would like to see much more
+discussion in the case studies section of the paper about how easy or
+hard it was to use TMI.  Can you make an argument, either
+quantitatively or qualitatively, that TMI benefited these
+applications?
+
+Another minor downside is that the paper presents TMI only
+informally. I am still a little unclear about the exact details of the
+way in which the various logs are maintained and authorization checks
+are performed. Certainly, after reading this paper I am not
+sufficiently informed to implement TMI on top of my favorite STM
+implementation.
+   
+Specific comments:
+
+ * Section 2 points out that complete mediation requires proper
+   passing of security metadata to an authorization check. While the
+   rest of the paper alludes back to this issue several times, I feel
+   that this is part of the problem is under-addressed. Security
+   metadata can include more than just the principal making the
+   request (which annotates the transaction construct in TMI). What
+   about other forms of metadata, like, for instance, security labels
+   in a label-based security system like SELinux or Jif? What if
+   there's more than one principal associated with a session? 
+
+ * The ease of error handling is a main selling point of TMI. However,
+   the only error handling provided is a rollback of a
+   transaction. While this is useful default behavior, can you comment
+   on if/how TMI can be integrated with support for explicit advice
+   (or compensations) that can restore the state of the application on
+   an authorization failure. The related work points out the need for
+   explicit advice for error handling in an AOP system as a drawback;
+   to be fair, IMO, the lack of explicit advice in TMI is also a
+   drawback.
+
+* Section 2, "...is unsound in the presence of library code."  STMs
+  are also unsound in the presence of library code unless the library
+  code has been ported to use the STM.
+
+ * Notation in Fig 5: Since you're already changing the "atomic"
+   block to a "transaction" block, I think it would be clearer to
+   change the notation throughout to be security specific. For
+   instance, I'd have preferred the @atomic qualifier to be
+   something like @sensitive. I also didn't understand what the
+   notation "(resource access pattern)" expression means
+   exactly. There seems to be some binding of pattern variables going
+   on as well (e.g. G) and some variables like "principal" that are in
+   scope by default. All of this goes back to my concern about the
+   informal presentation of TMI.
+
+ * I would have liked more detail about the form of fingerprints
+   you use for defining security-relevant operations and how these can
+   be tracked by the reference monitor.
+
+ * The discussion in Section 4 about the various forms of @atomic
+   object factories and contention managers is vague. Could you be
+   more specific?
+
+ * I would have liked to see an example of the kinds of changes that
+   are necessary in order to get an application to work with DSTM2. In
+   Section 5.3 you point out that FreeCS required 860 changes, most of
+   which were replacing reads/writes with accessor functions. Can you
+   show a code snippet to help the reader get a better sense of how
+   onerous these changes are?
+
+ * At the end of Section 5 you briefly mention a measure-and-adapt
+   authorization manager. Can you elaborate on this? If not, I suggest
+   omitting this.
+
+ * You might also compare to Swamy et al's CSFW '06 paper, Managing
+   Policy Updates in Security-typed Languages, which proposes using
+   transactions in the setting of information flow security.
+ 
+Typos etc:
+
+ Page 6: "... consist of a several ..."
+         "... matches against this log ..."
+
+ Page 9: Missing a citation of the Vino operating system. 
+
+
+-------------------- review 2 --------------------
+
+PAPER: 106
+TITLE: Enforcing Authorization Policies using Transactional Memory Introspection
+    
+
+Summary: Paper proposes using STM's read/write logs for transactions to do authorization. The idea is simple: STMs track 
+reads and writes done in a transaction anyways (for the purpose of concurrency control). Why not use this information
+to call a reference monitor for authorization checks as well? The advantages are that we do not need to worry about the
+programmer accidentally missing authorization checks.
+
+Evlauation: I think this is an interesting idea, and the authors have present it well, and done some evaluation. Thus
+I recommend accepting this paper. Here are some comments/questions to improve the paper:
+1. If the transaction aborts due to an authorization failure, I am not sure what you do. There is no point in retrying since
+it will fail again anyways.
+2. If the access to the critical data is outside a transaction boundary, you still have the problem of omitted
+reference monitor checks. Thus, your statement that you "guarantee complete mediation" is not true.
+3. In section 3.3, the performance differences between lazy and eager seem rather artificial. This is because,
+even with eager checks you could easily record which checks you have already done and avoid redoing redundant checks.
+ 
+
+A larger concern (that is relevant to the paper, but I wont blame the authors for this) is that I do not see 
+any significant piece of code written using STMs! Thus, efforts like this necessarily need to write
+toy examples with STMs and turn out to be unconvincing. This is a criticism for the STM community in general, rather than
+this particular paper. 
+
+
+-------------------- review 3 --------------------
+
+PAPER: 106
+TITLE: Enforcing Authorization Policies using Transactional Memory Introspection
+    
+
+I feel the paper could be written in a more simple and easy to read fashion. I would recommend the authors to give 
+some more background to the problem in the first paragraph of Introduction. A toy example in the introduction would 
+also help the readers get the point more easily. 
+
+The authors introduce Transactional Memory Introspection (TMI) Reference Monitor which uses the guarantees given by 
+STM, to enforce authorization policies. TMI decouples application functionality from security enforcement code similar to 
+STM decoupling applications with lock statements. The application software defines the security policy, the set of 
+resources that are security-relevant, as well as the code that checks security-policy compliance. TMI extends the 
+validation step for STM transactions to enforce correct authroization. The TMI is invoked implicitly whenever a security 
+relevant, shared resource is accessed. Upon an abort, the STM runtime system will roll back all effects of a transaction, 
+including any changes to the state of the TMI reference monitor. Since the TMI works at the instuction-level of 
+granularity and has less performance overhead, it has potential to be used in commercial applications. 
+
+Though the idea of building a reference monitor extending STM is novel, there is not much research rigor needed to see 
+the results. Also, I could not understand much on how a high level authorization policy translates into an instruction 
+level for it to be enforced. An example of concrete authroization policy using XACML or in some other formalism, would 
+have made things much more clearer. This is definitely a good engineering effort. 
+
+Typos: Section 3.2, 4th paragraph - double "also" 
+
+
+-------------------- review 4 --------------------
+
+PAPER: 106
+TITLE: Enforcing Authorization Policies using Transactional Memory Introspection
+    
+
+This paper describes a system --- Transactional Memory Introspection
+(TMI) --- for leveraging a software transactional memory to support
+authorization policies.  The authors achieve this by treating
+security-relevant variables as "shared" variables and mediating access
+to them through the STM.  If any authorization checks fail during the
+course of a transaction, the STM mechanism is used to rollback the
+changes.  The authorization checks themselves are performed by a
+reference monitor, which allows a wide variety of authorization
+policies to be enforced.  The authors' proposal combines the benefits
+of (1) automatically-inserted security checks a la in-lined reference
+monitors (IRMs); (2) rollback-oriented exception handling for
+returning the system to a consistent state on failure (in this case,
+failure of a security check); and (3) avoiding TOCTOU errors due to
+thread interleavings (in which a thread T1 performs a security check
+on a shared object, but the object is changed by another thread T2
+prior to the use in T1, where the change would cause the original
+security check in T1 to fail).
+
+The authors implement their system using the DSTM2 STM toolkit for
+Java, and evaluate several different real-world authorization policies
+using, showing it to have a small overhead over programs already using
+the DSTM2 toolkit for concurrency. The authors consider several
+optimizations to the authorization checking, comparing eager, lazy,
+and overlapped (concurrent) checks.
+
+The major contributions of this work are a framework for decoupling
+authorization enforcement from program logic, an approach that avoids
+many of the security issues introduced by concurrency, and a good
+implementation and evaluation.  The flexible authorization of TMI
+provides an enforcement mechanism that makes handling and reasoning
+about authorization failures much easier. Basing the system on a STM
+allows it to eliminate many security issues that arise when adding
+concurrency, since it does not need to explicitly reason about thread
+interleavings (which are a cause TOCTTOU bugs in concurrent software)
+during normal operation or during an exceptional condition caused by
+an authorization failure. I feel it does a good job of extending the
+abstraction model of STM concurrency (functions do not need be
+explicitly aware of concurrent accesses to shared variables) to security
+(functions do not need to explicitly be aware of authorization
+checks). The implementation and evaluation sections are
+convincing, although it is unfortunate that the chosen STM has such a
+high performance overhead, as it makes it hard to evaluate the true
+overhead of the system.  Finally, I should add that I was particularly
+impressed by the discussion of the design space.  Many times when I
+wondered about a particular issue, discussion of that issue was soon
+to follow.  Though I am not convinced the proposed approach is "the
+right answer," tere is much to learn from reading this paper.
+
+Here are various things I wondered about while reading the paper that
+the authors might wish to address:
+
+The authors seem to conflate the idea of shared object and
+security-sensitive object, and also conflate the notion of transaction
+for multi-threaded correctness with one of security policy
+consistency.  That is, I would think that security-relevant
+transactions need not be on shared objects, and that transaction
+boundaries should be dictated by the consistency of an operation with
+respect to its security.  It may well be that these two ideas largely
+coincide, but I suspect they are not equivalent.  For example, in
+order to ensure complete mediation, the authors recommend using a
+transaction{...} block to span operations at a fairly coarse level,
+such as around request handlers.  TMI rolls back this entire (large)
+transaction on failure---but what if we don't want to undo all of the
+changes to shared objects?  This may be difficult to arrange.
+Moreover, since a request handler may take substantial time to execute
+(especially with authorization checks), the transaction blocks may be
+too large for efficient concurrent access to shared variables. I would
+like to see a description of how TMI deals with this problem.
+
+Also, it seems like the STM requirements of TMI are beyond what most
+STM systems currently support; the authors state that "a TMI reference
+monitor is best built on an STM system with comprehensive support for
+I/O and external state"; since this is support is not common, it would
+be interesting to know how TMI would integrate with a system lacking
+such support.
+
+I find the claim that the system provides "freedom from TOCTTOU bugs"
+a little strong, since it does not prevent causes of TOCTTOU bugs such
+as filesystem interaction. That is, some other process could change
+the permissions of the file, and the TMI-enhanced system would not
+necessarily be aware of them.  Moreover, I wonder whether the system
+handles TOCTOU bugs due to concurrent changes to the policy, rather
+than security-relevant objects it governs.  That is, what if, within a
+transaction, there are several policy checks but the policy changes
+during the transaction?  The authors' lazy vs. eager strategies will
+be different in this case---the eager checks will be due to different
+versions of the policy, and possibly incorrect.  This case can be
+handled by treating the policy as a shared object, but the authors did
+not make it clear whether they do this.  The authors may be interested
+in a paper by Swamy et al. in CSFW 06, "Managing policy updates in
+security-typed languages" which proposes to use transactions to handle
+this situation.
+
+As a nit, I don't think the parenthetical paragraph on p. 4 (Sec. 2.2)
+on lock-based transactions needs to insinuate that that approach is
+untenable.  Such a claim warrants a significant discussion, and is
+outside the scope of this paper.  Indeed, the lock allocation
+strategy, for its shortcomings, has significantly better performance
+in general than the optimistic approach.  The claim about it being
+unsound WRT libraries is also spurious---you just have to analyze them
+or provide a sound model for them, which the referenced systems do.  I
+would simply say that lock-based transactions are an alternative
+technique that could potentially be used (albeit only with eager
+security checking) but such exporation is outside the scope of the
+current paper.
+
+I would have liked to see an example of a fingerprint.  I've read the
+fingerprint papers, so I have a sense of what this is about.  But I
+think it would clarify things for the general reader.  Probably the
+authors can trim their STM discussion in 2.2 to make space, if
+necessary.
+
+Does DSTM2 provide weak or strong atomicity?  Seems like you really
+want the latter, but the paper doesn't come out and say this very
+clearly.
+
+I would have liked to see the actual code of the policy in Fig. 5.
+For that matter, I felt the discussion of the chat server and X
+server, the most interesting examples, was pretty thin.  Any chance
+you can show example code, policy, etc. for that?
+
+In 5.2., the first para claims that no @atomic objects were
+specified.  But isn't this required in order to track their read/write
+sets and thereby enforce security?  Or perhaps this is OK because
+checks are being made on file system objects?
+
+In 5.5., I'd like details about how the contention levels were
+set/controlled experimentally in order to produce Fig. 7; this wasn't
+clear from the last two paras of the section. 
+

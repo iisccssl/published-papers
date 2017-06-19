@@ -1,0 +1,193 @@
+The following issues have been addressed by revising the paper.
+
+[1.6] VG, 23/7
+[4.4] "
+[1.8] Added fingerprint for FreeCS
+[4.5] "
+[4.7] Added example policy (in words) for FreeCS. Reviewer wanted policy for
+      Figure 5, but that Figure would get too crowded if we included an example
+			of a policy. Moreover, it is not really relevant for Figure 5. Instead, I
+			included an example policy in the results section.
+
+----------------------------------------------------------------------------
+MAJOR POINTS (must address) -
+
+* Need better discussion of I/O and TMI.
+* Need to better clarify fingerprints and how TMI acquires security-related
+  metadata required for authorization. Can be done by expanding on the
+  description of FreeCS and including fingerprint examples and code snippets
+  for this benchmark.
+
+---
+
+ISSUES RAISED BY INDIVIDUAL REVIEWERS:
+
+[1.1] More discussion on I/O needed at the beginning of the paper. How to deal
+      with I/O instructions if TM is not properly equipped with support for
+      I/O, or a transactional I/O package not available?
+ACTION ITEMS: 
+      Need a short discussion on the design space of dealing with I/O. This
+      discussion needs to clearly mention what we have implemented and what 
+      we are speculating on
+
+
+[1.2] Paper starts of with TMI as being easy to integrate, but ends up with
+      discussion of performance.
+ACTION ITEMS:
+      Not sure how to handle this, since this was not a major concern of other
+      reviewers. Should we reorganize the experimental results section in some
+      way to address this? Not clear how to evaluate "ease-of-integration".
+
+
+[1.3] Details of TMI were informal.
+ACTION ITEMS:
+      Formal treatment of TMI might be another paper in itself. I think we can
+      safely ignore this comment, but act on this comment by better clarifying
+      the details with which this reviewer had problems.
+
+
+[1.4] How do you deal with security labels? How do you deal with multiple
+      principals.
+ACTION ITEMS:
+      Must mention that we can handle security labels (via the authorization
+      manager's string representation of objects). Must also mention that we
+      indeed do this, for instance, for WierdX. 
+      
+      Multiple principals is a good point. We haven't addressed this in our work. 
+      One possibility is to have transaction boundaries separate each session by 
+      different principals. However, this technique will not work for cases
+      where we have separation of duty (e.g., two principals are needed to
+      perform a particular task).
+
+
+[1.5] Default failure handling is abort. How can TMI be integrated with
+      explicit advice for compensating actions.
+ACTION ITEMS:
+      Must elaborate on our architecture and mention that compensating actions
+      are also possible with TMI, e.g., by including the compensation actions
+      in the catch{} block of the AccessDeniedException.
+
+
+[1.6] Discussion on locks vs STMs.
+ACTION ITEMS:
+      Completely remove the discussion of locks vs STMs from the background
+      section. Was included to appease a USENIX Security reviewer.
+
+
+[1.7] What is "resource access pattern"? How are variables bound to subject
+      object and operation?
+ACTION ITEMS:
+      Need a better discussion on: (a) What a fingerprint is; (b) How
+      fingerprints are matched; and (c) what a resource access pattern is.
+      Liviu also raised this concern independently with me.
+
+
+[1.8] Example of fingerprint needed.
+ACTION ITEMS: 
+      Include a concrete example of a fingerprint for the FreeCS Chat server.
+
+
+[1.9] Description of @atomic object factories was vague.
+ACTION ITEMS:
+      Can we improve the discussion of this?
+
+
+[1.10] What kind of changes needed to adapt FreeCS to DSTM2?
+ACTION ITEMS:
+      Include a code snippet for FreeCS (or WierdX), but not both.
+
+
+[1.11] Measure and adapt authorization manager needs to be better
+       clarified/omitted.
+ACTION ITEMS:
+      We could omit this discussion if we're short on space.
+
+
+[1.12] Dealing with policy updates/related work on transactions.
+ACTION ITEMS:
+      Cite Swamy et al.'s CSF06 paper in related work.
+
+
+[2.1] What happens on transaction abort?
+ACTION ITEMS:
+      This was clarified sufficiently well. Not sure how to handle this.
+
+
+[2.2] Claim about guaranteeing complete mediation too strong.
+ACTION ITEMS:
+      Reviewer is correct. Need to weaken this/say that this is possible
+      with a strong atomicity TM.
+
+
+[2.3] Do not understand the performance difference between eager/lazy.
+ACTION ITEMS:
+      Reviewer has good point: Do we have a detailed analysis of why eager
+      is costlier? Is it because the TM periodically blocks the transaction?
+      May need some experiments to better understand the reason for the cost
+      of eager.
+
+
+[3.1] Do not understand how high level authorization policy translates to
+      the instruction level for enforcement.
+ACTION ITEMS: 
+      Related to [1.7] and [1.8]. Concrete example will help. Perhaps we need
+      something akin to the authorization manager example in Figure 5 much
+      earlier in the paper.
+
+
+[4.1] Conflating the idea of shared vs security sensitive and that of
+      consistency of transaction for concurrency and for security.
+ACTION ITEMS: 
+      This is a great point. I had been thinking about TMI along these lines.
+      For good concurrency, we need fine-grained locking (and, by analogy,
+      fine-grained transactions). In contrast, we require coarse-grained
+      transactions in TMI for "ease of integration", and these two requirements
+      seem to conflict. 
+
+      I don't think we can do justice to address this issue well in this paper.
+      But, can we address this using a shared{...} annotation for
+      multi-threaded accesses and a security{...} annotation for security
+      accesses? I need to think about this (and the semantics of a separate
+      shared{} and security{} annotation) a little bit more.
+
+
+[4.2] How to integrate TMI with a TM that lacks I/O support?
+ACTION ITEMS:
+      This is related to point [1.1]. Can be addressed the same way.
+
+
+[4.3] Cannot claim freedom from TOCTTOU bugs since we can't protect from file
+      system races. How to handle concurrent policy updates.
+ACTION ITEMS:
+      Somewhat related to [2.2]. Appropriately reword claim regarding TOCTTOU
+      bugs. Don't handle concurrent policy updates. But cite CSF06 paper.
+
+
+[4.4] Locks vs transactions.
+      Related to [1.6].
+
+
+[4.5] Example of fingerprint.
+      Related to [1.8]. 
+
+
+[4.6] DSTM2: Strong or weak atomicity?
+ACTION ITEMS:
+      Don't both ofree and shadow provide weak atomicity? Need to mention this
+      explictly.
+
+[4.7] Actual code of the policy in Figure 5.
+ACTION ITEMS:
+      If we have space, why not include (a snippet of) the actual XACML policy
+      for GradeSheet? Also, code for FreeCS might address some concerns that
+      this reviewer had.
+
+[4.8] @atomic objects for Tar.
+ACTION ITEMS:
+      This was quite puzzling. Is this because you're just using TMI for stack
+      inspection? If so, need to clarify this better.
+
+[4.9] Details regarding how contention levels were produced for Figure 7.
+ACTION ITEMS:
+      Clarify experimental methodology better.
+

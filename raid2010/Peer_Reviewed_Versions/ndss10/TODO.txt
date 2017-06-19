@@ -1,0 +1,6 @@
+PENDING CHANGES:
+
+(14) IMPORTANT  I really think you need to draw the figure for OBDD(I(i)) so
+that a review can visually see how apply works.
+
+

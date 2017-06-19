@@ -1,0 +1,296 @@
+This is TeX, Version 3.14159 (MiKTeX 1.20e (Snapshot build 187)) (preloaded format=latex 2000.7.10)  15 AUG 2000 14:18
+**example.tex
+(example.tex
+LaTeX2e <1999/06/01> patch level 1
+Babel <v3.6z> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(entcs.cls
+Document Class: entcs 1994/01/12, 2e-1.15: Elsevier Preprint
+(D:\texmf\tex\latex\base\newlfont.sty
+Package: newlfont 1998/08/17 v2.2m Standard LaTeX package
+LaTeX Info: Redefining \em on input line 58.
+ (D:\texmf\tex\latex\base\latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 38.
+))
+(D:\texmf\tex\latex\base\leqno.sty
+
+LaTeX Warning: inputting `leqno.clo' instead of obsolete `leqno.sty'.
+
+(D:\texmf\tex\latex\base\leqno.clo
+File: leqno.clo 1998/08/17 v1.1c Standard LaTeX option (left equation numbers)
+)) (D:\texmf\tex\latex\amsfonts\amssymb.sty
+Package: amssymb 1996/11/03 v2.2b
+
+(D:\texmf\tex\latex\amsfonts\amsfonts.sty
+Package: amsfonts 1997/09/17 v2.2e
+\@emptytoks=\toks14
+\symAMSa=\mathgroup5
+\symAMSb=\mathgroup6
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 133.
+))
+(D:\texmf\tex\latex\hyperref\hyperref.sty
+Package: hyperref 1999/11/09 v6.67e Hypertext links for LaTeX
+
+(D:\texmf\tex\latex\graphics\keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks15
+)
+\@linkdim=\dimen102
+\Hy@linkcounter=\count79
+\Hy@pagecounter=\count80
+
+(D:\texmf\tex\latex\hyperref\pd1enc.def
+File: pd1enc.def 1999/10/05 v0.6 PDFDocEncoding (Heiko Oberdiek)
+)
+Package hyperref Info: Bookmarks ON on input line 1410.
+Package hyperref Info: Hyper figures OFF on input line 1429.
+Package hyperref Info: Link nesting OFF on input line 1434.
+Package hyperref Info: Hyper index ON on input line 1437.
+Package hyperref Info: Plain pages ON on input line 1442.
+Package hyperref Info: Backreferencing OFF on input line 1449.
+
+Implicit mode ON; LaTeX internals redefined
+(D:\texmf\tex\latex\misc\url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+)
+\Fld@menulength=\count81
+\Field@Width=\dimen103
+\Fld@charsize=\dimen104
+\Choice@toks=\toks16
+\Field@toks=\toks17
+Package hyperref Info: Hyper figures OFF on input line 2058.
+Package hyperref Info: Link nesting OFF on input line 2063.
+Package hyperref Info: Hyper index ON on input line 2066.
+Package hyperref Info: backreferencing OFF on input line 2073.
+Package hyperref Info: Link coloring OFF on input line 2078.
+\c@Item=\count82
+\c@Hfootnote=\count83
+)
+*hyperref using default driver hypertex*
+(D:\texmf\tex\latex\hyperref\hypertex.def)
+LaTeX Info: Redefining \rm on input line 73.
+LaTeX Info: Redefining \cal on input line 74.
+LaTeX Info: Redefining \sf on input line 75.
+LaTeX Info: Redefining \tt on input line 76.
+LaTeX Info: Redefining \bf on input line 77.
+LaTeX Info: Redefining \it on input line 78.
+LaTeX Info: Redefining \sl on input line 79.
+LaTeX Info: Redefining \sc on input line 80.
+\@bls=\dimen105
+\eqntopsep=\skip41
+\eqnarraycolsep=\dimen106
+\labelwidthi=\dimen107
+\labelwidthii=\dimen108
+\labelwidthiii=\dimen109
+\labelwidthiv=\dimen110
+\@maxlistdepth=\count84
+\eqnbaselineskip=\skip42
+\eqnlineskip=\skip43
+\mathindent=\dimen111
+\c@section=\count85
+\c@subsection=\count86
+\c@subsubsection=\count87
+\c@paragraph=\count88
+\c@subparagraph=\count89
+\c@thm=\count90
+\c@alg=\count91
+\c@algorithm=\count92
+\c@note=\count93
+\c@summ=\count94
+\c@case=\count95
+\@tempcntc=\count96
+\c@figure=\count97
+\c@table=\count98
+\t@glob@notes=\toks18
+\t@loc@notes=\toks19
+\note@cnt=\count99
+\c@author=\count100
+\n@author=\count101
+\c@collab=\count102
+\n@collab=\count103
+\c@address=\count104
+\sv@mathsurround=\dimen112
+\sv@hyphenpenalty=\count105
+\prev@elem=\count106
+\cur@elem=\count107
+\fm@box=\box26
+\fm@size=\dimen113
+\t@abstract=\box27
+\t@keyword=\box28
+\t@xtheight=\dimen114
+\@logoheight=\dimen115
+\@pubyear=\count108
+\@copyear=\count109
+\slashbox=\box29
+LaTeX Font Info:    Try loading font information for U+lasy on input line 1111.
+
+ (D:\texmf\tex\latex\base\ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2eLaTeX symbol font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 1111.
+
+(D:\texmf\tex\latex\amsfonts\umsa.fd
+File: umsa.fd 1995/01/05 v2.2e AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 1111.
+ (D:\texmf\tex\latex\amsfonts\umsb.fd
+File: umsb.fd 1995/01/05 v2.2e AMS font definitions
+)
+\Slashbox=\box30
+)
+(entcsmacro.sty) (D:\texmf\tex\latex\graphics\graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(D:\texmf\tex\latex\graphics\graphics.sty
+Package: graphics 1999/02/16 v1.0l Standard LaTeX Graphics (DPC,SPQR)
+ (D:\texmf\tex\latex\graphics\trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+) (D:\texmf\tex\latex\config\graphics.cfg)
+Package graphics Info: Driver file: dvips.def on input line 80.
+
+(D:\texmf\tex\latex\graphics\dvips.def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\Gin@req@height=\dimen116
+\Gin@req@width=\dimen117
+) (example.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+Package hyperref Info: Link coloring OFF on input line 26.
+
+(D:\texmf\tex\latex\hyperref\nameref.sty
+Package: nameref 1999/10/07 v2.17 Cross-referencing by name of section
+\c@section@level=\count110
+)
+LaTeX Info: Redefining \ref on input line 26.
+LaTeX Info: Redefining \pageref on input line 26.
+\c@sv@footnote=\count111
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 60.
+
+Overfull \hbox (7.33429pt too wide) in paragraph at lines 61--64
+[][]\OT1/cmr/m/n/12 a macro file con-tain-ing the def-i-ni-tions of some of the
+ theorem-
+ []
+
+! Argument of \@fifthoffive has an extra }.
+<inserted text> 
+                \par 
+l.69 T
+      he formatting these style files impose should \emph{not} be alt...
+? s
+OK, entering \scrollmode...
+Runaway argument?
+! Paragraph ended before \@fifthoffive was complete.
+<to be read again> 
+                   \par 
+l.69 T
+      he formatting these style files impose should \emph{not} be alt...
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+! Argument of \filename@path has an extra }.
+<inserted text> 
+                \par 
+l.69 T
+      he formatting these style files impose should \emph{not} be alt...
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+\ifx \filename@ext \relax \edef \filename@ext {\XR@ext }\fi \def \ETC.
+! Paragraph ended before \filename@path was complete.
+<to be read again> 
+                   \par 
+l.69 T
+      he formatting these style files impose should \emph{not} be alt...
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+
+Overfull \vbox (6.26663pt too high) has occurred while \output is active []
+
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 69.
+
+(D:\texmf\tex\latex\base\omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/sl' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 69.
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 69.
+ [1]
+Overfull \hbox (17.73047pt too wide) in paragraph at lines 73--78
+\OT1/cmtt/m/n/12 elsart.sty \OT1/cmr/m/n/12 and \OT1/cmtt/m/n/12 elsart12.sty\O
+T1/cmr/m/n/12 , from which the files \OT1/cmtt/m/n/12 entcs.sty \OT1/cmr/m/n/12
+ and \OT1/cmtt/m/n/12 entcs12.sty
+ []
+
+[2] [3]
+Underfull \hbox (badness 10000) in paragraph at lines 205--208
+
+ []
+
+
+Overfull \hbox (7.34529pt too wide) in paragraph at lines 224--226
+[][]\OT1/cmr/m/n/12 However, note that the ref-er-ences should \OT1/cmr/m/it/12
+ not \OT1/cmr/m/n/12 be started with a new []\OT1/cmtt/m/n/12 \section
+ []
+
+[4]
+
+LaTeX Font Warning: Command \tiny invalid in math mode on input line 244.
+
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <6> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 244.
+
+LaTeX Font Warning: Command \tiny invalid in math mode on input line 247.
+
+
+LaTeX Font Warning: Command \tiny invalid in math mode on input line 250.
+
+! Undefined control sequence.
+l.268 apply the utility \textt
+                              {dvipdfm} to produce the needed
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[5]
+File: chess.eps Graphic file (type eps)
+ <chess.eps>
+File: tigre.eps Graphic file (type eps)
+ <tigre.eps>
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6]
+[7] [8] (example.aux) )
+(\end occurred when \ifnum on line 69 was incomplete)
+(\end occurred when \iffalse on line 69 was incomplete)
+(\end occurred when \ifnum on line 69 was incomplete)
+Output written on example.dvi (8 pages, 28652 bytes).

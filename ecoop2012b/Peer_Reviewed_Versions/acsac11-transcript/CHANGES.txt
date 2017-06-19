@@ -1,0 +1,14 @@
+1. Emphasize recovery in Introduction, and in general throughout the paper.
+2. Add a few sentences in motivation on recovery, using delCookie. Explain
+   delCookie.
+3. Move stuff related to HTML parser into implementation section (but keep the 
+   stuff on the need for HTML parsing in the design section).
+4. Shorten Mohan's example showing the code snippet. Add text in paper to
+   emphasize the relevant points for reader to take home.
+5. Remove adjectives about performance evaluation ("tolerable") from paper.
+6. Add a few sentences about AJAX callback handling being similar to event
+   handlers.
+7. Ken: redraw portions of figure that shows JS/Native call stacks. 
+8. Reference document.parse() somewhere in the paper.
+9. Where to keep the discussion on nested transactions?
+10. Remove text on buffering of HTML in js menu example.

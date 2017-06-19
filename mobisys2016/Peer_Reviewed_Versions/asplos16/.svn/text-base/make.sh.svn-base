@@ -1,0 +1,5 @@
+#!/bin/sh
+
+make
+cp restricted_spaces.pdf ~/public_html/drafts/restricted_spaces.pdf
+chmod 644 ~/public_html/drafts/restricted_spaces.pdf

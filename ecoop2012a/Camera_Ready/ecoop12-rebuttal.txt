@@ -1,0 +1,64 @@
+(1) ANALYSIS:
+
+  * The techniques used by Beacon are generic, and can detect capability leaks
+    in any modular JavaScript code base, e.g., node.js, Harmony, SproutCore.
+    However, our focus was on browser add-ons implemented using Jetpack. 
+    Beacon cannot directly be applied to non-modular add-ons.
+    
+  * We feel that Beacon is relevant to ECOOP, since it studies adherence to
+    modularity in Jetpack add-ons, a central topic for object-oriented
+    systems.
+
+  * The Jetpack loader indeed does not perform deep freeze of the 'exports' 
+    object. Beacon may therefore have false negatives. We plan to extend Beacon 
+    to analyze all event handlers.
+
+  * The PERFORMANCE of Beacon's static analysis heavily depends on the
+    size of the analyzed module. On average, Beacon takes a couple of minutes
+    and consumes 200MB per module. For the largest module
+    (tab-browser.js/25KB), Beacon took 30mins and 243MB of memory. We will
+    report this in our revised draft. We can provide a detailed analysis of
+    false reports; we observed NO false positives in the capability leak
+    analysis, and only a handful in POLA violation analysis.
+
+
+(2) DESIGN RECOMMENDATIONS: Jetpack is not secure by construction and there is
+    scope for improvement. It provides guidelines for developing modular add-ons
+    and recommends POLA, but does not enforce it. Beacon highlights that leaks 
+    are present in heavily tested code. By dynamically enforcing POLA and deep
+    freezing the 'exports' object, the framework can be made more secure. We
+    are investigating other design recommendations in current work.
+
+
+(3) UTILITY: Beacon is fully automated except for a few cases that our
+    infrastructure (WALA/Rhino) does not support, e.g., for..each, yield, 
+    and case-statements with variables. We manually refactored modules with 
+    these constructs to make them amenable for analysis. Beacon can be used
+    by Mozilla, add-on developers, or third parties to analyze Jetpack code.
+    We plan to release the code upon publication of the paper.
+
+
+(4) MISCELLANEOUS:
+
+ * In the running example, the 'Preferences' object unnecessarily leaks the
+   reference to the entire preference tree which the requesting module does
+   not utilize. This snippet violates Jetpack guidelines and is therefore
+   flagged as a violation by Beacon. A better design would provide accessor
+   functions rather than exporting the reference to the entire tree.
+
+ * Results for leaks and over-privileged add-ons/modules are useful for both
+   Mozilla and developers. 24 leaks in 359 add-ons show that unintended leaks
+   are frequent. The leaks reported in the paper do violate Jetpack
+   guidelines. However, there are no CVE advisories yet.
+
+ * In response to our reports, Mozilla has fixed some over-privileged modules 
+   (e.g., reference [5]) and the new code is available in the current candidate 
+   release. 
+
+ * formalLexical* and actualLexcial* are implementation-specific and related
+   to capturing scope information. arrayHeapsPtsTo is a generalized version of
+   heapPtsTo and used when exact index is not known statically. 
+
+ * Unlike legacy Firefox add-ons, Jetpack add-ons are new and have relatively
+   fewer of users. Customizable Shortcuts, with 5000 users, is one of the more
+   popular Jetpack add-ons.

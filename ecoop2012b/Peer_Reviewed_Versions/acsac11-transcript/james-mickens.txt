@@ -1,0 +1,100 @@
+Hi Mohan,
+
+I'm also working on an Oakland paper! However, it has nothing to do with
+JavaScript ;-).
+
+I took a look at your paper, and I think that it's in pretty good shape.
+However, I do have various pieces of feedback. My main observation is that you
+need to strengthen the motivation for the work. In the introduction, you say
+that there are two ways for host code and guest code to interact: the host can
+place the guest code in a strongly isolated iframe and exchange data using
+postMessage(), or the host can directly include the guest code using a
+<script> tag, eliminating the communication overhead but allowing the guest
+code to directly tamper with host state. Transcript provides protection for
+the latter case. 
+
+The introduction implies that iframe isolation is unnecessarily restrictive.
+However, iframe isolation is arguably more simple and secure than Transcript
+isolation. The iframe security model is easy to understand and program
+against: everything is isolated by default, and cross-domain exchanges require
+an explicit message passing protocol. In contrast, if I use transactional
+isolation, I have to worry about various subtleties. For example, I have to
+make sure that my policy file is broad enough to catch all of the malicious
+behavior that I want to stop, but narrow enough to not disrupt benign guest
+code. Using citations, you argue that reasoning about JavaScript security
+semantics is very difficult (see Caja, Conscript, etc.). So, it's not clear
+why I should believe that it's easy to specify a properly "broad but narrow"
+Transcript policy. Devising the policy code in Figure 1 does not seem
+straightforward. Furthermore, as a developer of guest code, Transcript forces
+me to think about many new corner cases. For example, in Section IV-B, you
+mention the following scenario:
+
+-Guest code in a transaction modifies DOM node N.
+
+-Later, the guest code is suspended.
+
+-The host code runs and deletes the non-speculative version of node N.
+
+-The guest code is resumed and committed. However, the committing DOM tree now
+has a reference to stale node N, a node which shouldn't exist in the "real"
+DOM.
+
+At this point, the host code has to somehow resolve the problem using
+isDOMConflict(). However, it's not clear whether the guest or the host (or
+anyone!) has a good idea of how to resolve such an issue. In my opinion,
+Transcript should disallow such commits by default. This is the design
+decision that we made in Crom. Crom allows a speculative execution to write to
+the DOM tree in arbitrary ways; however, if the user generates a
+speculated-upon action, Crom will only commit the associated speculation if
+there's start-state equivalence, i.e., the starting state for the speculation
+was the same as the application's *current* state. This ensures that the
+speculative state to commit is a realizable outcome for the current state.
+This makes it much easier to reason about commit safety. In contrast,
+Transcript's commit model seems to be that any speculation which satisfies the
+security policy can commit. This allows a lot of unexpected behavior, not only
+with the DOM tree, but (I believe) with the JavaScript heap as well. Do you
+have an "isJSHeapConflict()" call? If not, why not? In the example given on
+page 9 of the Transcript paper, couldn't I replace "DOM node N" with
+"JavaScript heap object O"? Wouldn't a similar commit-time problem emerge?
+
+So, to summarize the two points I've made, I think that Transcript introduces
+additional complexity that the paper doesn't fully address. Relative to iframe
+isolation, Transcript forces the developer to correctly specify "broad but
+narrow" security policies. Relative to Crom, Transcript has a commit model
+that is more powerful (since any policy-satisfying speculation can commit),
+but also more confusing (since the host and the guest can engage in
+write-write conflicts on the same state that must be resolved at commit-time).
+
+I had various smaller comments about the paper:
+
+-Transcript isolates cookies, but does it also isolate DOM storage?
+
+-How does Transcript handle setTimeout()s and setInterval()s that are called
+inside a transaction? I can imagine several ways to handle such things, but
+none of the solutions seem trivial . . .
+
+-In Section IV-B, you say that "Cloning event handlers only creates references
+to the function bodies, it does not create new function objects in the
+transaction's heap. However, if a guest attempts to modify an event handler
+associated with a node, the reference is rewritten to point to the function
+object in the transaction's write set." I didn't understand what these
+sentences were trying to say. Aren't all heap objects (including event
+handlers) associated with read/write sets? If so, what makes event handlers
+any different?
+
+-In the evaluation section, I'm confused about what code you're measuring in
+the application benchmark section. Are you just looking at the cost of running
+Transcript during the initialization routines of the five programs? In other
+words, I assume that you're not loading the programs and then actually
+interacting with them using the keyboard and the mouse? If the experiments
+just measure initialization overheads, you may be understating the cost of
+Transcript---adding 100ms to page load time is fine, but adding 100ms of
+synchronous cost to (say) a program that tracks onmousemove or onkeypress may
+have a noticeable effect on user-perceived responsiveness. Can you say
+anything about how Transcript affects interactive responsiveness?
+
+So, that's all that I have to say! Hopefully some of it will be useful to you.
+Good luck with your submission!
+
+Cheers,
+  ~j

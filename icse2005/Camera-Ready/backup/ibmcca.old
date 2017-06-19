@@ -1,0 +1,431 @@
+\newcommand{\mk}{\textsf{MK}}
+\newcommand{\mka}{\textsf{MK$_{\textsf{A}}$}}
+\newcommand{\mkb}{\textsf{MK$_{\textsf{B}}$}}
+
+\newcommand{\keyk}{\textsf{K}}
+\newcommand{\kek}{\textsf{KEK}}
+\newcommand{\kekmod}{\textsf{KEKMOD}}
+
+\newcommand{\vpa}{\textsf{VP$_{\textsf{A}}$}}
+\newcommand{\vpb}{\textsf{VP$_{\textsf{B}}$}}
+
+\newcommand{\cvk}{\textsf{CV$_{\textsf{K}}$}}
+\newcommand{\cvnew}{\textsf{CV$_{\textsf{new}}$}}
+\newcommand{\cvkek}{\textsf{CV$_{\textsf{KEK}}$}}
+
+\newcommand{\argone}{\textsf{arg$_1$}}
+\newcommand{\argonecv}{\textsf{arg$_1^{\textsf{cv}}$}}
+\newcommand{\argoneenc}{\textsf{arg$_1^{\textsf{enc}}$}}
+
+\newcommand{\argtwo}{\textsf{arg$_2$}}
+\newcommand{\argtwocv}{\textsf{arg$_2^{\textsf{cv}}$}}
+\newcommand{\argtwoenc}{\textsf{arg$_2^{\textsf{enc}}$}}
+
+\newcommand{\encrypt}[2]{\textsc{E}$_{#1}$(#2)}
+\newcommand{\decrypt}[2]{\textsc{D}$_{#1}$(#2)}
+
+\newcommand{\xor}{\oplus}
+
+\section{The IBM CCA API}
+\label{section:ibmcca}
+
+The IBM CCA API \cite{JohnsonCCAIBM91} is a cryptographic key-management API
+that is used with hardware security modules (secure coprocessors) such as the
+IBM~4758. The IBM~4758 is widely used in commerce and banking, and has received
+the highest possible rating for its physical security (FIPS level-4). This
+section focuses on a vulnerability in the CCA API that was first discovered by
+Bond~\cite{BondCKD00,IBMCKD01}. We first provide some background information on
+the IBM~4758 and the CCA API, and use the technique developed in
+Section~\ref{section:problem_statement} to discover the vulnerability
+automatically.
+
+\subsection{Background on CCA}
+\label{subsection:background}
+
+The IBM~4758 is a coprocessor, and is used together with a host computer.
+Every IBM~4758 is associated with a distinct {\em master key}; we will use the
+notation \mk\ to denote master keys. Each coprocessor safeguards its master
+key; physical security ensures that \mk\ cannot be retrieved by physically
+attacking the device. The security of a system built using the IBM~4758 is
+bootstrapped by safeguarding a single secret, namely \mk.
+
+CCA is often used together with the IBM~4758 for key-management tasks (although
+the IBM~4758 can be used without CCA as well). An important requirement of any
+key-management service is that the clear values of keys should never be
+revealed. CCA manages keys by storing them encrypted under the master key \mk\
+of the IBM~4758 it operates with. Before we develop this point further, we must
+introduce the concept of a {\em control vector} \cite{MatyasControlIBM91a,
+MatyasControlIBM91b}, whose design and implementation is an important
+contribution of CCA.
+
+Every key managed by CCA is associated with a control vector. Control vectors
+are used by CCA to implement role-based access control (RBAC)
+\cite{FerraioloRBAC92}.  The value of the control vector associated with a key
+decides the subset of operations from the API that the key has access to. For
+instance, CCA defines control vectors for PIN keys, data keys, keys for message
+authentication codes, and so on. The values of control vectors are published by
+IBM and are publicly available.
+
+Because it is important to maintain the integrity of RBAC, each key and its
+control vector should be tightly coupled, and any attempt to change the value
+of the control vector should render the key unusable. There are several options
+available to implement this, and CCA implements this by using the value of the
+control vector associated with a key to encrypt it \cite{MatyasControlIBM91a,
+MatyasControlIBM91b}. As mentioned earlier, a key is also stored encrypted
+under the master key \mk\ of the IBM~4758 that the CCA operates with. The CCA
+achieves both these requirements by encrypting key \keyk\ as
+\encrypt{\mk\xor\cvk}{\keyk} where \cvk\ is the control vector associated with
+\keyk.\footnote{$\xor$ denotes bit-wise exclusive-or;
+\encrypt{\textsf{K}}{\textsf{P}} and \decrypt{\textsf{K}}{\textsf{P}} denote
+encryption and decryption of \textsf{P} using key \textsf{K}, respectively.} A
+symmetric key algorithm, such as 3DES, is used to perform encryption.  Each key
+is stored on the hard disk of the host computer (that the IBM~4758 operates
+with) as an {\em operational key-token}, which contain several pieces of
+information related to the key.  For the purpose of this paper, an operational
+key-token will refer to just two of the components and will be denoted as
+(\encrypt{\mk\xor\cvk}{\keyk}, \cvk). That is, it contains the encrypted value
+of \keyk, and the clear value of \cvk. When presented with the key-token, the
+IBM~4758 can use \cvk\ from the key-token to compute \mk$\xor$\cvk. This value
+is used to decrypt \encrypt{\mk\xor\cvk}{\keyk} and retrieve \keyk\ within the
+coprocessor. Of course, this clear value should not be revealed outside the
+IBM~4758. This operational key-token will not function with another
+IBM~4758 because the master keys will be different.
+
+
+\begin{figure*}[t]
+\begin{center}
+{\footnotesize
+\begin{tabular}{r c l}
+\mk\   & : & Master key of the coprocessor CCA operates with.\\
+\kek\  & : & Clear value of the key-encrypting key.\\
+\keyk\ & : & Clear value of a CCA key.\\
+\cvk\  & : & Control vector associated with \keyk.\\
+\cvkek\ & : & Control vector for key-encrypting keys.\\
+\end{tabular}
+\begin{tabular}{|l|c|c|c|}
+\hline 
+API command       & Expected Input 1        & Expected Input 2 & Output\\ \hline
+\api{Key\_Part\_Import} & \textsf{KP$_1$} (clear)
+                        & \textsf{KP$_2$} (clear)
+& (\encrypt{\mk\xor\cvkek}{\textsf{KP$_1$}$\xor$\textsf{KP$_2$}}, \cvkek)
+\\ \hline
+\api{Key\_Export} & (\encrypt{\mk\xor\cvkek}{\kek}, \cvkek) 
+                  & (\encrypt{\mk\xor\cvk}{\keyk}, \cvk)
+                  & (\encrypt{\kek\xor\cvk}{\keyk}, \cvk) \\\hline
+                  
+\api{Key\_Import} & (\encrypt{\mk\xor\cvkek}{\kek}, \cvkek)
+                  & (\encrypt{\kek\xor\cvk}{\keyk}, \cvk) 
+                  & (\encrypt{\mk\xor\cvk}{\keyk}, \cvk) \\ \hline
+\end{tabular}}
+\end{center}
+\mycaption{Some commands from the IBM CCA API.}{\label{figure:ibmcca}}
+\end{figure*}
+
+
+We now consider communication between two parties, \A\ and \B, each of which
+has an IBM~4758 (with master keys \mka\ and \mkb, respectively) and uses the
+CCA API for key management (each party has a host computer and a coprocessor).
+One of the supported methods for communication involves establishing a
+communication channel between \A\ and \B, and setting up a symmetric {\em
+key-encrypting key} to encrypt all CCA-managed keys that are transported over
+the channel in further communications. The key-encrypting key, whose clear
+value we denote by \kek, is itself stored as a CCA key, and is associated with
+the control vector for key-encrypting keys: \cvkek. It is stored at \A\ and \B\
+as an operational key-token with values (\encrypt{\mka\xor\cvkek}{\kek},
+\cvkek) and (\encrypt{\mkb\xor\cvkek}{\kek}, \cvkek), respectively. One of the
+methods supported by CCA for installing key-encrypting keys works as follows:
+One of the parties, say \A, generates two (or more) {\em key parts},
+\textsf{KP$_1$} and \textsf{KP$_2$}, such that \kek\ = \textsf{KP$_1$} $\xor$
+\textsf{KP$_2$}.  These key parts are transported (in the clear) separately to
+\B, where they are entered using the CCA command \api{Key\_Part\_Import} (see
+Figure~\ref{figure:ibmcca}). The result of this command is an operational
+key-token for \kek. The idea is that the clear value of \kek\ cannot be
+retrieved unless all the key-part holders collude.\footnote{This technique is
+insecure, and IBM \cite{IBMCKD01} recommends the use of public-key encryption to
+transport key parts. However, this mode of key-part transportation continues to
+be supported.}
+
+Now suppose that \A\ has a key \keyk\ associated with control vector \cvk,
+stored at \A\ as (\encrypt{\mka\xor\cvk}{\keyk}, \cvk), that it wants to share
+with \B. Clearly, this key-token cannot be used by \B\ because the clear value
+of \keyk\ is encrypted with \mka. Hence, to make the key-token
+``device-independent'', CCA provides an API command \api{Key\_Export}, which is
+specified in Figure~\ref{figure:ibmcca}. This command takes as input the
+operational key-tokens corresponding to \kek\ and \keyk\ and produces the value
+(\encrypt{\kek\xor\cvk}{\keyk}, \cvk). This value is device-independent, and is
+called an {\em export key-token}. Intuitively, the key-token
+(\encrypt{\mka\xor\cvkek}{\kek}, \cvkek) is used to retrieve the value of \kek,
+which is then used to produce \kek$\xor$\cvk, where \cvk\ is retrieved from the
+key-token (\encrypt{\mka\xor\cvk}{\keyk}, \cvk). The IBM~4758 can also retrieve
+the value \keyk\ from (\encrypt{\mka\xor\cvk}{\keyk}, \cvk). These values can
+then be used to produce the export key-token.
+
+The export key-token can be transported over the network to \B, where it is
+referred to as an {\em import key-token}. At \B, an API command
+\api{Key\_Import} is used to convert this key-token into an operational
+key-token for \B. The details of this command are shown in
+Figure~\ref{figure:ibmcca}.  The first input to this command is the operational
+key-token of \kek, while the second input is the value of the key-token
+received over the communication channel. As with \api{Key\_Export},
+\api{Key\_Import} first retrieves the clear value of \kek, and uses this value
+with the value of \cvk\ from the second input to produce \kek$\xor$\cvk. This
+value is used to retrieve \keyk\ by decrypting \encrypt{\kek\xor\cvk}{\keyk}.
+The clear value of \keyk\ and the value of \cvk\ are then used to produce an
+operational key-token (\encrypt{\mkb\xor\cvk}{\keyk}, \cvk), which can be used
+at \B.
+
+\subsection{Formalizing the API}
+\label{subsection:ibmcca-formal}
+We will now formalize the CCA API using the framework developed in
+Section~\ref{section:problem_statement}. Our focus is on the security of the
+CCA API, and hence we will restrict our attention to the sequence of API operations
+that can be issued on just {\em one} coprocessor. We make the following assumptions:
+\begin{mylist}
+\item \A\ and \B\ communicate, and normal operation proceeds as described in
+Section \ref{subsection:background}. In particular, \A\ has a key \keyk\
+associated with control vector \cvk\ that it wishes to share with \B.
+\item \A\ sends the key-token (\encrypt{\kek\xor\cvk}{\keyk}, \cvk) over the
+communication channel to \B. Here \A\ assumes that the value of the shared 
+key-encrypting key is \kek; that is, the key-token at \A\ corresponding to the
+shared key is (\encrypt{\mka\xor\cvkek}{\kek}, \cvkek).
+\item The key-encrypting key is installed at \B\ using the
+\api{Key\_Part\_Import} command, and the two key parts are \textsf{KP$_1$} and
+\textsf{KP$_2$}, where \kek\ = \textsf{KP$_1$} $\xor$ \textsf{KP$_2$}.
+Moreover, we assume that the attacker knows {\em one} of the key parts,
+say \textsf{KP$_2$}, but not the other key part. The attacker is not assumed to
+collude with the holder of \textsf{KP$_1$}.
+\item The attacker has complete control over \B. In particular, the attacker
+can (a) manipulate any value sent to \B\ over the communication channel, (b)
+manipulate any key-token stored on the host computer at \B, and (c) issue any
+CCA API command to the coprocessor at \B\ with inputs of his choice.  These are
+standard assumptions following the Dolev-Yao attacker model~\cite{DolevYao83}.
+\end{mylist}
+
+Informally, the safety property that we will attempt to verify is that every
+operational key-token obtained at \B\ using \api{Key\_Import} should be 
+associated with the same control vector as the control vector associated
+with the export key-token sent by \A. That is, if the value sent by \A\
+over the communication channel is (\encrypt{\kek\xor\cvk}{\keyk}, \cvk),
+then the operational key-token that must result at \B\ is
+(\encrypt{\mkb\xor\cvk}{\keyk}, \cvk).
+
+Using the framework developed in Section \ref{section:problem_statement}, 
+we have \script{S} = (\script{V}, \pred{Init}, $\Sigma$, \script{L})
+where,
+\begin{mybullet}
+\item \script{V} denotes a single set-valued variable $keytokens$, which
+denotes the set of all key-tokens known to \B.
+\item \pred{Init}: $keytokens$ = $\emptyset$, the empty set.
+\item $\Sigma$ = \{\api{Key\_Part\_Import}, \api{Key\_Import}\}
+\item \script{L} = $\Sigma^*$
+\end{mybullet}
+
+The predicate \pred{Bad} is defined as (\encrypt{\mkb\xor\cvnew}{\keyk},
+\cvnew) $\in$ $keytokens$, where \cvnew $\neq$ \cvk.  Intuitively, we keep
+track of the set of key-tokens available on the IBM~4758 using the variable
+$keytokens$, and assume that this set is initially empty. We will only model
+two operations from the CCA API, namely \api{Key\_Import} and
+\api{Key\_Part\_Import}, and assume that these can be interleaved in any order,
+denoted by \script{L} = $\Sigma^*$. The operations in $\Sigma$ accept two
+arguments each, and \pred{Pre} and \pred{Post} are defined as follows:
+
+\begin{mylist}
+\item \api{Key\_Part\_Import}(\argone,~\argtwo): 
+\pred{Pre}(\argone,~\argtwo) is \textsc{True} and 
+\pred{Post}(\argone,~\argtwo) asserts that\\
+(\encrypt{\mkb\xor\cvkek}{\argone$\xor$\argtwo},~\cvkek) 
+$\in keytokens$. 
+\item \api{Key\_Import}(\argone,~\argtwo): \pred{Pre}(\argone,~\argtwo) asserts
+that \argone\ and \argtwo\ have the structure of key-tokens. Let \argoneenc\ and 
+\argonecv\ denote the first and second half respectively of the key-token
+\argone, and similarly for \argtwo. \pred{Post}(\argone,~\argtwo) asserts 
+that \encrypt{\mkb\xor\argtwocv}{\textsf{Key}} $\in keytokens$, where 
+we define \textsf{Key}~=~\decrypt{\textsf{Val}\xor\argtwocv}{\argtwoenc}, 
+and \textsf{Val}~=~\decrypt{\mkb\xor\argonecv}{\argoneenc}. 
+\end{mylist}
+
+
+\begin{figure}[ht]
+\begin{center}
+\begin{tabular}{|r c c c|}
+\hline
+\indent\vspace{-3mm}
+& & & \\
+$\xor$ rules & : &
+$\frac{\Gamma~\vdash~a \hspace{0.3cm} \Gamma~\vdash~b}{\Gamma~\vdash~a \xor b}$ &
+$\frac{\Gamma~\vdash~a \xor b \hspace{0.3cm} \Gamma~\vdash~b}{\Gamma~\vdash~a}$\\
+& & &\\
+(En/De)cryption & : &
+$\frac{\Gamma~\vdash~k \hspace{0.3cm} \Gamma~\vdash~p}{\Gamma~\vdash~E_k(p)}$ &
+$\frac{\Gamma~\vdash~k \hspace{0.3cm} \Gamma~\vdash~E_k(p)}{\Gamma~\vdash~p}$\\
+& & &\\
+(Un)pairing & : &
+$\frac{\Gamma~\vdash~a \hspace{0.3cm} \Gamma~\vdash~b}{\Gamma~\vdash~(a, b)}$ &
+$\frac{\Gamma~\vdash~(a, b)}{\Gamma~\vdash~a \hspace{0.3cm} \Gamma~\vdash~b}$\\
+\hline
+\end{tabular}
+\end{center}
+\mycaption{Knowledge enhancement by the attacker.}{\label{figure:enhanceknowledge}}
+\end{figure}
+
+Intuitively, \textsf{Val} denotes the clear value of the key-encrypting key,
+retrieved from \argone, and this value is used to retrieve the value
+\textsf{Key} from \argtwo. This value is then used to produce an operational
+key-token, which is required by \pred{Post} to be in $keytokens$.
+
+In accordance with our assumptions, the attacker can use any value that he knows as an
+argument to the API operations. The attacker initially knows (a)
+(\encrypt{\kek\xor\cvk}{\keyk}, \cvk), which he can learn from the
+communication channel, (b) \textsf{KP$_2$}, namely, the clear value of one of
+the key parts that is used to construct \kek, and (c) values of control
+vectors, which are publicly known. The attacker can apply rules such as those
+shown in Figure~\ref{figure:enhanceknowledge} to enhance his knowledge. In the
+figure, $\Gamma$ is used to denote the set of terms known to the attacker, and
+the rules capture how the attacker can enhance his knowledge using the set of
+terms that he knows. For instance, the first rule says that if the attacker knows
+two terms {\em a} and {\em b}, he can combine these to know {\em a~$\oplus$~b}.
+These rules correspond to the rules of the Dolev-Yao model augmented with the
+capability to manipulate terms by combining them with exclusive-or.  Standard
+rules such as commutativity and associativity apply for terms generated using
+exclusive-or, and we have omitted these from
+Figure~\ref{figure:enhanceknowledge}.
+
+When the above API is presented to our model checker, which is described in
+detail in Section~\ref{subsection:cca-bmc}, we obtain the counter-example trace
+shown in Figure~\ref{figure:cca-attack}. This counter-example denotes the
+``chosen-difference attack'' on control vectors, first discovered manually by
+Bond~\cite{BondCKD00}. 
+
+In statement (1) of Figure~\ref{figure:cca-attack}, the attacker installs a key
+of his choice as the key-encrypting key at \B. Recall that the attacker knows
+\textsf{KP$_2$}, where \textsf{KP$_1$} $\xor$ \textsf{KP$_2$}~=~\kek, and
+\textsf{KP$_1$} is not known to the attacker.  However, the attacker can
+manipulate key part \textsf{KP$_2$} using the rules presented in
+Figure~\ref{figure:enhanceknowledge}; he modifies \textsf{KP$_2$} to
+\textsf{KP$_2$}$\xor$\cvk$\xor$\cvnew, where \cvk\ is the control vector of the
+key transported over the network, and \cvnew\ is another control vector, chosen
+by the attacker. When \api{Key\_Part\_Import} is executed with the modified key
+part as the second argument, the key-token
+(\encrypt{\mkb\xor\cvkek}{\kek$\xor$\cvk$\xor$\cvnew}, \cvkek) results, and \B\
+thinks that this is the key-token for the shared key-encrypting key. 
+
+
+\begin{figure}[ht]
+\begin{center}
+{\footnotesize
+\begin{tabular}{|l|}
+\hline
+(1) \api{Key\_Part\_Import}:\\
+\indent\hspace{1cm} 
+Input 1: \textsf{KP$_1$}\\
+\indent\hspace{1cm} 
+Input 2: \textsf{KP$_2$}$\xor$\cvk$\xor$\cvnew\\ 
+\indent\hspace{1cm}
+Output: (\encrypt{\mkb\xor\cvkek}{\kek$\xor$\cvk$\xor$\cvnew}, \cvkek)\\
+(2) \api{Key\_Import}:\\
+\indent\hspace{1cm}
+Input 1: (\encrypt{\mkb\xor\cvkek}{\kek$\xor$\cvk$\xor$\cvnew}, \cvkek)\\
+\indent\hspace{1cm} 
+Input 2: (\encrypt{\kek\xor\cvk}{\keyk}, \cvnew)\\
+\indent\hspace{1cm}
+Output: (\encrypt{\mkb\xor\cvnew}{\keyk}, \cvnew)\\\hline
+\end{tabular}}
+\end{center}
+\mycaption{Counter-example trace exposing vulnerability.}{\label{figure:cca-attack}}
+\end{figure}
+
+Input~2 of Statement (2) of Figure~\ref{figure:cca-attack} corresponds to a
+step in which the attacker first uses the unpairing and pairing rules in
+Figure~\ref{figure:enhanceknowledge} to obtain (\encrypt{\kek\xor\cvk}{\keyk},
+\cvnew) from (\encrypt{\kek\xor\cvk}{\keyk}, \cvk), a value that he knows.
+Second, he invokes \api{Key\_Import} with this modified key-token and the
+key-token of the shared key obtained in the first step of the attack.  As
+explained earlier, \api{Key\_Import} produces \mkb$\xor$\cvkek\ using the value
+of \cvkek\ from Input~1, which is then used to retrieve
+\kek$\xor$\cvk$\xor$\cvnew\ from the first half of Input~1. Note that under
+normal operation this would have retrieved the value \kek\ instead.
+\api{Key\_Import} then extracts \cvnew\ from Input~2, and xor's this with
+\kek$\xor$\cvk$\xor$\cvnew\ to obtain \kek$\xor$\cvk. This value is used to
+retrieve \keyk\ from the portion \encrypt{\kek\xor\cvk}{\keyk} of Input~2.
+Note that in the process, \B\ has been fooled into thinking that the key is
+associated with the control vector \cvnew. Hence, \api{Key\_Import} terminates
+by producing an operational key-token
+(\encrypt{\mkb\xor\cvnew}{\keyk},~\cvnew); this violates the safety criterion,
+which demands that operational key-tokens should be associated with the same
+control vector at \B\ as was intended by \A. As explained earlier, violating
+the safety condition compromises the integrity of RBAC; Bond~\cite{BondCKD00}
+demonstrates how this can be used to learn sensitive values, such as 
+PIN-encrypting keys.
+
+
+\subsection{The Model Checker}
+\label{subsection:cca-bmc}
+We now discuss the implementation of the bounded model checker used to discover
+the attack presented in Figure~\ref{figure:cca-attack}. A formal description of
+the API as presented in Section~\ref{subsection:ibmcca-formal} is presented
+to the bounded model checker. Informally, the bounded model checker ``unwinds'' 
+the \fsm\ for \script{L} and produces all paths of length less than
+or equal to $N$, where $N$ is the bound for the model checker. Each
+reachable state is then checked to see if the safety property in question,
+namely $\neg$\pred{Bad}, is satisfied.
+
+%\begin{figure}[ht]
+%\begin{wrapfigure}[8]{l}[0cm]{8cm}
+%\center{\epsfig{figure=figures/cca-bmc.eps, scale=0.4}}
+%\mycaption{Design of the bounded model checker.}{\label{figure:cca-bmc}}
+%\end{wrapfigure}
+%\end{figure}
+
+A schematic diagram of the bounded model checker is shown in
+Figure~\ref{figure:cca-bmc}.  The model checker uses Prolog as its underlying
+decision procedure. The choice of Prolog was motivated by two requirements:
+(a) we needed to encode inference rules, such as those presented in
+Figure~\ref{figure:enhanceknowledge}, to model knowledge enhancement by the
+attacker, and (b) we needed to produce concrete values for the variables
+involved in the above rules in case a counter-example was found. Prolog
+satisfies both these requirements; its capability to perform unification
+provides us with a concrete counter-example trace if one exists.
+Moreover, it is also easy to encode transformations corresponding to
+API operations as Prolog statements. The main component of the model checker is
+a path generator that accepts the \fsm\ for \script{L} and an integer bound $N$.
+It exhaustively generates all paths of length up to $N$, where each path
+corresponds to a sequence of API operations. Each path also corresponds to
+a Prolog program obtained by combining the Prolog statements of the API
+operations in the path with initial knowledge of the attacker and 
+the knowledge-enhancing rules shown in Figure~\ref{figure:enhanceknowledge}.
+
+In our implementation, we simplified the first rule presented in
+Figure~\ref{figure:enhanceknowledge} by assuming that only ground terms (i.e.,
+terms without the encryption symbol) could be combined using exclusive-or. This
+simplification restricts the set of terms that can be learned by the attacker,
+but was sufficient to detect the attack. The general model with Dolev-Yao rules
+but allowing arbitrary terms to be combined with exclusive-or was recently
+studied \cite{ChevalierLICS03, ComonLICS03}, and the insecurity decision
+problem was shown to be decidable. Hence, it must be emphasized that it is
+possible to solve the problem with the rules as presented in
+Figure~\ref{figure:enhanceknowledge}, and that our simplification was solely an
+implementation consideration.  
+
+To discover the attack presented in Figure~\ref{figure:cca-attack}, a bound of
+$N = 2$ suffices. When the model checker explores the path {\small
+\api{Key\_Part\_Import} $\rightarrow$ \api{Key\_Import}} of the \fsm, the
+Prolog statements corresponding to these API operations are emitted, and
+combined with the Prolog statements for the rules in
+Figure~\ref{figure:enhanceknowledge}.  The resulting Prolog program satisfies
+the predicate \pred{Bad}, and the proof tree generated by Prolog provides
+concrete values to the arguments of the API operations in the path explored.
+This results in the trace shown in Figure~\ref{figure:cca-attack}.
+
+IBM recommends the use of procedural controls to avoid the attack discussed
+above~\cite{IBMCKD01}. One such procedural control is the use of {\em
+verification patterns}, which are akin to hash functions. \A\ generates a
+verification pattern \vpa\ for \kek, and transports it separately to \B. When
+the key-encrypting key is installed using \api{Key\_Part\_Import} at \B, a
+verification pattern \vpb\ is generated and compared with \vpa.  If the
+verification patterns do not match, it means that the key parts have been
+tampered with; the resulting key is unsafe, and must not be used. In a second
+experiment, we modified the semantics of \api{Key\_Part\_Import}, so that it
+compared the verification patterns of the combined key parts and \kek.  With
+this modification, we were no longer able to discover the attack shown in
+Figure~\ref{figure:cca-attack}.
+

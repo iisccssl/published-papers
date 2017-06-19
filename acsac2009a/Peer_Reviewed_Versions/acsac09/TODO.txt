@@ -1,0 +1,18 @@
+TODO List:
+1. Address comments from RAID'09.
+2. Talk clearly about differences between plugins/BHOs and JSEs in
+   Introduction.
+3. Compare to related work by Jhala et al.
+
+Main concerns from RAID'09 reviews:
+1. Differentiate from prior work by Vogt et al. What do we contribute over
+   prior work? How to justify lack of static analysis?
+2. Limitations of dynamic taint propagation? Need discussion section.
+   EXE file embedded in JSE itself?
+3. More implementation details needed.
+4. Performance: claim that Sabre can be always-on is "ridiculous".
+5. False positives/Whitelisting needs to be better explained.
+
+Work for Nathan Harper:
+1. Optimize performance of the tool.
+2. Dynamic slicing to locate whitelists.

@@ -1,0 +1,4 @@
+Action items, based upon NDSS'09 reviews.
+1. What can this technique achieve that cannot be achieved by previous
+   techniques?
+2. Evaluation section weak: only hand picked attacks, only four drivers.

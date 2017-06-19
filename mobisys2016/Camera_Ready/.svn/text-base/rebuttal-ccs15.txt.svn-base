@@ -1,0 +1,37 @@
+======================Reviewer-#49A=======================
+
+(A1) We expect the host to check the integrity of the kernel. Once the integrity of the OS-kernel is established, it serves as the basis to scan apps that run atop it. New malicious apps can certainly bypass an anti-virus that runs on the kernel. But the goal of this paper was never to come up with a fool-proof anti-virus scanner. Rather it's to provide a checking mechanism that can then be coupled with arbitrary anti-virus scanners.
+
+(A2) If the device is powered off, the verification tokens will no longer match. As discussed under Section-2: "Check out," the host can require such devices to undergo further forensics.
+
+(A3) We're surprised you did not find details of the TCB. Section-4 is devoted to explaining components of the secure world (the TCB). Note our threat model is that the firmware itself is not modified to bypass the hardware capabilities provided by the TrustZone. Also, TrustZone CAN be used as a root-of-trust. Knox secure boot is based on this.
+
+(A4) The vetting-service can be configured to notify the guest if the host attempts to read sensitive/private information. See Section-6, "Read requests." 
+
+======================Reviewer-#49B=======================
+
+(B1) We have explicitly addressed the issue of TOCTTOU attacks in Section-4.4, first four paragraphs under "Remote Writes."
+
+(B2) There's no need to physically inspect the device. The OS kernel must contain all the drivers needed to run peripherals, and it suffices for the host to examine them.
+
+(B3) The technical reference for Knox is Reference-[11] in our paper. Knox provides remote attestation, which we also use, but our work provides remote reads/writes/verification tokens/vetting, etc., which Knox does not.
+
+(B4) The USB interface cannot be used to alter guest memory, so an untrusted USB-based scanning kiosk is exactly similar to a remote, network-based untrusted host server, which we do consider.
+
+(B5) The guest AUTHENTICATES the host and vetting-service to verify their identities. AUTHENICATION is different from TRUST. The host is UNTRUSTED, but the vetting-service is TRUSTED.
+
+(B6) Calls to emergency numbers can be done with suitable modifications to the modem's device driver.
+
+=======================Reviewer-#49C=======================
+
+(C1) We rely on the host's and guest's signed credentials just as HTTPS/SSL/TLS also rely on signed credentials. 
+
+(C2) Section-5 last paragraph under "Guest device analysis" presents memory data-size and transfer-time. This transfer can happen over WiFi. Hosts could set up a firewalled AP that restricts connections to vetting-servers.
+
+(C3) Guests only contact the vetting-service at check-in time, BEFORE the host's write requests to disable the interfaces are executed. After check-in, if the host has disabled the guest's communication interfaces, it cannot send remote reads/writes to the guest, and the guest would not need the vetting-service.
+
+(C4) Privacy/Fingerprinting: See response-(A4) to Reviewer-#49A.
+
+(C5) Restoring guest state only replaces device drivers of periperhals which must have been unused after check-in. It does not affect any other state.
+
+(C6) If the checksum fails, the host can stop guest check-in and leave the device outside. If the vetting-service marks a host request unsafe, the guest can choose not to check-in.

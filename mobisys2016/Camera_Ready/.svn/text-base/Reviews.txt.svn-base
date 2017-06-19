@@ -1,0 +1,308 @@
+Dear Vinod,
+
+Reviews for your paper are below. Again, the ACM MobiSys 2016 TPC is
+delighted to have informed you that your paper #37 was accepted to appear
+in the conference, conditional on shepherd approval.
+
+Your shepherd is Ardalan Amiri Sani <ardalan@uci.edu>. Please contact your
+shepherd as per the timeline below. Your shepherd may adjust the timeline
+depending on their availability. We remind you that final acceptance to the
+conference is contingent on your shepherd's approval.
+
+- Contact shepherd by 10th March with revision plan.
+- Send first revision to shepherd by 1 April.
+- Shepherd comments received by 15 April.
+- Send final version to shepherd for approval by 25 April.
+- Shepherd approval sent by 2 May to TPC Chairs.
+- Camera Ready Due 9 May.
+- 1-minute Video Submission due 1 June.
+
+Cecilia & Sharad
+
+
+Title: Regulating ARM TrustZone Devices in Restricted Spaces
+
+Authors: Ferdinand Brasser (Technische Universität Darmstadt)
+Daeyoung Kim (Rutgers University)
+Christopher Liebchen (Technische Universität Darmstadt)
+Vinod Ganapathy (Rutgers University)
+Liviu Iftode (Rutgers University)
+Ahmad-Reza Sadeghi (Technische Universität Darmstadt)
+
+
+===========================================================================
+                       ACM Mobisys 2016 Review #37A
+                     Updated 20 Feb 2016 2:45:02am GMT
+---------------------------------------------------------------------------
+     Paper #37: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                  My recommendation: 4. accept
+         My expertise on this topic: 4. expert
+
+                         ===== Paper summary =====
+
+This paper introduces the problem of regulating the software running on
+mobile devices when users are located in restricted spaces. The idea is to
+make users check-in their software before entering such a space. This is
+done using a trusted system (leveraging ARM TrustZone) that inspects the
+kernel's memory structures. The device is then checked out when leaving the
+restricted space at which point no more software restrictions are enforced.
+
+I've never seen this idea before and I really like it. I think there's a lot
+of benefit exposing this idea to the community. The design of the system is
+fair and the paper does a good job describing the problems the system needs
+to overcome. The only drawback is that I find parts of the design
+unnecessarily complex, but that's probably due to my exposure to the
+industry view of this technology. 
+
+                   ===== My comments to author(s) =====
+
+Again, I like the problem and I commend the authors for going after
+building such a system. 
+
+Now, here's a series of questions that popped into my head that the paper
+did not answer.
+
+1. Consider the following strawman design as an alternative. The OS has a
+safe mode in which it can boot. When booted in the safe mode, the OS
+performs a number of modifications such as disabling drivers (or installing
+dummy ones), locking certain memory pages, etc... At check-in, SW forces an
+OS shutdown followed by a boot up in safe mode. 
+
+Can the paper compare their system with this strawman? 
+
+This question stems from my skepticism that measuring kernel's data
+structures provides an adequate level of trust. I have less skepticism
+trusting a solution in which an OS boots into safe mode.
+
+2. Why not use send software attestations from the device to the host and
+have the host analyze them rather than doing all this expensive work on the
+device? Again, could the paper compare such a design alternative.
+
+3. What happens in the scenario after the check-in when the device
+discovers malware? Could the paper explain how the device is quarantined,
+and how it is cleaned?
+
+4. Who acts as the certifying authority? Consider NSA/FBI/government as
+being the host, and visitors (e.g., University professors) being the
+guest. Could the paper propose several examples on who should act as the
+certifying authority?
+
+5. What prevents a MITM for the algorithm in Figure 4? Why isn't it
+possible for malware to fake a certificate for PubKeyG? Is there a database
+of public keys of all devices out there? Who creates certificates?
+
+I think nullifying interfaces and dummy drives are very brittle approaches
+to securing devices. Devices are not built to be robust to such
+"tricks". Some of the results in Figure 7 (this should be called a table,
+no?) confirm my suspicions. Why not assign the devices to SW and have SW
+refuse service? Or why not reboot the OS and shut off these devices?
+
+I would suggest the paper use established terms from trusted computing
+rather than coining their own terms. For example, the term "software
+attestation" is well-known and I think that's what the paper means when
+using the term "verification token". Also, the process by which data
+structures are inspected is typically referred to as "measurement". 
+
+K_{Dev} is not a feature of ARM TrustZone. Gadget 2008 is an imaginary
+device (see page 6-1). ARM TrustZone does not require provisioning each
+device with a secret key. Most devices out there do not have this
+key. Please read the ARM TZ spec carefully.
+
+Important related work to this paper:
+
+- "AdAttester". Mobisys 2015.
+- "Splitting the bill". HotMobile 2013.
+- "Mobile Trusted Computing". IEEE 102(8): 1189-1206 (2014).
+- "fTPM". MSR Tech Report.
+
+Nitpicks:
+
+- grammar: "can reading" in Section 1.
+
+
+===========================================================================
+                       ACM Mobisys 2016 Review #37B
+                     Updated 28 Feb 2016 5:15:17am GMT
+---------------------------------------------------------------------------
+     Paper #37: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                  My recommendation: 3. weak accept
+         My expertise on this topic: 3. knowledgeable
+
+                         ===== Paper summary =====
+
+This paper presents a solution to use ARM TrustZone in order to regulate the use of peripheral devices of smart devices in restricted spaces, such as federal institutions or examination settings.
+Using TrustZone, a remote server, called host, can remotely read and write to the kernel memory of a device, called guest, allowing it to disable access to peripheral devices by nullifying or redirecting their device driver callbacks.
+The guest also uses a vetting service before committing memory writes issued by the host in order to defend against malicious hosts.
+
+The paper attacks an important problem.
+The proliferation of smart devices each equipped with several peripheral devices is indeed a major concern in the aforementioned restricted spaces and other scenarios.
+
+As for the solution, at first, the idea of remotely writing to the device kernel memory in order to disable access to the device driver seemed like nice one to me, mostly because it allows us to easily support a large number of devices without having to worry about the differences between their peripheral devices.
+However, after some deep thinking, it became clear that there is an important problem with the solution that potentially makes it ineffective.
+The main problem is that the solution can only provide guarantees for the time of check, which can be easily reverted after the check by a malicious guest.
+Unfortunately, from the paper, it's not clear how frequent these checks can be done.
+
+The other problems include the practicality of nullifying or redirecting device driver callbacks without complete alias analysis on the kernel memory and privacy concerns given that the host has full access to the guest kernel memory.
+
+                   ===== My comments to author(s) =====
+
+- My main concern with the proposed solution is its overall effectiveness.
+The solution allows the host to receive a snapshot of the guest kernel memory and to write to the kernel memory to disable the device drivers.
+However, after this is done, there is no check in place to disallow the guest to revert the changes, making the solution potentially ineffective.
+Indeed, the authors acknowledges this problem in page 4. They say that "host can use this feature [requesting a verification token at any time] to frequently check the verification token to narrow the timeframe of the violation."
+That is, the host needs to continuously perform checks on the guest otherwise the guest can be used against the host policies for extended periods of time.
+Unfortunately, from the paper, it's not clear how frequent these checks can be done.
+
+Acknowledging the problem, the authors have some discussions on how this can be avoided.
+In page 4, they say that host must check the memory snapshot to make sure /dev/kmem is not exposed or modules are not allowed. Or they say that at check-in, the host can check that an anti-malware is running that can detect malicious behavior.
+Unfortunately, these are not effective.
+A simple reboot of the guest is enough to revert all of these.
+Moreover, even without a reboot, there are many other ways for a malicious guest (which has complete control of the guest normal world) to fool the host and revert the changes to the memory.
+For example, an additional ioctl command can be added to one of the drivers that can be used to redo the changes.
+This additional ioctl will not require any changes to the driver callback list and cannot be easily detected by the host.
+As for the anti-malware, it can be turned off after the check.
+
+- There is also a major problem with the practicality of nullifying or redirecting device driver callbacks.
+How about aliases?
+A malicious guest can have many aliases (i.e., function pointers) pointing to the same driver callbacks.
+It can even use temporary aliases.
+That is, it can store the physical address of the callback and map it to some virtual address just before calling it and unmapping it afterwards.
+Does the host currently check to find all of these possible attack vectors.
+Alias analysis in the kernel can be quite compute extensive and might require a significant portion of the kernel memory to be transferred to the host.
+This will make the solution even less practical.
+
+- Another major shortcoming of this approach is its inability to deal with mmaped memory.
+Mmap can be used to map part of a peripheral device register space to user space allowing part of the device driver to be pushed to user space if needed.
+Since the proposed solution only analyzes the kernel memory, it will not be able to detect such mmaped regions into the user space.
+This opens an unchecked attack surface for malicious code in the guest.
+
+- The guest needs to transfer the kernel memory to the host.
+Authors argue that the user memory is not transferred to the host for privacy reasons.
+However, the content of kernel memory contains sensitive and private information as well.
+For example, the buffer cache, which is a cache for disk content, is in the kernel memory.
+Also, the buffers in the networking stack that hold the transmitted/received packets are in the kernel memory and might not be zeroed out.
+There is also a lot of info on the applications running in the system.
+Unfortunately, the proposed solution does not offer any insights on how protect such sensitive information from a malicious host.
+
+- The discussion of the vetting service in the implementation section is missing.
+For example, how many lines of code does it have?
+I'd like to emphasize that the vetting service is in the system TCB and hence it is paramount for the authors to present more details.
+The authors mention that they do not include the vetting service in the Secure World not to bloat it.
+However, this does not mean that the vetting service is not trusted.
+A compromised vetting service allows a malicious host to attack the guest, hence the vetting service is in the TCB.
+
+- There is some ambiguity in the writing style.
+There are many instances where the authors use the word 'can' and it's not clear whether they have actually implemented a feature or not.
+This might be just a bad writing style but unfortunately it adds confusion.
+For example:
+Page 5: "We now describe a generic approach, developed in prior work [...], that hosts can use to detect such malicious data modifications..."
+Page 5: "Additionally, the host can ensure that the kernel is configured to disallow well-know attack surfaces, ...."
+...
+I will not list all of the instances here but I strongly suggest that the authors find all such instances of the use of the word 'can' (and possibly 'could') and change them.
+If the feature is implemented, then just remove 'can'.
+If the feature is not implemented, make it clear that it's not (and that it's part of future work or orthogonal to the work).
+
+- The threat model mentions that 'the host trusts device manufacturers and vendors to equip the secure world with TrustZone's secure boot protocol.'
+Why does it have to trust? The host should be able to verify this. right?
+
+- Does the proposed solution work if the guest adopts Address Space Layout Randomization (ASLR) (as new Android devices do)?
+Will the host be able to still find the device driver callbacks by analyzing the kernel memory snapshot?
+
+- I like the results in Figure 7. They are informative.
+
+
+===========================================================================
+                       ACM Mobisys 2016 Review #37C
+                     Updated 23 Feb 2016 7:00:38am GMT
+---------------------------------------------------------------------------
+     Paper #37: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                  My recommendation: 3. weak accept
+         My expertise on this topic: 2. some familiarity
+
+                         ===== Paper summary =====
+
+The authors present a solution to restricting and regulating mobile device capabilities on restricted environment by leveraging TPMs. For example this can be useful to disable cameras where they are not allowed. The system presented requires just a small TCB and provides storng guarantees
+
+                   ===== My comments to author(s) =====
+
+The system presents a clever application of ARM's trustzone to a problem that is very important: BYOD and Mobile Device Management. These are terms that are very relevant to the mobile industry, and hard ones as many of the existent solutions are either insufficient or result in inconveniences to the users.
+
+Strengths:
+* The authors described a complete system that they implemented, which as described provides strong guarantees on a small TCB
+* The paper addresses an important and difficult problem.
+
+Weaknesses:
+* The description of the motivating scenario is confusing.
+* The read/write mechanism seems troublesome to me. Wouldn't disabling devices through writing memory lead to system instability? A higher level abstraction could be safer and less intrusive. I assume this requires a rooted device, which in practice is not common.
+* The veto server gets a snapshot of the full normal world memory of the device. This means that the device would ship a couple of GBs over the network that could potentially include sensitive information. It also seems wasteful and time-consuming to send all the memory through the network.
+* The evaluation is insufficient. How stable is the system after altering its memory? How power efficient is this system? How long does it take to check-in / check-out the device? Can you characterize the bandwidth consumption of the system during the check-in, check-out and veto operations?
+
+
+===========================================================================
+                       ACM Mobisys 2016 Review #37D
+                     Updated 15 Feb 2016 5:10:37pm GMT
+---------------------------------------------------------------------------
+     Paper #37: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                  My recommendation: 2. weak reject
+         My expertise on this topic: 3. knowledgeable
+
+                         ===== Paper summary =====
+
+The paper proposes a solution to address the problem of restricting mobile device access in restricted spaces by using ARM TrustZone support to monitor memory operations performed by the normal world in the secure world support.
+
+                   ===== My comments to author(s) =====
+
+The overall system of leveraging ARM TrustZone support to create configurations that are acceptable to restricted spaces is an interesting direction.  The design of the system appears thorough and well-motivated.  
+However, there are several important issues that this paper did not fully address, which casts some doubts on the usefulness of the proposed system in practice.
+
+1. I would have liked to see a short survey of the types of configurations or desirable policies that are common for restricted spaces to help motivate the design of the system. For example, if most of such policies entail shutting down the network interfaces (WiFi, cellular) and peripherals such as camera, microphone, USB (as shown in Figure 7), then such design can be more customized to support these common configurations to reduce unnecessary overhead.
+
+2.  The proposed design of using verification tokens computed over the memory state of the normal world only ensures that the security policy is enforced every time the memory state is computed.  In between the verification token computation, the kernel memory could be enabled to carry out the prohibited operations.  Furthermore, it's unclear whether a malicious user application with root privilege can't just spoof the verification tokens with the help of some external device which correctly follows the proposed security policy configurations.
+
+3. The overhead of the system is not studied from the perspective of the disturbance on the allowed apps running on the device.
+
+
+===========================================================================
+                       ACM Mobisys 2016 Review #37E
+                    Updated 18 Feb 2016 10:28:03pm GMT
+---------------------------------------------------------------------------
+     Paper #37: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+
+                  My recommendation: 3. weak accept
+         My expertise on this topic: 2. some familiarity
+
+                         ===== Paper summary =====
+
+This work addresses the problem of regulating devices in restricted spaces such as federal or corporate buildings or examination halls. The design is based on ARM TrustZone devices, which allow hosts to enforce policy compliance via remote memory operations, and also allow guests to trust the hosts via a vetting service. The authors present in detail the problem formulation, remote memory operations, policy enforcement, guest privacy and security. The system is implemented and evaluated under diverse scenarios.
+
+                   ===== My comments to author(s) =====
+
+This work addresses an increasingly important problem: regulating devices in restricted spaces. I am not an expert in this topic so I cannot judge the innovation or significance of the proposed solution. Overall, the authors did a nice job motivating the problem and explaining the specific design considerations. And the evaluation seems to be well thought out. The content is dense at places, but overall, the paper is well organized and easy to follow. 
+
+For the general MobiSys community, it may be helpful for the authors to better highlight the design challenges. Also, it would be helpful to discuss the different types of restricted spaces, how the policies may differ among hosts and guest devices, and more importantly, how such differences may impact or limit the proposed solution.
+
+page 2: .. the host can reading sensitive and private app ..
+
+
+
+===========================================================================
+                                  Comment
+     Paper #37: Regulating ARM TrustZone Devices in Restricted Spaces
+---------------------------------------------------------------------------
+PC discussion: The PC discussed this paper. The conclusion is that the paper addresses an important problem and the solution does a good job of addressing the challenges. However, there are important concerns about the paper that needs to be addressed in the shepherding process.
+First, the authors need to add some discussion/numbers on the frequency at which the host can request the client for the verification token.
+The concern is that the host needs to ask for the token frequently, but at this point, it's not clear how often the check can be done since the paper does not provide any evaluation results on the overhead of sending and checking the token. Second, the authors are asked to provide a more detailed discussion on how the host can guarantee that the client kernel image is rootkit-free. Specifically, the authors need to explain which guarantees (with respect to detecting rootkits) are already achieved in the host prototype and which ones are future work. The current writing of the paper is vague. Finally, there are other instances of vagueness in the writing that need to be addressed.
+For example, what guarantees does the current implementation of the vetting service provide?
+
+
+
+

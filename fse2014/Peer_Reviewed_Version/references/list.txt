@@ -1,0 +1,19 @@
+Citations for resources I have looked at or plan on looking at. Not
+all will necessarily go in the bibliography.
+
+Barua, Anton, Mohammad Zulkernine, and Komminist Weldemariam. "Protecting Web Browser Extensions from JavaScript Injection Attacks." Engineering of Complex Computer Systems (ICECCS), 2013 18th International Conference on. IEEE, 2013.
+Cassou, Damien, Stéphane Ducasse, and Nicolas Petton. "SafeJS: Hermetic Sandboxing for JavaScript." arXiv preprint arXiv:1309.3914 (2013).
+Dhawan, Mohan. Rethinking Web Platform Extensibility. Diss. Rutgers, The State University of New Jersey, 2013.
+Lerner, Benjamin S., Matthew J. Carroll, Dan P. Kimmel, Hannah Quay-de la Valleeand Shriram Krishnamurthi. "Modeling and reasoning about DOM events." Proceedings of the 3rd USENIX conference on Web Application Development. USENIX Association, 2012.
+Orr, Caitlin R., Arun Chauhan, Minaxi Gupta, Christopher J. Frisz and Christopher W. Dunn. "An approach for identifying JavaScript-loaded advertisements through static program analysis." Proceedings of the 2012 ACM workshop on Privacy in the electronic society. ACM, 2012.
+Richards, Gregor, Christian Hammer Francesco, and Nardelli Suresh Jagannathan1 Jan Vitek. "Flexible Access Control for JavaScript." OOPSLA 2013.
+Song, Myoungkyu, and Eli Tilevich. "TAE-JS: automated enhancement of JavaScript programs by leveraging the Java annotations infrastructure." Proceedings of the 2013 International Conference on Principles and Practices of Programming on the Java Platform: Virtual Machines, Languages, and Tools. ACM, 2013.
+Watt, Timothy. Block-scoped Access Restriction Technique for HTML Content in Web Browsers. Diss. Rochester Institute of Technology, 2012.
+
+Birgisson, Arnar, et al. "Enforcing authorization policies using transactional memory introspection." Proceedings of the 15th ACM conference on Computer and communications security. ACM, 2008.
+Bodden, Eric, Ben Hermann, Johannes Lerch and Mira Mezini. "Reducing human factors in software security architectures." Future Security Conference (to appear 2013).
+Bonatti, Piero, Sabrina De Capitani di Vimercati, and Pierangela Samarati. "An algebra for composing access control policies." ACM Transactions on Information and System Security (TISSEC) 5.1 (2002): 1-35.
+Jajodia, Sushil, Pierangela Samarati, and V. S. Subrahmanian. "A logical language for expressing authorizations." Security and Privacy, 1997. Proceedings., 1997 IEEE Symposium on. IEEE, 1997.
+Jajodia, Sushil, et al. "A unified framework for enforcing multiple access control policies." ACM Sigmod Record. Vol. 26. No. 2. ACM, 1997.
+
+

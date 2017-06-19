@@ -1,0 +1,334 @@
+%\mysection{Event-handler Wrapper Generators}
+%\label{section:appendix:events}
+%%
+%\begin{wrapfigure}{rh}{0.5\textwidth}
+%\indent\vspace{-0.5cm}
+%\begin{center}
+%\indent\vspace{-0.5cm}
+%\renewcommand{\arraystretch}{0.75}
+%\begin{tabular}{|rl|}
+%\hline
+%\lno{1} & \codetiny{tx\_clkhandler = function(evt) \{}\\
+%\lno{2} & \mytab \codetiny{evttx = transaction \{ node.evtH (evt); \}
+%iblock\_func (evttx);}\\
+%\lno{3} & \codetiny{\}}\\
+%\hline
+%\end{tabular}
+%\end{center}
+%\mycaptionsquish{Generating wrapped event handlers.}{\label{figure:evthandler}}
+%\end{wrapfigure}
+%
+%%This section describes the implementation of the event handler wrapper
+%%generator, which is included in the mandatory part of a host's iblock.
+%Firefox currently supports three event-handling models~\cite{dom-level}.  For
+%each model, the goal of the wrapper generator is to obtain a reference to the
+%handler being registered, and wrap it suitably.  We describe the three models
+%briefly and discuss how \txjs\ obtains a reference to the handler in each
+%case.
+%
+%\noindent \textbf{(1)} The \textit{DOM-level 0/Traditional} model registers an
+%event handler for a DOM node, \eg~a \html{div} element, as follows:
+%\code{node.onclick = clkhandler}.  Here \code{node} represents the \html{div}
+%element and \code{clkhandler} is registered as a handler for \code{onclick}
+%events.  \txjs\ modifies the interpreter to suspend transactions that change
+%properties containing event handlers, such as \code{onclick} and \code{onload}.
+%Once the transaction suspends, the iblock obtains a reference to
+%\code{clkhandler}.
+%
+%\noindent \textbf{(2)} The \textit{DOM-level 0/Inline} model registers an event
+%handler using code such as: 
+%
+%\code{document.write("\html{div onclick="/*\textrm{handler code}*/}")}, 
+%
+%which sets an attribute (\eg~\code{onclick}) of the DOM node.  \txjs\ handles
+%such cases by suspending the execution of \code{document.write}.  The argument
+%to this call is HTML code, which the transaction's iblock parses to obtain a
+%reference to the event handler.
+%
+%\noindent \textbf{(3)} The \textit{DOM-level 2} model registers an event
+%handler as follows: \code{node.addEventListener("click", clkhandler, false)}.
+%\txjs\ suspends \code{addEventListener}, thereby allowing the iblock to obtain
+%a reference to \code{clkhandler}.
+%
+%
+%In addition to obtaining a reference to the event handler, the iblock also
+%obtains a reference to \code{node}, which is the DOM node for which the handler
+%was being registered. The iblock then initializes a new property
+%\code{node.evtH} with \code{clkhandler}, and defines a new function
+%\code{tx\_clkhandler} as shown in \figref{figure:evthandler}, which it
+%registers as the event handler.
+%Here, \code{iblock\_func} is a function that
+%contains the iblock itself, while \code{evt} is a \js\ object that
+%the browser uses to denote the event. As a result of this transformation,
+%\code{tx\_clkhandler} is invoked when the \code{onclick} event is triggered,
+%which then executes \code{clkhandler} within a transaction, thereby allowing
+%\txjs\ to mediate its operation as well.
+%
+%
+\mysection{Non-tail-recursive Interpreters}
+\label{section:appendix:tail-call}
+
+%
+\begin{wrapfigure}{rh}{0.5\textwidth}
+%\vspace*{-6.0ex}
+%
+\tikzset{>=stealth,
+    frame/.style={minimum width=6.5em, text height=1.7ex, text depth=.2ex, draw,
+outer ysep=0}}
+%
+\begin{tabular}{|c|}
+%
+\hline
+\begin{minipage}[b]{0.45\textwidth}
+\begin{center}
+\renewcommand{\arraystretch}{0.75}
+\begin{tabular}{rl}
+\lno{1} & \codetiny{function f() \{ document.body.appendChild(...); \}}\\
+\lno{2} & \codetiny{var tx = transaction \{ f(); \}} \\
+\lno{3} & \codetiny{g(tx);} \\
+\end{tabular}
+\end{center}
+% \smallskip
+\scriptsize 
+\begin{tabular}{p{0.95\textwidth}}
+\textbf{(a)} Problematic code for an interpreter with non-tail
+recursion.
+\end{tabular}
+\end{minipage}\\
+%
+%\hline
+%
+%\begin{minipage}[b]{0.45\textwidth}
+%\begin{center}
+%\scriptsize
+%\begin{tikzpicture}
+%    \node (top) [frame,inner xsep=1em,outer xsep=0] {call to
+%\textsf{JS\_interpret}};
+%    \draw [dashed] (top.south west) -- ++(0,-.5);
+%    \draw [dashed] (top.south east) -- ++(0,-.5);
+%    \path (top.north)++(0,1ex) node [anchor=base] {\textit{Native (C++)
+%stack}};
+%    \path (top)++(11em,0) node (js1) [frame] {\textbf{\code{tx} delimiter}};
+%    \path (js1.north)++(0,1ex) node [anchor=base] {\textit{\js\ stack}};
+%    \path (js1.south) node (js0) [below,frame] {main program};
+%    \draw [->] (top.mid east)++(-1ex,0) -- (js1.mid west);
+%\end{tikzpicture}
+%\end{center}
+%\scriptsize 
+%\begin{tabular}{p{0.95\textwidth}}
+%\textbf{(b)} When the main \js\ program starts the transaction, the C++
+%function \textsf{JS\_interpret} grows the \js\ stack but does not call itself,
+%so the native stack does not grow.
+%\end{tabular}
+%\smallskip
+%\end{minipage}\\
+%
+\hline
+%
+\begin{minipage}[b]{0.45\textwidth}
+\begin{center}
+\scriptsize
+\begin{tikzpicture}
+    \node (top) [frame,inner xsep=1em,outer xsep=0] {call to
+\textsf{JS\_interpret}};
+    \draw [dashed] (top.south west) -- ++(0,-.5);
+    \draw [dashed] (top.south east) -- ++(0,-.5);
+    \path (top.north)++(0,1ex) node [anchor=base] {\textit{Native (C++) stack}};
+    \path (top)++(11em,0) node (js2) [frame] {call to \verb|f|};
+    \path (js2.north)++(0,1ex) node [anchor=base] {\textit{\js\ stack}};
+    \path (js2.south) node (js1) [below,frame] {\textbf{\code{tx} delimiter}};
+    \path (js1.south) node (js0) [below,frame] {main program};
+    \draw [->] (top.mid east)++(-1ex,0) -- (js2.mid west);
+    \node (removed) [fit=(js2) (js1), right delimiter=\}, inner sep=0] {};
+    \path (removed.east) node [anchor=north,rotate=90] {removed\strut};
+\end{tikzpicture}
+\end{center}
+\smallskip
+\scriptsize 
+\begin{tabular}{p{0.95\textwidth}}
+\textbf{(b)} When the transaction suspends, the interpreter
+removes activation records from the front of the \js\ stack, up to and
+including the (youngest) transaction delimiter.\\
+\end{tabular}
+\end{minipage}\\
+%
+\hline
+%
+\begin{minipage}[b]{0.45\textwidth}
+\begin{center}
+\scriptsize
+\begin{tikzpicture}
+    \node (top) [frame,inner xsep=1em,outer xsep=0] {call to
+\textsf{JS\_interpret}};
+    \draw [dashed] (top.south west) -- ++(0,-.5);
+    \draw [dashed] (top.south east) -- ++(0,-.5);
+    \path (top.north)++(0,1ex) node [anchor=base] {\textit{Native (C++) stack}};
+    \path (top)++(11em,0) node (js1) [frame] {call to \verb|g|};
+    \path (js1.north)++(0,1ex) node [anchor=base] {\textit{\js\ stack}};
+    \path (js1.south) node (js0) [below,frame] {main program};
+    \draw [->] (top.mid east)++(-1ex,0) -- (js1.mid west);
+    \path (js0.south west)++(-8ex,-3ex)
+        node (object) [draw,anchor=north west,outer ysep=0]
+        {\begin{tabular}[t]{@{}c@{}}$\vdots$\\read set\\write set\end{tabular}};
+    \draw [->] (js1.mid east)++(-1ex,0) .. controls +(2,-.3) and +(3,.4)
+                                        .. (object.north east);
+    \path (object.north east)++(2ex,0) node (tx1) [anchor=north west,frame]{call
+to \verb|f|};
+    \path (tx1.south) node (tx0) [below,frame] {\textbf{\code{tx} delimiter}};
+    \draw [->] (tx1.mid -| object.east)++(-1ex,0) -- (tx1.mid west);
+    \node [fit=(object), inner sep=0, outer xsep=1.2ex,
+           left delimiter=\{,
+label=left:\begin{tabular}{@{}r@{}}transaction\\object\end{tabular}\enspace] {};
+\end{tikzpicture}
+\end{center}
+%\smallskip
+\scriptsize 
+\begin{tabular}{p{0.95\textwidth}}
+\textbf{(c)} Before resuming the transaction, the main program may invoke other
+functions, say~\texttt{g}.\\
+\end{tabular}
+\smallskip
+\end{minipage}\\
+%
+\hline
+%
+\begin{minipage}[b]{0.45\textwidth}
+\begin{center}
+\scriptsize
+\begin{tikzpicture}
+    \node (top) [frame,inner xsep=1em,outer xsep=0] {call to
+\textsf{JS\_interpret}};
+    \draw [dashed] (top.south west) -- ++(0,-.5);
+    \draw [dashed] (top.south east) -- ++(0,-.5);
+    \path (top.north)++(0,1ex) node [anchor=base] {\textit{Native (C++) stack}};
+    \path (top)++(11em,0) node (js2) [frame] {call to \verb|f|};
+    \path (js2.north)++(0,1ex) node [anchor=base] {\textit{\js\ stack}};
+    \path (js2.south) node (js1) [below,frame] {\textbf{\code{tx} delimiter}};
+    \path (js1.south) node (jsg) [below,frame] {call to \verb|g|};
+    \path (jsg.south) node (js0) [below,frame] {main program};
+    \draw [->] (top.mid east)++(-1ex,0) -- (js2.mid west);
+    \node (reinstated) [fit=(js2) (js1), right delimiter=\}, inner sep=0] {};
+    \path (reinstated.east) node [anchor=north,rotate=90] {reinstated\strut};
+\end{tikzpicture}
+\end{center}
+\scriptsize 
+\begin{tabular}{p{0.95\textwidth}}
+\textbf{(d)} When the transaction is resumed, its activation records are
+reinstated onto the front of the \js\ stack.\\
+\end{tabular}
+\end{minipage}\\
+%
+\hline
+\begin{minipage}[b]{0.45\textwidth}
+\begin{center}
+\scriptsize
+\begin{tikzpicture}
+    \node (top) [frame,inner xsep=1em,outer xsep=0] {call to
+\textsf{JS\_interpret}};
+    \path (top.south) node (bad) [below,frame,inner xsep=1em,outer xsep=0]{call
+to \textsf{JS\_interpret}};
+    \draw [dashed] (bad.south west) -- ++(0,-.5);
+    \draw [dashed] (bad.south east) -- ++(0,-.5);
+    \path (top.north)++(0,1ex) node [anchor=base] {\textit{Native (C++) stack}};
+    \path (top)++(11em,0) node (js2) [frame] {call to \verb|f|};
+    \path (js2.north)++(0,1ex) node [anchor=base] {\textit{\js\ stack}};
+    \path (js2.south) node (js1) [below,frame] {\textbf{\code{tx} delimiter}};
+    \path (js1.south) node (js0) [below,frame] {main program};
+    \draw [->] (top.mid east)++(-1ex,0) -- (js2.mid west);
+    \draw [->] (bad.mid east)++(-1ex,0) -- (js1.mid west);
+    \node (to remove) [fit=(js2) (js1), right delimiter=\}, inner sep=0, outer
+xsep=1.1ex] {};
+    \path (to remove.east) node [anchor=north,rotate=90] {to remove\strut};
+\end{tikzpicture}
+\end{center}
+\scriptsize 
+\begin{tabular}{p{0.95\textwidth}}
+\textbf{(e)} If \textsf{JS\_interpret} were to implement \js\
+function calls by calling itself recursively (as happens in the implementation
+of certain constructs, such as \code{eval}), an older call to
+\textsf{JS\_interpret} (the lower one in this diagram) would need to return
+before a younger one does. Control flow in C++ is not flexible enough to enable
+this.\\
+\end{tabular}
+\end{minipage}\\
+\hline
+\end{tabular}
+\mycaptionsquish{Native versus \js\ call stacks.  %\describecaption{The
+%implementation of suspend/resume assumes an interpreter without non-tail
+%recursion.}
+}
+{\label{figure:stacks}}
+%\vspace*{-8.5ex}
+\end{wrapfigure}
+%
+
+%
+A key challenge in enhancing a legacy \js\ interpreter, such as SpiderMonkey,
+with support for transactions is in how the interpreter uses recursion.  To
+support the suspend/resume mechanism for switching control flow between a
+transaction and its iblock, the interpreter must not accumulate any activation
+records in its native stack (\eg~the C++ stack, for SpiderMonkey) between when
+a transaction starts and when it suspends.  In particular, the interpreter must
+not represent \js\ function calls by C++ function calls. The same issue also
+arises when a compiler or JIT interpreter is used to turn \js\ code into
+machine code.
+
+To illustrate this point, consider SpiderMonkey, which implements the bytecode
+interpreter in C++.  The main entry point to the bytecode interpreter is the
+C++ function \textsf{JS\_interpret}, which maintains the \js\ stack as a linked
+list of activation records, each of which is a C++ structure. When one
+function calls another in \js,
+%
+ the \textsf{JS\_interpret} function does not
+call itself in C++; instead, it adds a new activation record to the front of
+the linked list and continues with the same bytecode interpreter loop as
+before.  Similarly, when a function returns to another in \js,
+\textsf{JS\_interpret} does not return in C++; instead, it removes an old
+activation record from the front of the linked list and continues with the same
+bytecode interpreter loop as before.  For the most part, SpiderMonkey does not
+represent \js\ calls by C++ calls.
+
+The fact that SpiderMonkey does not represent \js\ calls by native calls helps
+us add transactions to it without making invasive changes, as the following
+example illustrates.  Suppose a transaction invokes a function \code{f} that
+suspends for some reason, \eg~in \figref{figure:stacks}(a), the function
+\code{f} calls \code{appendChild}.  If the C++ call to \textsf{JS\_interpret}
+that executes the transaction were not same as the one that executes the called
+function \code{f}, then the former, although older, would have to return before
+the latter returns. As detailed in \figref{figure:stacks}, the former has to
+return when suspending the transaction, whereas the latter has to return when
+resuming the transaction.  Even exception handling in C++ does not allow such
+control flow.
+
+Unfortunately, \textsf{JS\_interpret} in SpiderMonkey does call itself in a few
+situations.  For example, it handles the \code{eval} construct in this way, and
+the problem of the C++ stack in Figure \ref{figure:stacks}(e) does arise if we
+replace the \code{document.body.appendChild(...)} of
+\figref{figure:stacks}(a) by 
+%
+\code{eval\linebreak[0]("document.\linebreak[0]body.\linebreak[0]%
+appendChild\linebreak[0](...)")}.
+%
+One way to solve this problem requires applying the
+continuation-passing-style transformation to the interpreter to put it into tail
+form, \ie~convert all recursive calls to \textsf{JS\_interpret} to tail calls.
+However, this transformation is invasive, especially if done manually on legacy
+interpreters.
+
+\txjs\ uses a less invasive mechanism to enable suspend/resume in SpiderMonkey.
+This mechanism is similar in functionality to gluing (see
+\sectref{section:design:iblock:gluing}), and we explain it with an example.
+Consider the \code{eval} construct, whose functionality is to parse its input
+string, compile it into bytecode, and then execute the bytecode as usual.
+Because only the last step, \ie~that of executing the bytecode, can suspend, we
+simply changed the behavior of \code{eval} so that, if invoked inside a
+transaction, it suspends the transaction right away.  The iblock of the
+transaction can then compile the string into bytecode and include the bytecode
+into the execution of the transaction. This is achieved by adding a new
+activation record to the front of the transaction's \js\ stack and modifying
+the program counter to execute this code when the transaction resumes.  When
+the suspended transaction resumes, it transfers control to the \code{eval}ed
+code, which can freely suspend.  Besides \code{eval}, our current \txjs\
+prototype also implements gluing for \code{document.write} (as discussed in
+\sectref{section:design:iblock:gluing}) and \js\ builtins \code{call} and
+\code{apply}, which make non-tail recursive calls to \textsf{JS\_interpret}.

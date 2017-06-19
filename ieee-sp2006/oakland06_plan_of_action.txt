@@ -1,0 +1,40 @@
+1. Read papers on dynamic slicing algorithms: ICSE'03 and PLDI'04
+   Goal: Understand the number of instructions generated in a trace.
+
+2. Find a good reference for aspect-oriented programming.
+
+3. Repeat experiments by recollecting traces, and re-performing measurements.
+   Also, this time, carefully document procedure in notebook as well as in
+   the paper.
+
+4. Read papers by Jeremy Epstein on X11 security.
+
+5. Cut a lot of the irrelevant citations and add relevant, meaningful
+   citations.
+
+6. Tone down the "automation" aspect of things.
+
+
+Targets for Oakland paper:
+(1) The experimental results must be precise:
+    
+    * The number of functions in the trace, as well as 
+      the number of distinct events in the trace must 
+      be precisely recorded.
+    
+    * The size of RC must be recorded, and also the
+      root-causes must be correctly recorded.
+      Create      OK
+      Destroy     OK
+      Map         OK
+      Unmap       OK
+      Chstack     OK
+      Enumerate   Check (in set-diff?)
+      Chprop      OK
+      GetProp     OK
+      InputEvent  OK
+      DrawEvent   Check (in set-diff?)
+      Move        OK    (but check correctness)
+    * Measure the number of global variables as well.
+ 
+(2) The related work must be complete.

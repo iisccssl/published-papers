@@ -1,0 +1,100 @@
+Story line:
+-----------
+
+Title: "Cloud Management Platform for trust and control"
+
+
+1. Introduction:
+----------------
+Current Cloud Management Platforms (CMP) lacks
+    - customer's trust on provider's infrastructure
+    - customer's control on their data and computation
+
+Proprietry CMP: VMWare vCloud, Amazon AWS
+Open source CMP: OpenStack, CloudStack, OpenNebula, Eucalyptus
+
+Why existing CMPs lack customer's trust?
+    - centralized control (Cloud Controller)
+    - do give interface to customers for control but lacks trust
+
+Cloud Controller 
+    - implements policies for resource allocation (maintenence)
+    - implements mechanisms 
+
+Self Service Cloud (SSC) to the rescue.
+
+But SSC limited to just one physical platform.
+
+Our Solution: Cloud Controller should just implement policies and the mechanisms are implemented by per-client dashboard-VM, a mutually trusted entity.
+
+Plus:
+    - trusted billing
+    - trust without exposing provider's infrastructure
+
+
+2. Background:
+--------------
+- overview of current CMPs (Cloud controller & node controller)
+- background on SSC (security, flexibility & mutual trust)
+    - why SSC not enough
+        - complicates management for customers
+        - VM migration
+        - exposes provider's infrastructure
+
+3. Threat Model:
+----------------
+- untrusted human administrators (of network & end host)
+
+4. Design:
+----------
+
+Components:
+- Cloud controller
+- Dashboard-VM
+- system node controller
+- client node controller
+
+interactions among the components
+    - allocation scenario
+    - maintenence scenario 
+    - deallocation scenario
+
+Establishing trust on Dashboard-VM without effecting its evolution (adding features)
+
+what to do on Dashboard-VM failure?
+
+5. Abstractions for relations between VMs:
+------------------------------------------
+- co-location dependency
+- data flow (network or storage)
+
+use cases: snort IDS, VMWall, trusted network metering, anonymization
+
+6. Migration in trust-enabled CMP:
+----------------------------------
+
+concurrent VM migration
+two techniques
+use of vTPM
+
+6. Implementation:
+------------------
+
+
+7. Evaluation:
+--------------
+- base overhead experiments (bandwidth & latency)
+    - single VM scenario.
+    - complex scenarios using different relationship abstractions (use cases)
+The above experiment measure the overhead of extra indirection of network traffic
+
+- migration experiments (total migration time & downtime)
+    - single VM migration 
+    - VM in network flow relation and without co-location (may-tunnel) 
+    - multi-VM migration (comparison of two techniques)
+    - overhead of adding vTPM attestation.
+
+
+
+
+

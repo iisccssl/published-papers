@@ -1,0 +1,14 @@
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+{\bf{Template} } & {\bf{Object}} & {\bf{Collection}}\\ \hline\hline
+Membership & $643,\!622$ & $422$   \\ \hline
+Non-zero & $49,\!058$ & $266$  \\ \hline
+Bounds  & $16,\!696$ & $600$  \\ \hline
+Length & NA & $4,\!696$   \\ \hline
+Subset & NA & $3,\!580$    \\ \hline
+\textbf{Total} & $709,\!376$ & $9,\!564$  \\ \hline
+\end{tabular}
+\end{center}
+\mycaption{Invariants inferred by \tool\ on data structures on the kernel heap. These invariants are used as data
+structure integrity specifications during enforcement.}{\label{invstats}}

@@ -1,0 +1,11 @@
+As of 8th June, 2006, additions are:
+
+(1) More detail on set-equation-based technique. Precise definitions
+    and algorithm. How we deal with errors in labeling (with example)
+
+(2) More detail (at a high-level, say 2-3 slides worth) on current work
+    on basis-finding-based approach.
+
+(3) Point out shortcomings: discuss these in detail.
+     (i) Lack of completeness [not all fingerprints found].
+    (ii) Security-sensitive operation-finding is still manual.

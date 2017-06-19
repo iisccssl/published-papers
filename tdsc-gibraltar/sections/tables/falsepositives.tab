@@ -1,0 +1,14 @@
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+{\bf{Template} } & {\bf{Object}} & {\bf{Collection}}\\ \hline\hline
+Membership & $0.71\%$ & $1.18\%$   \\ \hline
+Non-zero & $0.17\%$ & $2.25\%$  \\ \hline
+Bounds  & $0\%$ & $0\%$  \\ \hline
+Length & NA & $0.66\%$   \\ \hline
+Subset & NA & $0\%$    \\ \hline\hline
+\multicolumn{3}{|l|}{\textbf{Average false positive rate: $0.65\%$}}\\\hline
+\end{tabular}
+\end{center}
+\mycaption{False positive rates, classified by the type of invariant and the
+template that classifies the invariant.} {\label{falsepositives}}

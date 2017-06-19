@@ -1,0 +1,46 @@
+Firebug is a powerful JavaScript debugger for Firefox that allows dynamic DOM
+tree exploration and modification, along with CSS, script and network
+monitoring. In April 2007, an XSS vulnerability for Firebug versions prior to
+1.04 was disclosed, which could be exploited to gain full system access where
+ever the extension was installed. The main reason was improperly sanitised
+input from arbitrary scripts, that was executed within the extension with
+"chrome" privileges.
+
+We simulate this malicious script injection behaviour, by writing a malicious
+extension and webpage combination that communicate through JavaScript events.
+The script in the webpage creates an event and includes the XSS attack vector
+as an attribute. The extension captures this event as soon as the webpage is
+loaded and recovers the process/file name that needs to be executed on the
+victim's system. In our proof of concept example, we just open a bash shell. 
+
+EXTENSION CODE
+
+var myExtension = {
+		myListener: function(evt) {
+		
+		// extract the attributes that contain the executable file name
+		// and the arguments
+				
+		// create an nsILocalFile for the executable
+		var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		file.initWithPath("<executable file name>");
+		
+		// create an nsIProcess
+		var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
+		process.init(file);
+		
+		// initialize the arguments and then run the process.
+		process.run(false, args, args.length);
+		
+	  }
+	}
+	document.addEventListener("MyExtensionEvent", function(e) { myExtension.myListener(e); }, false, true);
+
+In order to prevent an extension from executing arguments received from a
+malicious script, we taint all communication between a script and an extension
+with the domain name of the webpage. Before running the privileged process, we
+check if the arguments to the process were tainted or not. If they were and
+they came from a trusted/white-listed domain, the process is allowed to
+execute, otherwise the tool throws and alert indicating that an untrusted
+domain provided arguments to the extension to execute a system process.
+

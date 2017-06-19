@@ -1,0 +1,25 @@
+params:
+
+1. Size of UDomU (512MB, 2GB)
+2. Encryption (yes, no)
+
+Results:
+
+1. Native: 
+Dom0 -> DomU
+
+(512, no)  =  0.764 sec 0.00152 SD
+(512, yes) =  5.571 sec 0.00464 SD
+
+(1GB, no)  =  1.840 sec 0.00576 SD
+(1GB, yes) = 11.419 sec 0.00811 SD
+
+2. Checkpoint SD:
+Dom0 <-> CheckSD -> UDomU
+
+(512, no)  = 0.8028 sec 0.00694 SD
+(512, yes) = 5.5594 sec 0.00537 SD
+
+(1GB, no)  = 1.9356 sec 0.00114 SD
+(1GB, yes) = 11.329 sec 0.07313 SD
+

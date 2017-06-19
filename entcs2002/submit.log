@@ -1,0 +1,229 @@
+This is TeX, Version 3.14159 (Web2C 7.4.5) (format=latex 2003.4.4)  12 SEP 2004 16:43
+**submit.tex
+(./submit.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(./entcs.cls
+Document Class: entcs 1994/01/12, 2e-1.15: Elsevier Preprint
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/base/newlfont.s
+ty
+Package: newlfont 1998/08/17 v2.2m Standard LaTeX package
+LaTeX Info: Redefining \em on input line 62.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/base/latexsym.s
+ty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 42.
+))
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/amssym
+b.sty
+Package: amssymb 2002/01/22 v2.2d
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/amsfon
+ts.sty
+Package: amsfonts 2001/10/25 v2.2f
+\@emptytoks=\toks14
+\symAMSa=\mathgroup5
+\symAMSb=\mathgroup6
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 132.
+))
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/hyperr
+ef.sty
+Package: hyperref 2003/01/22 v6.73n Hypertext links for LaTeX
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/keyval
+.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks15
+)
+\@linkdim=\dimen102
+\Hy@linkcounter=\count79
+\Hy@pagecounter=\count80
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/pd1enc
+.def
+File: pd1enc.def 2003/01/22 v6.73n Hyperref: PDFDocEncoding definition (HO)
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/config/hyperref
+.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive and teTeX
+)
+Package hyperref Info: Hyper figures OFF on input line 1792.
+Package hyperref Info: Link nesting OFF on input line 1797.
+Package hyperref Info: Hyper index ON on input line 1800.
+Package hyperref Info: Plain pages ON on input line 1805.
+Package hyperref Info: Backreferencing OFF on input line 1812.
+
+Implicit mode ON; LaTeX internals redefined
+Package hyperref Info: Bookmarks ON on input line 1916.
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/html/url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+)
+LaTeX Info: Redefining \url on input line 2055.
+\Fld@menulength=\count81
+\Field@Width=\dimen103
+\Fld@charsize=\dimen104
+\Choice@toks=\toks16
+\Field@toks=\toks17
+Package hyperref Info: Hyper figures OFF on input line 2513.
+Package hyperref Info: Link nesting OFF on input line 2518.
+Package hyperref Info: Hyper index ON on input line 2521.
+Package hyperref Info: backreferencing OFF on input line 2528.
+Package hyperref Info: Link coloring OFF on input line 2533.
+\c@Item=\count82
+\c@Hfootnote=\count83
+)
+*hyperref using default driver hdvips*
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/hdvips
+.def
+File: hdvips.def 2003/01/22 v6.73n Hyperref driver for dvips
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/hyperref/pdfmar
+k.def
+File: pdfmark.def 2003/01/22 v6.73n Hyperref definitions for pdfmark specials
+\pdf@docset=\toks18
+\pdf@box=\box26
+\pdf@toks=\toks19
+\pdf@defaulttoks=\toks20
+\Fld@listcount=\count84
+\@outlinefile=\write3
+))
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/base/leqno.clo
+File: leqno.clo 1998/08/17 v1.1c Standard LaTeX option (left equation numbers)
+)
+LaTeX Info: Redefining \rm on input line 73.
+LaTeX Info: Redefining \cal on input line 74.
+LaTeX Info: Redefining \sf on input line 75.
+LaTeX Info: Redefining \tt on input line 76.
+LaTeX Info: Redefining \bf on input line 77.
+LaTeX Info: Redefining \it on input line 78.
+LaTeX Info: Redefining \sl on input line 79.
+LaTeX Info: Redefining \sc on input line 80.
+\@bls=\dimen105
+\eqntopsep=\skip41
+\eqnarraycolsep=\dimen106
+\labelwidthi=\dimen107
+\labelwidthii=\dimen108
+\labelwidthiii=\dimen109
+\labelwidthiv=\dimen110
+\@maxlistdepth=\count85
+\eqnbaselineskip=\skip42
+\eqnlineskip=\skip43
+\mathindent=\dimen111
+\c@section=\count86
+\c@subsection=\count87
+\c@subsubsection=\count88
+\c@paragraph=\count89
+\c@subparagraph=\count90
+\c@thm=\count91
+\c@alg=\count92
+\c@algorithm=\count93
+\c@note=\count94
+\c@summ=\count95
+\c@case=\count96
+\@tempcntc=\count97
+\c@figure=\count98
+\c@table=\count99
+\t@glob@notes=\toks21
+\t@loc@notes=\toks22
+\note@cnt=\count100
+\c@author=\count101
+\n@author=\count102
+\c@collab=\count103
+\n@collab=\count104
+\c@address=\count105
+\sv@mathsurround=\dimen112
+\sv@hyphenpenalty=\count106
+\prev@elem=\count107
+\cur@elem=\count108
+\fm@box=\box27
+\fm@size=\dimen113
+\t@abstract=\box28
+\t@keyword=\box29
+\t@xtheight=\dimen114
+\@logoheight=\dimen115
+\@pubyear=\count109
+\@copyear=\count110
+\slashbox=\box30
+LaTeX Font Info:    Try loading font information for U+lasy on input line 1111.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 1111.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/umsa.f
+d
+File: umsa.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 1111.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/amsfonts/umsb.f
+d
+File: umsb.fd 2002/01/19 v2.2g AMS font definitions
+)
+\Slashbox=\box31
+) (./entcsmacro.sty)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/epsfig
+.sty
+Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/graphi
+cx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/graphi
+cs.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/trig.s
+ty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/config/graphics
+.cfg
+File: graphics.cfg 2001/08/31 v1.1 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: dvips.def on input line 80.
+
+(/afs/cs.wisc.edu/s/tetex-2.0.2/i386_rh72/share/texmf/tex/latex/graphics/dvips.
+def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\Gin@req@height=\dimen116
+\Gin@req@width=\dimen117
+)
+\epsfxsize=\dimen118
+\epsfysize=\dimen119
+)
+
+! LaTeX Error: File `algorithmic.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.7 \usepackage
+               {algorithm}^^M
+End of file on the terminal!
+
+ 
+Here is how much of TeX's memory you used:
+ 2847 strings out of 95847
+ 37454 string characters out of 1194058
+ 85737 words of memory out of 1000001
+ 5774 multiletter control sequences out of 10000+50000
+ 13869 words of font info for 57 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 32i,1n,26p,231b,121s stack positions out of 1500i,500n,5000p,200000b,5000s
+No pages of output.

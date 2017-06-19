@@ -1,0 +1,4 @@
+TODO List:
+1. Prune paper to fit it within 15 pages total.
+2. Add stuff on fault injection experiments.
+3. Address major open comments from Oakland.

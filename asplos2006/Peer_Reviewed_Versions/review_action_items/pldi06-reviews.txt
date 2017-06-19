@@ -1,0 +1,340 @@
+-------------------- review 594 --------------------
+    
+
+This paper proposes the idea that certain properties of the heap remain
+constant throughout the execution of a program. Thus, if one measures these
+properties, and the value changes significantly, this may signal an anomaly and
+it may be due to a bug.
+
+The system has been implemented and has been used to find some bugs that were
+already known, plus uncover some previously unknown bugs.
+
+It is an interesting paper to read,  although there were a few points that were
+not clear to me. In general, how easy is it to find stable heap metrics for a
+new benchmark? From the discussion in the paper, this sounded like it might be
+problematic.
+
+I also had trouble following how and when the logged call-stack was helpful in
+pinpointing the location of the bugs.
+
+References should all have page numbers. If you are going to cite work on
+static shape analysis, there are other approaches to static shape analysis for
+C, for example the work by Ghiya in POPL 1996. 
+
+
+-------------------- review 307 --------------------
+    
+
+Summary: A dynamic tool for finding anomalies in the heap is presented. The
+tool compares properties of the heap to the ones computed on a training run.
+The main idea is that if these properties are stable then anomalies hint on
+bugs. Empirical results indicate that on few realistic applications the
+properties are indeed stable and that 40 bugs were identified (31 of them are
+new).
+
+Overall I liked this paper a lot although I think that that the experimentation
+and the presentation can be drastically improved. I am curious to know what
+kind of bugs can be identified by HEAPMD. If possible it will be nice to state
+precisely the kind of bugs your tool can find (Figure 9 gives some hints but I
+am hoping for more, see detailed comments below).  Also, the experimental
+results can be strengthened by: (1) showing the applications of the tool on
+programs which are artificially mutated to include bugs of the kind checked and
+(2) providing more statistical evidences for stability.
+
+
+Suggestions for improvements
+
+
+Bugs checked: I assume that your tool focuses on violations of safety
+properties. In my experience, interesting bugs include typos (as you define
+them), swapping of order of instructions, boundary errors, bugs due to external
+aliasing. A different way to characterize the bugs is the safety property which
+is violated. For example, many bugs can be identified by just checking
+cleanness (e.g., null dereferences and memory leaks) but some require
+specification such as preservation data structure invariant. It is definitely
+nice that your tool can identify some of these in certain cases.
+
+Elaborate on the experimental programs used and provide more evidences for
+stability.
+
+Your tool does not produce any false alarm on the programs checked. This is
+definitely nice. Can you elaborate?
+
+Presentation: The introduction can be improved. I believe that you should
+mention that you ignore types since they can affect many other decisions (e.g.
+the decision not to record information in field granularity).  The introduction
+should also explain how the tool works and the kind of bugs found. Finally, it
+will be nice if you can assess how hard is to use HEAPMD. 
+
+The discussion on the relation between static and dynamic analysis is
+confusing. For example the static tool reported in [37] does not have false
+alarms. Many dynamic tools have more false alarms. In both cases, there area
+tradeoffs between properties checks and false alarms to scalability and at the
+moment dynamic tools scale better. 
+
+In the related work, there are also dynamic measurements on the heap for Java
+by Shaham reported in ISMM'02.
+
+Section 4 could be called "Bugs finding with HEAPMD"
+
+The possibility of using stack configuration for error report does not seem to
+be a unique feature of your tool. 
+
+
+-------------------- review 193 --------------------
+    
+
+The paper attempts to detect heap anomalies by: (1) computing a set of metrics
+sensitive to the state of the heap, learning ranges of their stable values over
+a set of inputs, and then considering these ranges as ``normal ranges''.  (2)
+computing these metrics for other inputs of the program and reporting anomalies
+when values go out of the previously computed normal ranges.
+
+The tool described in the paper works directly on x86 binary executables, and
+scales to handle real applications, which is certainly impressive. The tool
+computes a number of metrics based on local node-level properties. These
+metrics may correspond to some stable properties of the heap.
+
+The computed metrics are somewhat arbitrary, and are given no conceptual
+justification. This is fine, as long as these metrics are justified by rigorous
+experimental results, which is unfortunately not the case.
+
+While the general idea of the paper is really interesting and exciting, I think
+that the following are serious problems that require further work:
+
+1. Lack of statistical rigor
+
+The paper draws heavily on statistical claims about the behavior of the
+metrics. However, it is not clear what is the statistical rigor of the
+experiments described in the paper. In particular, the stability of a metric
+over 3 inputs does not seem to be sufficient (Figure 8a - twolf, crafty, mcf,
+parser). Nor does the stability of a metric over 10 inputs (Table 8b). I think
+that this work would have been much more convincing if you had considered a
+significantly larger number of inputs that imply some statistical validity.
+
+There is also a potential problem with comparing executions with a different
+number of metric computation points (as is very likely to happen, as shown in
+Figure 5 where input1 has 100 points and input2 has 253), especially if metrics
+are computed on every method entry.  The fact that you allow ``setup
+fluctuations'' of different lengths between inputs does not help me trust your
+results.
+
+Considering Figure 8a, something should also be said about stable metrics such
+as the one computed for gcc, in which the range of the metric is rather wide
+(8.6% to 37.1%) and is therefore likely to miss a wide range of anomalies.
+Similarly, the vpr benchmark has a single stable metric with a very wide range.
+
+Since the number of stable metrics in Table 8a is rather small, it would be
+useful to have the data for all the metrics rather than just example for stable
+metrics.
+
+I was intrigued by the fact that the metrics are so stable between different
+versions of the benchmarks. Does it mean that a single data-structure (e.g., a
+tree in the PC/Action benchmark) dominates the heap and that no other
+structures of substantial sizes are added between versions? Since metrics are
+computed over the entire heap, it seems that adding another data-structure of
+different characteristics between versions could throw the metrics out of
+calibration.
+
+There is some tension between the results as presented in Figure 8b, and the
+fact that they are used to find 5-10 bugs per benchmark (as reported in Table
+2). For example, I assume that the bugs for Interactive-web-app were not
+exposed using the metric indeg=1, as this metric is totally stable across
+versions. It would be useful to show the metrics that were used to expose the
+bugs in each benchmark.
+
+I wonder what is the justification of considering a metric as stable when it is
+stable for 40% of inputs.
+
+Figure 4: not sure what is the number of heap allocated data-structures and
+pointers in gzip and crafty. If I recall correctly, they are mostly
+array-based. If you remove them from the average, you get a slightly different
+story. This table as whole seem to be warped, as you are counting percentage of
+pointers over a total that includes non-pointer locations. So if I have 10
+fields, 8 integers with 0 value, and 2 pointers that take multiple values, you
+would report that as 20% of the pointers taking multiple values, where in
+reality 100% of pointer variables do.
+
+2. Metrics are computed over the entire heap.
+
+Computing the metrics over the entire heap, and not per data-structure means
+that a wider range of values has to be considered as normal, even if the values
+do stabilize. This might significantly reduce the ability to detect anomalies
+(for example, consider the range of the outdeg=1 metric for gcc in Figure 8a).
+
+In some sense, this justifies the existence claim for stable metrics, as
+changes to a single data-structure are likely to have very little effect on the
+global percentage.
+
+However, obtaining a stable metric over the entire heap also implies that
+benign manipulations of the heap are likely to mask anomalies in a single data
+structure, unless the anomalies are of vast size.  For example, when
+considering a single version of a program, I fail to see how could the example
+of incorrect insertion to a linked-list (Figure 9a) be observed over a real
+heap, where the normal ranges of the metrics are likely to be insensitive to
+such small changes.
+
+Observing such an anomaly is more likely between versions, as a new bogus
+version of e.g. list insertion may produce a consistent difference in the
+computed metrics. On the downside, there is no guarantee on the way a program's
+data-structures change between versions, and a program may choose to use
+different data-structures, which would make the metrics less useful (as they
+are computed over the heap as a whole).
+
+This problem might be compounded by the fact that the paper does not use type
+information. For example, counting the zero-valued elements of an integer array
+as nodes with null-valued pointer may have a devastating effect on the computed
+percentages. I believe that this actually happens in gzip and crafty, as it is
+not likely that the program has >99% of its pointer with a constant null value.
+
+I think that reporting the absolute number of heap nodes could have helped you
+make a stronger case for the reported experimental results. When the entire
+heap contains only a small number of nodes, I can see how your approach would
+be sensitive enough to detect anomalies within a single version. When the heap
+contains a large number of nodes, I suspect that the approach would be either
+too sensitive, producing a large number of false alarms, or not sensitive
+enough.
+
+If your approach only applies to checking anomalies across versions, you may
+want to make be more explicit about it, and justify it.
+
+
+In addition to the above major problems, the following also require further
+work:
+
+1. Using type information: I think that this is crucial in getting better
+results.
+
+2. Computing the metrics at field-level: the discussion justifying computation
+of the metrics at the object-level in Section 2.1 is not convincing. Obviously,
+computation at the field-level only adds information, and you could still count
+outgoing-edges and incoming-edges at the object-level if you wish to do that.
+
+Other issues:
+
+1. I assume that the bugs reported in Table 2 are found between different
+versions of the applications? Are they bugs found in previous versions by
+training on a newer version? Were all bugs found in the same version, or is the
+table summarizing bugs from different versions? Is it fair to say that all the
+new bugs reported in the paper are found across different versions?
+
+2. I was confused by your notion of ``roots''. To me, indegree=0 means a memory
+leak. Do you distinguish between nodes that are referenced from the stack
+(roots) and nodes that are not references at all (leaks)?
+
+3. A slowdown of X2-3 for recording every allocation, deallocation and writing
+to an object in the heap is not too bad. Just to get an impression of
+feasibility and scalability it would have been nice to report the actual
+running times and trace-sizes for the analyzed applications.
+
+4. Since figures 9 and 10 in the paper focus on single data-structures and not
+on the heap as whole, I wanted to point-out that some metrics make no sense for
+certain data-structures. %leaves for a linked list, or %roots for a tree are
+going to change according to the number of elements in the data-structure,
+which probably makes them useless when these structures are significantly
+influential.
+
+5. It is common for data-structure invariants to be temporarily violated only
+to be restored at a later point in the program. This may introduce a high
+standard-deviation of some metrics. However, maybe this does not happen often
+enough across method boundaries for you to worry about.
+
+
+Minor comments
+
+- Does figure 9/3(B) really correspond to the PC Game (action) example? indeg=1
+	does not seem to hold in this example.
+
+- comparison of HeapMD and SWAT. Since these are synthesized inputs, it is not
+	clear what is the validity of comparing the reported false alarms.
+
+- Section 3, 2nd paragraph, 2nd number (ii) should be (iii). 
+
+
+-------------------- review 807 --------------------
+    
+
+HeapMD is a tool that computes metrics over the indegree and outdegree of heap
+nodes. In particular, it computes the percentage of nodes with indegree = 0, 1,
+2, outdegree = 0, 1, 2, and indegree = outdegree. (Unfortunately, this simple
+and important detail has to wait until page 3; the paper would be improved by
+straightforward and clear writing, rather than vague descriptions that confuse
+and delay.) When the metrics differ from those previously observed, a report
+can be presented to a user, and the user can determine whether the violation
+(of previous observations) is indicative of a bug. The metrics are collected at
+1/100,000 of all function entries. The metrics are not actually computed from
+the heap; rather, there is a shadow heap that is maintained along with the real
+one, and the metrics are computed on it in order to reduce cache effects.
+
+In any given program or run, most of the metrics do not have a stable value. A
+metric is considered stable if it is stable in 40% of the training runs. (This
+fact appears on page 7; it belongs in the methodology section, not the
+experiments section.) During training, "stable" means that the value never
+changes much: the derivative is low. During anomaly detection, not violating
+the properties means that they stay in the range that was observed during
+training.
+
+The paper begins with a motivation that sounds like that of Purify: dangling
+pointers do not necessarily cause a crash, and the effect of heap-based bugs is
+often delayed. It would be good to characterize how many of your bugs could
+have been found by previously-known techniques such as Purify. (Page 8 seems to
+imply that Purify wold have found many or all of HeapMD's reports, though you
+say that HeapMD's output is better.) To me, the most compelling part of the
+paper is that malformed but pointer-correct data structures can be detected. By
+contrast, yet another way to detect pointer errors is not nearly as exciting.
+
+I found the writing confusing and the presentation unclear. This is in part
+because the algorithm is complex, but the text is also in part to blame. For
+instance, the writing mixes together the training and checking phases, and does
+not use consistent (and distinct) terminology for the two. For example, section
+2.2 says "exhibit unstable behavior ... by violating their valid range", but
+unstable behavior and range violations are two distinct concepts. Instability
+is relevant only during training, and has to do with rate of change, not with
+absolute values. By contrast, range violations are relevant only during
+checking.
+
+The introduction to section 2.1 is long and a bit vacuous. Please cut it by
+50%, making the writing clearer and punchier.
+
+Likewise, section 4.1 introduces a lot of terminology that is irrelevant to
+your problem and that is never or rarely used. This proliferation of arbitrary
+and nonintuitive terms weakens, not strengthens, the paper. Please eliminate
+the fluff, which will help readers to appreciate your main point and your real
+contribution. (An unmotivated taxonomy is *not* your real contribution.)
+
+The caption for figure 2 should explain the difference between the solid and
+dotted lines.
+
+The failure to use the entire SPICE benchmark raises suspicions.  Please
+explain. See "The Use and Abuse of SPEC: An ISCA Panel," IEEE Micro, vol. 23,
+no. 4, pp. 73-77, July/August, 2003.
+
+You give examples of finding errors in simple data structures. Why is anyone
+writing such data structures anymore? Shouldn't they just be using a library
+such as STL or the Microsoft foundation classes?  As a related point, is HeapMD
+most effective for "simple" bugs?
+
+If the anomaly detector is run on its training data, 60% of the runs may be
+identified as buggy, since only 40% of the runs have to agree in order for a
+metric to be considered stable. Please explain why this doesn't happen; I was
+surprised to see your low false positive rate. I suspect this may have to do
+with the fact that training relies on instability, but checking depends on
+range checking -- please clarify so that readers need not guess.
+
+HeapMD is stochastic and only checks every 100,000 function calls. So why can
+it "pinpoint the function where the bugs occur"? I would believe that it
+usually does so, but the claim seems a bit excessive.
+
+A major problem (that may kill this paper in the end) is why this technique
+works on a heterogeneous heap. If you are considering a single data structure,
+then problems may be reflected in the global heap. But in a heterogeneous heap,
+in which only a tiny fraction is devoted to each data structure, why would a
+bug in any one data structure be reflected in the global statistics? Perhaps
+Lattner's "Data structure analysis" or a similar dynamic analysis would help.
+The problematic methodology (some of the benchmarks aren't heap-intensive, so
+they may be dominated by a single data structure) does not increase confidence.
+I would like to see this paper appear -- it's a cool idea and impressive
+results, which need to get into the literature -- so please explicitly address
+this issue (in addition to fixing other issues noted here) and re-submit
+elsewhere. 
+

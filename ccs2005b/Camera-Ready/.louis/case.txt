@@ -1,0 +1,34 @@
+Consider another seller 7509.  This seller
+specializes in CD/DVD drives fot notebook computers.  
+In the auctions we looked at,
+he starts with an extremely low start price.  This ranged from $2-$30
+depending on the acution, and also advertises
+a "buy-it-now" price from $99-$119.  For each item, the buy-it-now price 
+is well above the price
+that comparable items can be bought from other vendors, but we speculate
+this is a marketing technique to make the actual auction prices look
+more attractive.
+
+The final price of this sellers auctions is typically $60-$80.  In a 
+significant fraction of the auctions we looked at (13/xxx), there is
+a buyer 21422, who bids exactly $66, 2 days before the end of the 
+auction, but he is always outbid, sometimes by just $1.  This behavior
+is consistent with shilling behavior described in [N].
+
+(Note: shipping for his drives is $15)
+
+
+/* comment - not for paper
+Now consider seller 13928 ("alpa51".  He specializes in laptop memory.  
+Like the
+other sellers we have examined, he starts the bidding at low prices, generally
+under $1.  Winning bids are $40-$60.  But there really isn't really 
+anything very interesting to say about his auctions.  The frequent buyers
+(like bob-bogutsky) bid extremely low, for example $5.  They are clearly
+bargain hunters, not shills.
+
+(Note: his shipping is $6)
+*/
+
+All of the sellers we have looked at have excellent reputations of greated
+than 99% on eBay's own feedback system.

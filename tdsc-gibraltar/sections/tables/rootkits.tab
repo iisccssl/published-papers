@@ -1,0 +1,29 @@
+\begin{center}
+\begin{tabular}[htb]{|l|l|l|}
+\hline
+{\bf{Attack Name}} &  {\bf{Data Structures Affected}}\\ 
+\hline\hline
+\multicolumn{2}{|l|}{\textbf{Rootkits from Packet Storm~\cite{rootkitsite}.}} \\\hline\hline
+{Adore-0.42} & {System call table}\\ \hline
+{Adore-ng} & {Vfs hooks, Udp recvmsg}\\\hline 
+{All-root} & {System call table}\\ \hline
+{Kbd v3} & {System call table}\\ \hline
+{Kis 0.9} & {System call table}\\ \hline
+{Knark 2.4.3} & {System call table, Proc hooks}\\ \hline
+{Linspy2} & {System call table}\\ \hline
+{Modhide} & {System call table}\\ \hline
+{Phide} & {System call table}\\ \hline
+{Rial} & {System call table}\\\hline
+{Rkit 1.01} & {System call table}\\ \hline
+{Shtroj2} & {System call table}\\ \hline
+{Synapsys-0.4} & {System call table}\\\hline
+{THC Backdoor} & {System call table}\\\hline\hline
+\multicolumn{2}{|l|}{\bf{Rootkits from research literature~\cite{stealthattacks}.}} \\\hline\hline
+{Disable Firewall } & {Netfilter hooks}\\\hline
+{Disable PRNG} & {Vfs hooks}\\\hline
+\end{tabular}
+\mycaption{\small Rootkits for Linux that modify control data. This table shows
+the data structures modified by the rootkit. \tool\ successfully detects all
+the above rootkits. The invariants violated are all Object invariants, detected by the Membership(constant) template.}
+{\label{rootkitlist}}
+\end{center}

@@ -1,0 +1,278 @@
+Date: Fri, 31 Oct 2008 14:46:42 -0700
+From: vigna@cs.ucsb.edu
+To: vinodg@cs.rutgers.edu
+Subject: Your NDSS 2009 Submission (Number 38)
+
+Dear Prof. Vinod Ganapathy:
+
+I am sorry to inform you that the following submission 
+was not selected by the program committee to appear at 
+NDSS 2009: 
+
+      Protecting Commodity Operating System Kernels from
+           Vulnerable Device Drivers
+
+The selection process was very competitive. Due to time 
+and space limitations, we could only choose 20 of the submitted 
+papers to appear in the program, out of 171 submissions (acceptance rate of 11%). 
+Nonetheless, I still hope you can attend the conference. 
+
+I have enclosed the reviewer comments for your perusal.
+
+If you have any additional questions, please feel free to get in touch.
+
+Best Regards,
+Giovanni Vigna 
+NDSS 2009 
+
+============================================================================ 
+NDSS 2009 Reviews for Submission #38
+============================================================================ 
+
+Title: Protecting Commodity Operating System Kernels from Vulnerable Device Drivers
+
+Authors: Shakeel Butt, Chih-Cheng Chang, Vinod Ganapathy and Michael Swift
+============================================================================
+                            REVIEWER #1
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+
+                   Reviewer's Confidence: 4
+                   Score: 2 (weak reject)
+
+
+---------------------------------------------------------------------------
+Comments
+---------------------------------------------------------------------------
+
+The paper extends the Microdriver architecture (published
+in ASPLOS'08). It tries to address the problem that the
+part of the driver that Microdriver moves into user mode
+(u-driver) can still corrupt the kernel through the broad
+driver-specific interface between the user mode and the
+kernel mode parts of the driver. The paper extends 
+Microdrivers as follows:
+
+1. It checks whether the calls that the u-driver makes
+into the k-driver comply with certain driver-specific
+rules.
+
+2. It presents a mechanism for generating rules automatically.
+
+The goal of this extension is to exclude the u-driver
+from the TCB. This is a difficult problem.
+
+The paper reads well. The problem is well motivated.
+However, I see the following problems.
+
+1. The solution presented in the paper does not achieve
+its goal. In spite of several statements such as "...
+effectively removing the u-driver from the TCB", the
+system does NOT remove the u-driver from the TCB. It
+merely enforces a number of heuristics such as "the
+value in field x must not change". But there is absolutely
+no evidence that these heuristics block all possible ways
+in which the u-driver could attempt to corrupt the
+kernel by sending it bad parameter values. The evaluation
+in the paper certainly does not provide such evidence
+(see below). I am almost convinced that, for many drivers,
+it would not be hard to write an adversarial u-driver
+that gets past all the heuristics proposed in the paper.
+
+2. The system does not provide complete protection. It
+provides some protection. There is a wide spectrum of
+providing "some protection". It is always possible to
+provide "some protection" by implementing a few ad hoc
+checks. Given that, the paper has to demonstrate that
+the protection it provides goes beyond what can be achieved
+by trivial means. This is difficult and requires a careful
+evaluation section. I do not think the paper makes this
+argument successfully (see the next two points).
+
+3. The evaluation section is weak -- at least the part that
+evaluates the quality of the protection (section 5.2). For
+two of the three categories, it shows that the protection
+works on a single simple hand picked example. This doesn't
+prove anything.
+
+4. I find the access control terminology
+inappropriate and misleading. The frequent use of terms
+such as "reference monitor" and "TCB reduction" suggests
+that the paper is providing hard protections and hides
+the fact that the paper is presenting heuristics. I
+think it would be much more useful to admit from the
+start that the paper is about heuristics and to dedicate
+some space to justifying why these heuristics make sense.
+
+5. The rules can have false positives. In the real world,
+a security scheme that breaks perfectly good drivers
+every once in a while will not be used by anybody. This
+is relevant because much of the motivation of the paper rests
+on being practical -- being able to handle legacy driver code.
+The evaluation section states that no false positives
+were observed. However, the evaluation section considers
+only four drivers. The system had false positives on those
+drivers, and tweaks had to be added to make the false
+positives go away. It is unclear how many false positives
+the system will produce on a broader set of drivers
+or in a different operating environment.
+
+6. Why was the system evaluated on only four drivers? If
+everything is automatic except for a few annotations, it
+should be easy to run the system on tens of drivers.
+If this is not the case then the paper should explain where
+the difficulties lie. More generally, I find it hard to
+conclude that something works for drivers in general after
+having tried only four examples.
+
+============================================================================
+                            REVIEWER #2
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+
+                   Reviewer's Confidence: 4
+                   Score: 2 (weak reject)
+
+
+---------------------------------------------------------------------------
+Comments
+---------------------------------------------------------------------------
+
+In this paper, the authors present a security architecture that aims to protect
+commodity OSes from untrusted device drivers. In particular, the security
+architecture
+is based on an earlier work called MicroDriver where a device driver is split
+into two parts: a user-space component (called u-driver) and a kernel-space
+component (called k-driver). A reference monitor is being proposed to extend
+MicroDriver such that it can mediate the communications between the u-driver
+and the k-driver and thus increase the overall security guarantee. Its
+effectiveness
+has been evaluated with a Linux prototype.
+
+Overall, the proposed approach is a viable approach, though its novelty is
+minor.
+In particular, when compared with existing approaches including iKernel [47],
+Nexus [51], and others [17,20,27], it is less clear on the advantages offered
+by the proposed approach. In fact, existing virtualization-based approaches
+such as [17,20,27] can offer all the benefits from the proposed approach.
+A natural question to ask is why there is a need for the proposed approach.
+Though it is being argued that all the above systems require a virtual machine
+monitor, however, such concern may not be a issue especially considering the
+real-world wide adoption of virtualization.  Also, from another perspective,
+a related legitimate question to ask is that ``are there any new security
+guarantees/properties that cannot be provided by existing approaches, while
+they can be offered by the proposed approach?'' A clear answer could be
+very helpful in understanding the benefits from the proposed approach.
+
+This particular work heavily depends on prior work of authors, especially
+MicroDriver
+and DriverSlicer, which makes the contributions of the paper less significant.
+For example, as argued in Section 1 (pp. 2-3), the security architecture offers
+four main benefits over prior approaches: (1) TCB size reduction via privilege
+separation, (2) compatibility with commodity operating systems, (3) good
+common-case performance, and (4) flexibility. However, if we examine
+the benefit (1), the capability of privilege separation is achieved by
+MicroDriver, not from the proposed approach. Also, the other three benefits
+are mainly enabled by DriverSlicer, not from the proposed approach. When
+compared with previous works from authors, the only addition is the inclusion
+of a reference monitor, which attempts to reduce the full trust in previous
+systems especially on those communications between a u-driver and a k-driver.
+However for the reference monitor, there also exist several major limitations.
+
+(1) First, the reference monitor is mainly proposed to enforce kernel data
+structure integrity constraints. The kernel data structure integrity
+constraints
+are obtained from a training phase where an existing invariant inference tool
+called Daikon [9] is leveraged. However, the tool itself cannot ensure two
+key properties of the derived invariants: namely completeness and preciseness.
+With that, I wonder whether there are any security guarantees that can be
+achieved.
+
+(2) Second, another main task of the reference monitor is to enforce control
+transfer policies from a u-driver to a k-driver.  However, the enforcement
+cannot rule out the mimicry attacks [50].  With the enforcement of kernel data
+structure integrity constraints, it is agreed that the attack is being
+constrained
+but the attack is still very feasible. We also note that this additional
+enforcement task is introduced by the way the overall architecture MicroDriver
+is designed.  It is to my understanding that other systems such as iKernel [47]
+and others [17,20,27] may not necessarily suffer from this attack.
+
+In the following, I list some additional comments and hope they can be
+addressed
+to further improve the paper.
+
+(1) In pp. 2, it was mentioned that new OS architectures [28, 51, 53] and other
+user-space device drive frameworks [4, 11, 16, 26, 30, 49] often require a
+complete rewrite of device drivers. It seems this is not the case. In fact,
+as indicated in figure [2] of reference [51], the lines changed in porting
+a device driver is comparable to the lines of annotations required in the
+proposed approach.
+
+(2) In pp. 10, it was mentioned that "Data structures in the vault area are
+only accessed by the reference monitor and not by the kernel." How? Are
+there any security measures that have been deployed to achieve this?
+
+(3) In Section 4.3.2 (pp. 11), "We also impose the restriction that only one
+kernel thread can invoke an upcall at a given time..." Though it could be just
+a implementation limitation, the authors may want to discuss possible
+implications
+especially with respect to the multi-tasking support in commodity OS kernels.
+
+(4) When verifying the kernel/driver interface in the proposed reference
+monitor,
+it is suggested to compare with a recent work that is currently missing.
+
+S. Bugrara and A. Aiken. "Verifying the Safety of User Pointer Dereferences."
+Proceedings of the IEEE Symposium on Security and Privacy, pages 325-338, May
+2008.
+
+(5) In pp. 14,        " ... took almost thrice as long..." -- one typo.
+
+============================================================================
+                            REVIEWER #3
+============================================================================ 
+
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+
+                   Reviewer's Confidence: 3
+                   Score: 3 (weak accept)
+
+
+---------------------------------------------------------------------------
+Comments
+---------------------------------------------------------------------------
+
+The paper presents the design, implementation, and evaluation of
+a security architecture for device drivers that better isolates
+kernel data and functionality from device drivers code. The paper
+is well written, well organized, and the references are
+sufficient.
+
+This is a solid paper, with an interesting security architecture,
+executed all the way, including support tools implementation,
+evaluation, and some experiences. My major concern when I first
+started reading the paper was what it would take to make this
+happen in a big way at a major OS vendor... This would be a tough
+proposition. Even if one wanted to star using this approach, it
+would be tough to retrofit older drivers, and in many cases
+impossible as third parties might not be swayed to do the work
+and other drivers source code might no longer be available. 
+
+Of the eleven mentioned vulnerabilities, how many of them would
+have been prevented by this architecture? 
+
+How good are the invariant generators?
+
+The paper needs to be proof read carefully.

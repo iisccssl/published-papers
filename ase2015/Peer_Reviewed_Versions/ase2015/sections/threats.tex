@@ -1,0 +1,42 @@
+\section{Threats to Validity}
+\label{section:threats}
+
+Our results show the effectiveness of using random differential testing at
+finding bugs in native cross-platform app development frameworks. We now
+summarize the threats to the internal and external validity of our results.
+
+The main threat to internal validity is in determining whether an inconsistency
+discovered by \tool\ is indeed a symptom of a bug in Xamarin. Although an
+inconsistency manifests itself in one of the three different ways outlined in
+\figref{table:inconsistency-sources}, it may be the result of using a method
+with a documented difference in behavior across platforms. We addressed this
+threat in two ways. First, as discussed in \sectref{section:design}, we created
+filters for methods with documented deviations of behavior, so
+false-positive-generating test cases are not produced. Second, we studied the
+results of \tool\ to understand the cause of the inconsistency. In some cases,
+this study lead us to a sentence in the documentation or code comments where
+the inconsistency was documented (as discussed in
+\sectref{section:evaluation}). We did not include these inconsistencies in our
+overall count shown in \figref{table:xcheckresults}, and reported the other
+inconsistencies to the Xamarin BugZilla forum.
+
+A second threat to internal validity is the ``seriousness'' of the bugs found
+by \tool---\ie~does an inconsistency lead to a serious error in the functioning
+of an app, or is it just a minor annoyance? Unfortunately, this aspect is much
+harder to evaluate. Our take on the issue is that an inconsistency is indeed a
+bug that must be fixed (or suitably documented). However, the fact that 12
+(over 25\%) of the inconsistencies that we found lead to bug-fixes within days
+of our reports shows that Xamarin developers did perceive the inconsistencies
+as being significant.
+
+The main threat to external validity is the ability of our approach to
+generalize to other native frameworks, or even other aspects of Xamarin
+(\eg~the compatibility libraries used to translate between Windows Phone and
+iOS). We currently do not have experimental data to answer such questions.
+Nevertheless, our results with Xamarin PCLs for Android indicate that
+inconsistencies arise because of the challenges involved in translating the
+semantics of two different mobile platforms. In particular, an analysis of our
+results does not indicate that the kinds of inconsistencies we found are
+symptomatic of problems either in Windows Phone or Android alone. Therefore, we
+hypothesize that random differential testing of other native frameworks is
+quite likely to find similar bugs in them as well.

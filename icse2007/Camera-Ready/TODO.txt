@@ -1,0 +1,31 @@
+1. False positive and false negative measurements.
+2. A limitations section.
+3. Check the asymptotic complexity of concept analysis.
+
+Main comments yet to be addressed: 
+
+* State explicitly the scope of programs and retrofitted aspects that the
+technique could be applied to (e.g., limited to checks on function calls?)
+[Limitations section].
+
+* Precision and recall with respect to manual approach) [Experiments section:
+need experiments for X server].
+
+* Provided evidence of effectiveness of the technique, with respect to the
+inserted security checks. I'm not convinced that numbers of fingerprints
+identified is a measure of effectiveness.
+[Experiments section: can do this by comparing fingerprints].
+
+* With pointer based languages, your approach does not catch all possible ways
+to access sensitive data structures. Pointer based languages can use pointer
+arithmetics to access sensitive data without touching these named object types
+explicitly.
+
+* Your approach makes the assumption that sensitive data is somehow identified
+by using a specific type. However that does not have to be the case. You may
+use a generic type (such as String) to store sensitive data (e.g., a password).
+Do you get millions of false positives in this case? 
+
+* You state that you found "many" security-sensitive operations identified in
+the LSM project. Can you give more precise results? How many did you find. What
+were the false-positives and true-negatives? 

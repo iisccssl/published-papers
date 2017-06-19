@@ -1,0 +1,7 @@
+Transcript provides transactional execution for event-driven programs.
+In an event-driven program, the code belonging to the program executes
+in chunks. Upon finding a security alert, Transcript's undo model restores
+the state of the Web application back to the last known good checkpoint, 
+i.e., the point before the current chunk execution. Changes made by other
+chunks belonging to the program that have already been committed are not
+undone.

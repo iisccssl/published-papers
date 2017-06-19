@@ -1,0 +1,66 @@
+MOTIVATION: 
+
+Reviewers 1 and 2 had concerns with the motivation for our project. In the
+light of these concerns, we clarify our position. 
+
+We are NOT proposing LLM as a hypervisor replacement. Indeed, hypervisors
+enable several services beyond integrity monitoring that LLM cannot support,
+and if a lightweight hypervisor is available, then LLM does not provide much
+added benefit.
+
+Rather, our point is that the vast diversity of mobile and embedded hardware
+means that the manpower needed to port (and verify) a hypervisor to these
+domains is non-trivial, even if it has just a few thousand LOC.
+Simultaneously, given current trends, we will see tens of cores on mobile and
+embedded processors in the near future.  The point of our paper is to show
+that if hardware vendors were to adopt the minor changes needed to implement
+LLM, then it can be used to implement system integrity monitors without
+requiring the effort to port hypervisors. In our opinion, the effort invested
+by a hardware vendor to implement LLM for a particular domain will be smaller
+than the software effort needed to port hypervisors to that domain.
+
+As concerns OKL4, despite its claimed deployment on 750 million devices, it is
+a paravirtualized system, requiring changes to the OS. In contrast, an
+LLM-based solution can be applied to an unmodified commodity OS.
+
+EVALUATION:
+
+Reviewers 1 and 3 had concerns with our evaluation methodology:
+
+* We compared performance of Linux 4-core LLM versus a 3-core SMP to study the 
+  overhead induced by the integrity monitor. We did this because we assume a
+  dedicated security-monitoring core and Linux ran on 3 cores in the LLM. 
+
+* We did not compare performance with hypervisor-based protection because we 
+  were unable to execute a hypervisor within our QEMU-based tested.
+
+* We DO have raw data to report confidence intervals and standard deviations 
+  and will include this in our revised draft.
+
+
+OTHERS:
+
+Reviewer 1 minor points:
+
+* The hardware modifications would mainly involve changes to addressing
+  hardware (to implement local memory access restrictions) and hardware to
+  mask IPIs from coreUs to halt core0. 
+
+* [Section 3.4.1] The reviewer is correct in that there is no need to touch
+  that portion of memory. However, it is still accessible to and can be
+  modified by a malicious target. This motivates the need for secure paging.
+
+* The working set has to fit in local memory to avoid poor monitor performance
+  because of "swapping", but in our experience, about 500KB of local memory
+  suffices for the monitor.
+
+
+Reviewer 3:
+
+* It is possible for the target to hide malware directly on device memory
+  (e.g., GPU, smart NIC), and as proposed, LLM cannot detect such malware
+  hosted outside main system memory unless the target is using IOMMU to map
+  device memory to main memory. As argued above, we acknowledge that
+  hypervisors are more powerful than LLM, and our goal is to explore the
+  limits of a hypervisor-free hardware architecture such as LLM, and we will
+  discuss this in a "Limitations" section.

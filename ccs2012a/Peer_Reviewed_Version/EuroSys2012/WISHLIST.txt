@@ -1,0 +1,9 @@
+A wishlist of tasks that were lacking in the EuroSys'12 submission:
+
+1. Experiments with the tap driver for the write workload in the storage SD.
+
+2. Implementing one more SD, particularly, a network SD.
+
+3. Comparison with SICE.
+
+4. Reporting the size (LOC) of various components: domB, #lines in Xen, etc.

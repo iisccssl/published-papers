@@ -1,0 +1,2 @@
+S. Willison. Understanding the Greasemonkey vulnerability. 
+http://simonwillison.net/2005/Jul/20/vulnerability/ July 2005.

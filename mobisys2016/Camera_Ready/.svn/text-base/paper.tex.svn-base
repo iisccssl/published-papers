@@ -1,0 +1,307 @@
+\documentclass[pageno]{sig-alternate-05-2015}
+
+%------------------------------------------------------------------------------
+%                                  Preamble. 
+%------------------------------------------------------------------------------
+%
+\usepackage{times}
+\usepackage[normalem]{ulem}
+%\usepackage{txfonts}
+\usepackage{url}
+\usepackage{tikz}
+%\usepackage{ifpdf}
+\usepackage{color}
+%\usepackage{pifont}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyphenat}
+\usepackage{widow}
+\usepackage{needspace}
+%\usepackage{titlesec}
+\usepackage[pdftex,unicode=true,%
+                   pdfstartview={FitH},%
+                   colorlinks=true,%
+                   citecolor=black,%
+                   filecolor=black,%
+                   linkcolor=black,%
+                   urlcolor=black]{hyperref}
+\usepackage[authoryear,square,comma,sort&compress]{natbib}
+
+\hypersetup{
+    bookmarks=true,
+    unicode=false,
+    pdffitwindow=false,
+    pdfstartview={FitH},
+    pdftitle={MobiSys 2016 - Regulating ARM TrustZone Devices in Restricted Spaces},
+    pdfauthor={Ferdinand Brasser, Daeyoung Kim, Christopher Liebchen, Vinod Ganapathy, Liviu Iftode, and Ahmad-Reza Sadeghi},
+    pdfsubject={Published in Proceedings of MobiSys 2016, the 14th ACM International Conference on Mobile Systems, Applications and Services, June 25-30, 2016, Singapore}, 
+    pdfcreator={Vinod Ganapathy},
+    pdfproducer={Vinod Ganapathy},
+    pdfkeywords={ARM TrustZone} {Restricted Spaces} {Mobile Device Security},
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    filecolor=black,
+    urlcolor=black 
+}
+
+% Use a smaller font size for URLs:
+\makeatletter
+\def\url@myurlstyle{%
+   \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\sf}}}
+   \makeatother
+\urlstyle{myurl}
+
+% Section names, figure names and algorithm names.
+\renewcommand{\tableautorefname}{Table}
+\renewcommand{\figureautorefname}{Figure}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\renewcommand{\refname}{\uppercase{References} \indent\hfill {\small \rm (All
+URLs verified in April 2016.)}}
+\newcommand{\figref}[1]{\autoref{#1}}
+\newcommand{\tabref}[1]{\autoref{#1}}
+\newcommand{\mysection}[1]{\section{#1}}
+%\newcommand{\sectref}[1]{\S\ref{#1}}
+\newcommand{\sectref}[1]{\autoref{#1}}
+\newcommand{\aref}[1]{Algorithm~\ref{#1}}
+\newcommand{\mycaption}[2]{\caption{#1}#2}
+\newcommand{\myfootnote}[1]{\footnote{\scriptsize #1}}
+%\newcommand{\myparagraph}[1]{\paragraph{#1.}}
+%\newcommand{\myparagraph}[1]{\paragraph{#1}}
+\newcommand{\myparagraph}[1]{\indent\par\noindent\textsf{\textbf{#1.}}}
+\newcommand{\emphitem}[1]{\textbf{#1}}
+\newcommand{\asplossubmissionnumber}{55}
+%\newcommand{\hRule}{\indent\vspace{-0.15cm}\noindent\rule{\linewidth}{0.025mm}\indent\vspace{-0.1cm}}
+\newcommand{\hRule}{\indent\vspace{-0.5cm}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=0.5pt] (char) {#1};}}
+
+%------------------------------------------------------------------------------
+%                                Space savers. 
+%------------------------------------------------------------------------------
+% This mylist environment indents items, and saves less space than the above.
+\newcounter{myctr}
+%\newenvironment{mylist}{\begin{list}{(\textbf{\arabic{myctr}})}
+\newenvironment{mylist}{\begin{list}{\textbf{\circled{\arabic{myctr}}}}
+{\usecounter{myctr}
+\setlength{\topsep}{1mm}\setlength{\itemsep}{0.5mm}
+\setlength{\parsep}{0.5mm}
+\setlength{\listparindent}{\parindent} % Indentation of paras.
+\setlength{\itemindent}{0mm}\setlength{\partopsep}{0mm}
+\setlength{\labelwidth}{-2mm}
+\setlength{\leftmargin}{0mm}}}{\end{list}}
+
+% Space saving List environment for itemizing.
+\newenvironment{mybullet}{\begin{list}{$\bullet$}
+{\setlength{\topsep}{1mm}\setlength{\itemsep}{0.5mm}
+\setlength{\parsep}{0.5mm}
+\setlength{\listparindent}{\parindent} % Indentation of paras.
+\setlength{\itemindent}{0mm}\setlength{\partopsep}{0mm}
+\setlength{\labelwidth}{-2mm}
+\setlength{\leftmargin}{0mm}}}{\end{list}}
+
+%------------------------------------------------------------------------------
+%                  Useful commands and acronymns used in the paper.
+%------------------------------------------------------------------------------
+% Commands
+\newcommand{\mycomment}[1]{}
+\newcommand{\todo}[2]{\textcolor{red}{\textit{\textbf{#1}:~#2}}}
+\newcommand{\define}[1]{\emph{#1}}
+
+% Acronymns
+\newcommand{\code}[1]{{\sf #1}}
+\newcommand{\apriori}{\textit{a priori}}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\eg}{\textit{e.g.,}}
+\newcommand{\ie}{\textit{i.e.,}}
+\newcommand{\adhoc}{ad hoc}
+
+% ----- Use the definitions below if you have the pifont package -----
+% \newcommand{\circone}  {\ding{182}}
+% \newcommand{\circtwo}  {\ding{183}}
+% \newcommand{\circthree}{\ding{184}}
+% \newcommand{\circfour} {\ding{185}}
+% \newcommand{\circfive} {\ding{186}}
+% \newcommand{\circsix}  {\ding{187}}
+% \newcommand{\circseven}{\ding{188}}
+% ----- Use the definitions below if you have the tikz package -----
+\newcommand{\circone}  {\textbf{\circled{1}}}
+\newcommand{\circtwo}  {\textbf{\circled{2}}}
+\newcommand{\circthree}{\textbf{\circled{3}}}
+\newcommand{\circfour} {\textbf{\circled{4}}}
+\newcommand{\circfive} {\textbf{\circled{5}}}
+\newcommand{\circsix}  {\textbf{\circled{6}}}
+\newcommand{\circseven}{\textbf{\circled{7}}}
+% ----- Use the definitions below if you don't have tikz or pifont ----
+% \newcommand{\circone}  {(1)}
+% \newcommand{\circtwo}  {(2)}
+% \newcommand{\circthree}{(3)}
+% \newcommand{\circfour} {(4)}
+% \newcommand{\circfive} {(5)}
+% \newcommand{\circsix}  {(6)}
+% \newcommand{\circseven}{(7)}
+
+% Paper setup
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+%------------------------------------------------------------------------------
+% Editing-related changes
+%------------------------------------------------------------------------------
+\definecolor{heraldRed}{rgb}{1.0,0.0,0.0}
+\definecolor{heraldBlue}{rgb}{0.0,0.0,1.0}
+
+% \newcommand{\deltext}[1]{\textcolor{heraldRed}{\sout{#1}}}
+% \newcommand{\deltext}[1]{}
+
+
+% \newcommand{\addtext}[2]{\textcolor{heraldBlue}{\fbox{\textbf{\uppercase{#1}}}~#2}}
+\newcommand{\addtext}[2]{#2}
+
+
+%------------------------------------------------------------------------------
+%                               Fancy header setup.
+%------------------------------------------------------------------------------
+%
+\pagestyle{fancyplain}
+\lhead{}
+\lfoot{}
+\chead{}
+\rhead{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+\renewcommand{\baselinestretch}{1}
+
+%------------------------------------------------------------------------------
+%                              Title and Authors.
+%------------------------------------------------------------------------------
+\begin{document}
+
+\CopyrightYear{2016}
+\setcopyright{acmcopyright}
+\conferenceinfo{MobiSys'16,}{June 25-30, 2016, Singapore.}
+\isbn{978-1-4503-4269-8/16/06}\acmPrice{\$15.00}
+\doi{http://dx.doi.org/10.1145/2906388.2906390}
+
+\title{Regulating ARM TrustZone Devices in Restricted Spaces}
+\author{
+\begin{tabular}{c@{~~~~}c@{}c@{~~~~}c@{}c}
+Ferdinand Brasser && 
+  Daeyoung Kim && 
+  Christopher Liebchen\\
+%
+\affaddr Technische Universit{\"a}t Darmstadt && 
+\affaddr Rutgers University && 
+\affaddr Technische Universit{\"a}t Darmstadt\\
+%
+\affaddr ferdinand.brasser@trust.cased.de &&
+\affaddr daeyoung.kim@cs.rutgers.edu &&
+\affaddr christopher.liebchen@trust.cased.de\\\\
+%
+Vinod Ganapathy && 
+  Liviu Iftode && 
+  Ahmad-Reza Sadeghi\\
+\affaddr Rutgers University && 
+\affaddr Rutgers University && 
+\affaddr Technische Universit{\"a}t Darmstadt\\
+%
+\affaddr vinodg@cs.rutgers.edu &&
+\affaddr iftode@cs.rutgers.edu &&
+\affaddr ahmad.sadeghi@trust.cased.de\\
+%
+% \\\multicolumn{5}{c}
+% {\email \{ferdinand.brasser, christopher.liebchen, ahmad.sadeghi\}@trust.cased.de}\\
+% \multicolumn{5}{c}
+% {\email \{daeyoung.kim, vinod.ganapathy, liviu.iftode\}@cs.rutgers.edu}\\
+\end{tabular}
+}
+
+\maketitle
+%------------------------------------------------------------------------------
+%                                  Abstract.
+%------------------------------------------------------------------------------
+\begin{abstract}
+%
+\input{sections/abstract}
+%
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10002978.10003006.10003007.10003008</concept_id>
+<concept_desc>Security and privacy~Mobile platform security</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003033.10003083.10003014.10003017</concept_id>
+<concept_desc>Networks~Mobile and wireless security</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Security and privacy~Mobile platform security}
+\ccsdesc[500]{Networks~Mobile and wireless security}
+
+\printccsdesc
+
+\keywords{ARM TrustZone; Restricted spaces; Mobile device security} 
+
+%------------------------------------------------------------------------------
+%                                Main Contents. 
+%------------------------------------------------------------------------------
+
+\input{sections/introduction}
+\input{sections/usagemodel}
+\input{sections/policy}
+\input{sections/mechanism}
+\input{sections/vetting}
+\input{sections/evaluation}
+\input{sections/related}
+\input{sections/conclusions}
+
+\myparagraph{Acknowledgments} 
+%
+% \section*{Acknowledgments}
+%
+We thank the MobiSys reviewers, our shepherd Ardalan Amiri Sani, Trent Jaeger,
+Xinyang Ge, Giuseppe Petracca, and Santosh Nagarakatte for their comments on
+drafts of this paper. Daeyoung Kim, Vinod Ganapathy and Liviu Iftode were
+supported in part by the US National Science Foundation grants CNS-1441724,
+CCF-1408803, CNS-1117711, and CNS-0952128.  Ferdinand Brasser, Christopher
+Liebchen and Ahmad-Reza Sadeghi were funded by the German Science Foundation
+(DFG) as part of project S2 within CRC~1119 \textsc{crossing}, European Union's
+Horizon 2020 research and innovation program under grant agreement number
+643964 (\textsc{supercloud}), and the Intel Collaborative Research Institute
+for Secure Computing. 
+
+%------------------------------------------------------------------------------
+%                                  References.
+%------------------------------------------------------------------------------
+% \fontsize{9pt}{9pt}
+% \selectfont
+
+\small
+\renewcommand{\baselinestretch}{1}
+\let\oldthebibliography=\thebibliography
+  \let\endoldthebibliography=\endthebibliography
+  \renewenvironment{thebibliography}[1]{%
+    \begin{oldthebibliography}{#1}%
+      \setlength{\parskip}{0.25ex}%
+      \setlength{\itemsep}{0.25ex}%
+  }%
+  {%
+    \end{oldthebibliography}%
+  }
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+
+\end{document}
+

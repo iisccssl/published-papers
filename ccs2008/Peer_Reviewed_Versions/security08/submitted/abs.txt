@@ -1,0 +1,15 @@
+Correct enforcement of authorization policies is a difficult task, especially
+for multi-threaded software.  Even in carefully-reviewed enforcement
+mechanisms, some corner cases are likely to remain where unauthorized access is
+possible.  We introduce Transactional Memory Introspection (TMI), a reference
+monitor architecture that builds on Software Transactional Memory---a new,
+attractive alternative for writing correct, multi-threaded software.  TMI
+greatly simplifies the task of correctly implementing security enforcement
+mechanisms.  In particular, TMI helps ensure complete mediation of all
+security-relevant operations, eliminates race conditions related to security
+checks, and simplifies handling authorization failures.  We present the design
+and implementation of a TMI-based reference monitor and experiment with its use
+in enforcing authorization for three multi-threaded servers.  Our experiments
+confirm the benefits of the TMI architecture and show that TMI can even benefit
+performance.
+

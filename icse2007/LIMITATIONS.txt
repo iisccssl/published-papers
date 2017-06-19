@@ -1,0 +1,6 @@
+1. Searching of fingerprints is restricted to be intraprocedural. 
+   We can miss interprocedural occurences.
+2. Fingerprints are flow insensitive.
+3. Pointer arithmetic and casts in resource accesses will result
+   in our analysis being incomplete.
+4. If you use String for everything, that will be a problem for us.

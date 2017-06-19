@@ -1,0 +1,135 @@
+\section{Implementation}
+\label{section:implementation}
+
+% ---------------------------------------------------------------------------------
+% TODO: This text to be added in this section. Modify and fix any
+% cross-references.
+
+% TODO: Suitably modify the stuff below and move it to the implementation
+% section. Not really necessary to introduce OpenSGX at this early stage.
+
+%Features of the SGX are now commercially deployed in Intel's Skylake series of
+%processors. Despite the availability of commodity hardware, for this paper, we
+%chose to develop \tool\ atop OpenSGX~\cite{opensgx:ndss16}, a QEMU-based SGX
+%emulation infrastructure that supports x86-64 executables, compiled as statically-linked, 
+%position independent executables (PIEs). Our choice was motivated by two factors.
+
+Features of the SGX are now commercially deployed in Intel's Skylake series of
+processors. Despite the availability of commodity hardware, for this paper, we
+chose to develop \tool\ atop OpenSGX~\cite{opensgx:ndss16}, a QEMU-based SGX
+emulation infrastructure. Two factors governed our choice.
+
+First, open-source software support for SGX enclave development is still
+rudimentary. To create a system that fully realizes the power of enclaves, we
+need support for in-enclave bootstrap code and supporting libraries, drivers
+within the OS, and compiler support to emit SGX code. Although Intel provides
+SDKs for Windows 10, these SDKs are closed-source, which complicates extension
+and modification~\cite{win10:sdk}. An open-source Linux
+SDK~\cite{linuxsdk:june16}, which we could have extended, was released only in
+June 2016 when we were already underway with our \tool\ prototype.  While
+Intel's programming references~\cite{intelsgx:sep13,intelsgx:oct14} specify the
+semantics of instructions, they offer considerable freedom to end-developers to
+choose their enclave programming model. Community consensus has yet to emerge
+on these programming models, and rather than define one of our own, we chose to
+use the programming model defined by OpenSGX. Moreover, OpenSGX incorporates
+driver support for SGX, and has ported various utilities and libraries to work
+in enclave mode, which we could readily utilize and extend for \tool.
+
+Second, even the SGX architecture itself is evolving. Skylake processors
+currently implement version~1 of the instruction set. This instruction set
+poses a number of restrictions~\cite{dynmgmt:hasp16,dynalloc:hasp16}, the chief
+of which is that it does not permit page protections to be changed at the
+hardware level for pages in the EPC. Page protections can still be changed at
+the level of page tables, and SGX performs a two-level page protection check
+prior to writing or modifying a page: at the page-table level and at the
+hardware level. However, recent work has shown that lack of support for page
+protection modifications at the EPC level can be
+exploited~\cite{asyncshock:esorics16}. As already discussed, \tool\ relies on
+the ability to change EPC page protections. In addition, SGX hardware currently
+requires all enclave memory to be committed at enclave build time (therefore
+requiring the developer to predict and use the maximum stack/heap sizes during
+enclave build) and does not allow additional code modules to be dynamically
+loaded into the enclave after it has been built.  While these changes have been
+proposed in version~2 of the instruction
+set~\cite{dynmgmt:hasp16,dynalloc:hasp16}, it is not yet commercially
+available~\cite{sgx:v2:na}. In contrast, it is easy to explore such changes
+within the context of a software-based SGX emulator such as OpenSGX.
+
+%------------------------------------------------------------------------------
+
+
+% ---------------------------------------------------------------------------------
+
+%We implemented a proof-of-concept of the system on top of OpenSGX
+%~\cite{opensgx:ndss16}, an open source Intel SGX emulator. The system supports x86-64
+%executables that use Executable and 
+%Linkable Format (ELF) ~\cite{elfsharedlib, elfsystemV} which are compiled as position independent executables (PIEs)
+%and are statically linked.  In this section, we first describe the modification
+%we made to OpenSGX. We next discuss the implementation of the bootstrap, the
+%decoder and the loader. 
+
+Our \tool\ prototype supports x86-64 executables that use ELF
+format~\cite{elfsharedlib, elfsystemV}, are compiled as position independent
+executables and are statically linked.  In this section, we first describe our
+modifications to OpenSGX. We then discuss the components of \tool.
+
+\myparagraph{Modifications to OpenSGX.} The client enclave holds the client
+executable as well as its decoded instructions. As a result, the number of EPC
+pages should be large enough to meet the memory requirements of the client
+enclave. OpenSGX restricts the number of EPC pages to 2000. We modified OpenSGX
+to increase the default number of EPC pages to 32000 which translates to 128 MB
+for the physical protected memory region. On OpenSGX, this size can be extended
+to meet further memory requirements. We also change the number of initial page
+frames for the heap region from the default value of 300 to 5000.
+
+\myparagraph{Binary Disassembly.} The executable file provided by the client is
+in 64-bit ELF format.  An ELF binary comprises of several segments and each
+segment has one or more sections. Each section contains information of similar
+type, for instance the \code{.text} section contains the executable code, all
+writable data is stored in the \code{.data} section and uninitilized data is
+kept in the \code{.bss} section. The ELF format also features an ELF header
+located at the beginning of the file and is used to recognize other parts of
+the file.
+
+One common challenge in disassembling a binary is mixing of code and data
+within the code section. Our \tool\ prototype assumes that the client's
+executable is compiled with separated code and data sections. Before
+disassembling the code sections of the executable, the loader checks its header
+to verify that the executable is correctly formatted. The checks include
+checking the signature as well as the ELF class of the executable. The loader
+next reads the program header of the executable to extract all text sections.
+We implement the disassembler based on the 64-bit binary disassembler of NaCl,
+an open source sandbox for native code. Using prefix and opcode tables for
+x86-64 bit instruction set, the disassembler parses the byte sequence of the
+text sections into instructions and associated metadata
+information, \eg~the number of prefix bytes, number of opcode bytes and number
+of displacement bytes~\cite{intelinstructionset:june16}.
+
+NaCl's disassembler  does not track all disassembled instructions. Instead,
+during the disassembly it uses a buffer that stores the most recently
+disassembled instructions. This stems from the fact that the NaCl validates
+each instruction right after it is disassembled.  We instead use a dynamically
+allocated buffer that can hold all the instructions and use that buffer as the
+input to policy checks. Since dynamic memory allocation involves exiting the
+enclave mode and invoking a trampoline, we reduce the involved overhead by
+restricting the calls to \code{malloc} by allocating a memory page at a time
+instead of just a memory region for an instruction.
+
+Along with disassembling the executable, the loader also reads the symbol
+tables to keep track of the address and name of all the functions in the
+executable. It constructs a symbol hash table whose key is the address of a
+function and value is the name of the function. This symbol hash table could be
+used by the policy checking component when it perform policy checks.
+
+\myparagraph{Loading.} After the executable has been checked and confirmed to
+follow certain policies the loader takes over. The loader maps the \code{text},
+\code{data} and \code{bss} segments to the enclave memory, making the
+\code{text} segment be executable but read-only, the \code{data} segment and
+\code{bss} segment be writable but non-executable. It then locates the sections
+that require relocations and the locations at which the relocations should be
+applied. The loader acquires all the information that it needs for relocations
+from the \code{.dynamic} section of the executable. In particular, the loader
+determines the address and the size of relocation tables which contain detailed
+information for relocations by reading appropriated entries of the
+\code{.dynamic} section. Upon completing relocation, the loader sets up a call
+stack and transfers control to the executable.

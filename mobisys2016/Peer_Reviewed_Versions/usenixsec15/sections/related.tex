@@ -1,0 +1,118 @@
+\section{Related Work}
+\label{section:related}
+
+\myparagraph{TrustZone-based Frameworks}
+%
+Since the introduction of TrustZone, a number of projects have used it to build
+novel security applications.  TrustDump~\cite{trustdump:esorics14} is a
+TrustZone-based mechanism to reliably acquire memory pages from the normal
+world of a device.  While similar in spirit to remote reads, TrustDump's focus
+is to be an alternative to virtualized memory introspection solutions for
+malware detection. Unlike our work, TrustDump is not concerned with restricted
+spaces, authenticating the host, or remotely configuring guest devices.
+
+Samsung Knox~\cite{knox:ccs14} and \textsc{Sprobes}~\cite{sprobes:most14}
+leverage TrustZone to protect the normal world in real-time from kernel-level
+rootkits. These projects harden the normal world kernel by making it perform a
+world switch when it attempts to perform certain sensitive operations to kernel
+data. A reference monitor in the secure world checks these operations, thereby
+preventing rootkits. In our work, remote reads allow the host to detect
+infected devices, but we do not attempt to provide real-time protection from
+malware. As discussed in \sectref{section:threat}, our work can be used in
+conjunction with Knox to improve the security of the normal world.
+
+TrustZone has also been used to improve the security of user applications.
+Microsoft's TLR~\cite{tlr:asplos14} and Nokia's ObC~\cite{obc:asiaccs09}
+leverage TrustZone to provide a secure execution environment for user
+applications, even in the presence of a compromised kernel. Other applications
+include ensuring trustworthy sensor readings from
+peripherals~\cite{tenor:mobisys12} and securing mobile payments~\cite{proxama}.
+
+\myparagraph{Enterprise Security} With the growing emphasis on BYOD, a number
+of projects have developed enterprise security solutions for smart devices.
+Many of these projects have focused on enabling multiple persona
+(\eg~\cite{asm:sec14,flaskdroid:sec13,cells:sosp11}) or enforcing mandatory
+access control policies on smart devices
+(\eg~\cite{deepdroid:ndss15,seandroid:ndss13,flaskdroid:sec13,asm:sec14}).
+Prior work has also explored access control for devices based on the context of
+their use
+(\eg~\cite{crepe:isc10,conucon:securecomm10,saint:acsac09,Covington2002,Damiani2007,conxsense:asiaccs14}).
+
+There are three differences between these projects and ours. First, they
+typically exercise their policies at the level of user apps and not
+peripherals.  Our work is synergistic with these efforts, complementing the
+app-level control that they provide. Second, most of these techniques are
+typically implemented by enhancing the runtime platform on the guest device. In
+our work, the policy enforcement mechanism is agnostic to the guest platform
+because it works at the level of memory reads and writes. The platform-specific
+portions (\ie~analyzing memory images and designing the write operations) are
+performed at the host.  This approach keeps the TCB that executes on the guest
+minimal in functionality.  Third, a minor point of difference is that these
+prior projects are not integrated with secure hardware, although it may be
+possible to integrate them with TrustZone.
+
+\myparagraph{App Security}
+%
+It is now well-known that many popular apps exfiltrate sensitive user data from
+smart devices~\cite{taintdroid:osdi10}. Moreover, a significant fraction of
+apps (on Android) are over-privileged~\cite{stowaway:ccs11,pscout:ccs12} and
+end-users are poor at understanding the meaning of app
+permissions~\cite{ep:ubicomp12,felt:soups12}.  Such apps can leverage the
+increasing array of sensors on modern smart devices in novel and dangerous
+ways~\cite{soundcomber:ndss11,placeraider:ndss13}. These threats will amplify
+in the future as we see an increasing number of augmented reality apps that
+continuously monitor sensor feeds and extract data from the device's
+environment.
+
+Some projects have attempted to rectify the situation by offering improved app
+permission models~\cite{howtoask:hotsec12} or modifying the execution
+environment on the device to return ``fake'' sensor data to
+apps~\cite{mockdroid:hotmobile10}. However, such techniques are usually
+ineffective when the device itself is compromised (\eg~via kernel rootkits), or
+if the user unintentionally installs a malicious app. Researchers have also
+investigated defenses tailored toward improving privacy in the presence of
+augmented reality apps~\cite{ar:sec13,darkly:oak13}. Our work can complement
+these efforts by giving hosts the ability to control peripherals below the app
+layer. 
+
+% \myparagraph{Hardening Smart Devices}
+% 
+% Finally, the research community has addressed techniques to harden the
+% software stack of smart devices. Samsung Knox~\cite{knox:ccs14}, as
+% previously discussed, provides the ability to detect certain classes of
+% kernel-level rootkits in real time.  MOCFI~\cite{mocfi:ndss12} enhances the
+% mobile operating system by enforcing control-flow integrity properties,
+% thereby mitigating the effect of attacks such as buffer overflow-based
+% exploits.  Airbag~\cite{airbag:ndss14} employs lightweight virtualization to
+% isolate user apps and prevent them from infecting the device's firmware or
+% leaking sensitive information. At the app level,
+% RetroSkeleton~\cite{retro:mobisys13} rewrites Android apps to improve their
+% security on commodity devices. These techniques can help improve the
+% resilience of smart devices to attack. Our work allows hosts to remotely
+% analyze smart devices via remote memory operations and verify that they are
+% free of malware infection.
+
+
+% \myparagraph{Defending from Malware}
+% \myparagraph{Context Awareness}
+
+
+
+% * Clear difference from SAMSUNG KNOX.
+% * List the things that we don't want to do (because SAMSUNG KNOX is our competition)
+%     - Intercept critical operations.
+%     - They cannot detect memory overflow errors.
+%     - Ours is asynchronous, theirs is synchronous.
+%     - No writes/uninstalling devices.
+% * KNOX is not enforcing any enterprise security policy. Ours is enforcing specific enterprise policies.
+% * KNOX checks the integrity of certain kernel memory pages.
+%
+% Prior work has developed numerous examples of security primitives that use
+% remote memory operations. Examples include memory forensics~\cite{}, kernel
+% malware detection~\cite{}, and operating system repair~\cite{}.  
+% However, the bulk of these techniques have usually been developed for
+% server-class systems or personal computers with larger form factors, such as
+% desktops, that typically use the x86 architecture and where methods to isolate
+% the target from the monitor, \ie~virtualization or co-processors, are readily
+% available.
+%

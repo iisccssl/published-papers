@@ -1,0 +1,19 @@
+Smart personal devices have become ubiquitous, and we increasingly rely on
+their use in our daily lives. Simultaneously, society is beginning to place
+restrictions on how these devices can be used in various environments. Such
+\textit{restricted spaces} abound in today's society. For example, enterprises
+and federal offices that store sensitive information place restrictions on the
+use of cameras and microphones in smart devices. In classrooms, students are
+often disallowed from using smart devices during examinations. And in social
+settings, people are unwilling to have their conversations recorded by their
+friends wearing smart glasses. To date, these restrictions have been enforced
+using \adhoc\ methods.
+
+In this paper, we present a systematic approach for restricted space hosts to
+remotely analyze and regulate guest device use in the restricted space. Our
+approach cleanly separates policy from mechanism.  Policies on device use are
+decided by the hosts that control the restricted space. These policies are
+enforced by a trusted mechanism that executes on the smart guest device. We
+present an implementation of our mechanism on smart devices equipped with the
+ARM TrustZone architecture. We also present candidate policies that show how
+device use can be regulated in a variety of restricted spaces.

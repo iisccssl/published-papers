@@ -1,0 +1,46 @@
+digraph "DD" {
+size = "7.5,10"
+center = true;
+
+{ node [shape = plaintext];
+  edge [style = invis];
+  
+}
+
+{ rank = same; 
+"0xc8";
+}
+{ rank = same;
+"0xc7";
+"0xc0";
+}
+{ rank = same; 
+"0xb6";
+"0xb7"
+}
+{ rank = same;
+{ node [shape = box]; "0xb1";
+}
+{ node [shape = box]; "0xb0";
+}
+
+}
+
+"0xc8" -> "0xc7";
+"0xc8" -> "0xc0" [style = dotted];
+"0xc7" -> "0xb6";
+"0xc7" -> "0xb7" [style = dotted];
+"0xc0" -> "0xb1";
+"0xc0" -> "0xb7" [style = dotted];
+"0xb6" -> "0xb0" [style = dotted];
+"0xb6" -> "0xb1";
+"0xb7" -> "0xb0";
+"0xb7" -> "0xb1" [style = dotted];
+"0xb0" [label = "0"];
+"0xb1" [label = "1"];
+"0xc8" [label="x"];
+"0xc0" [label="i"];
+"0xc7" [label="i"];
+"0xb6" [label="y"];
+"0xb7" [label="y"];
+}

@@ -1,0 +1,28 @@
+\appendix
+\input{sections/appendix-table}
+
+\begin{center}
+\underline{\sc\bfseries \Large Appendix}
+\end{center}
+
+\section{Application Robustness Experiments}
+\label{section:robustness}
+
+Installing a dummy driver disables the peripheral, but how does it affect the
+user app that is using the peripheral? To answer this question, we conducted
+two sets of experiments involving a number of client user apps that leverage
+the periperhals shown in \figref{table:uninstall}. 
+
+In the first set of experiments, which we call the \textit{passive setting}, we
+start with a configuration where the client app is not executing, replace the
+device driver of the peripheral with a dummy, and then start the app. In the
+second set of experiments, called the \textit{active setting}, we replace the
+periperhal's device driver with the dummy as the client app that uses the
+peripheral is executing. 
+
+\figref{table:robustness} shows the results of our experiments. For both the
+passive and active settings, we observe that in most cases, the user app
+displays a suitable error message or changes its behavior by displaying a blank
+screen or creating an empty audio file. In some cases, particularly in the
+passive setting, the app fails to start when the driver is replaced, and the
+Android runtime displays an error that it is unable to start the app.

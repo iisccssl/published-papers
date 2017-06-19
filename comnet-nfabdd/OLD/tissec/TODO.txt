@@ -1,0 +1,31 @@
+TODO List after the Oakland deadline:
+
+* Experiments with Bro dataset: Bro is another IDS that supports regular
+  expressions. We can add the Bro dataset too, and have experiments with
+  a total of three sets of signatures.
+
+* Comparison with pcre: As Randy discussed, we should probably include
+  comparison with the PCRE package as well.
+
+* Modifying the tool to consider arbitrary many NFAs: we should modify
+  the NFA tool to construct regular expressions with arbitrary many
+  regular expressions. This will probably allow us to handle the entire
+  Snort data set, which we should do.
+
+The above three are "short-term" directions, things that we can try
+doing by the end of this year.
+
+We've to also think about long-term directions: 
+
+* One of the most promising, in my mind, is that of multi-byte matching. It
+  will be worth seeing whether the matrix multiplication approach that Rezwana 
+  mentioned will be practical, and then pursue that with the ACM CCS'10 (April 
+  17th) deadline in mind.
+
+* Another promising direction is hardware implementation. Our best results
+  still don't yield GB/s matching speeds: we're about 1000 times slower than
+  GB/s. But I suspect that's because we're in software. If we had a hardware
+  implementation, then we will be able to achieve much higher speeds. We should
+  at least have a hardware-based design, even if we don't pursue an
+  implementation.
+

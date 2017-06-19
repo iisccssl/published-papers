@@ -1,0 +1,170 @@
+\documentclass[conference]{IEEEtran}
+
+%------------------------------------------------------------------------------
+%                                  Preamble. 
+%------------------------------------------------------------------------------
+%
+% \usepackage{times}
+\usepackage{url}
+\usepackage{ifpdf}
+\usepackage{color}
+\usepackage{widow}
+\usepackage{txfonts}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyphenat}
+\usepackage[pdftex]{hyperref}
+\usepackage[authoryear,square,comma,sort&compress]{natbib}
+
+% Use a smaller font size for URLs:
+\makeatletter
+\def\url@myurlstyle{%
+   \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\sf}}}
+   \makeatother
+\urlstyle{myurl}
+
+% Section names, figure names and algorithm names.
+\renewcommand{\tableautorefname}{Table}
+\renewcommand{\figureautorefname}{Figure}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\renewcommand{\refname}{REFERENCES}
+\newcommand{\figref}[1]{\autoref{#1}}
+\newcommand{\sectref}[1]{\autoref{#1}}
+\newcommand{\sectrefs}[2]{Sections~\ref{#1} and~\ref{#2}}
+\newcommand{\aref}[1]{Algorithm~\ref{#1}}
+\newcommand{\mycaption}[2]{\textbf{\caption{\bf #1}#2}}
+\newcommand{\myfootnote}[1]{\footnote{\scriptsize #1}}
+% \newcommand{\myparagraph}[1]{\noindent\textbf{\textit{#1}}}
+\newcommand{\myparagraphnodot}[1]{\parskip 5pt \noindent\textbf{\textit{#1}}}
+\newcommand{\myparagraph}[1]{\myparagraphnodot{#1.}}
+% \newcommand{\myparagraph}[1]{\paragraph{}{#1}}
+
+%------------------------------------------------------------------------------
+%                                Space savers. 
+%------------------------------------------------------------------------------
+% This mylist environment indents items, and saves less space than the above.
+\newcounter{myctr}
+\newenvironment{mylist}{\begin{list}{(\textbf{\arabic{myctr}})}
+{\usecounter{myctr}
+\setlength{\topsep}{1mm}\setlength{\itemsep}{0.5mm}
+\setlength{\parsep}{0.5mm}
+\setlength{\listparindent}{\parindent} % Indentation of paras.
+\setlength{\itemindent}{0mm}\setlength{\partopsep}{0mm}
+\setlength{\labelwidth}{-2mm}
+\setlength{\leftmargin}{0mm}}}{\end{list}}
+
+% Space saving List environment for itemizing.
+\newenvironment{mybullet}{\begin{list}{$\bullet$}
+{\setlength{\topsep}{1mm}\setlength{\itemsep}{0.5mm}
+\setlength{\parsep}{0.5mm}
+\setlength{\listparindent}{\parindent} % Indentation of paras.
+\setlength{\itemindent}{0mm}\setlength{\partopsep}{0mm}
+\setlength{\labelwidth}{-2mm}
+\setlength{\leftmargin}{0mm}}}{\end{list}}
+
+%------------------------------------------------------------------------------
+%                  Useful commands and acronymns used in the paper.
+%------------------------------------------------------------------------------
+% Commands
+\newcommand{\mycomment}[1]{}
+\newcommand{\todo}[1]{\textcolor{red}{\textit{\textbf{FIXME: #1}}}}
+% \newcommand{\todo}[2]{}
+\newcommand{\checkme}[1]{#1}
+\newcommand{\define}[1]{\emph{#1}}
+\newcommand{\fixme}[1]{\textbf{\textcolor{red}{[ Fixme: #1]}}}
+
+% Acronymns
+\newcommand{\tool}{X-Checker}
+\newcommand{\TOOL}{X-Checker}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\btcode}[1]{\texttt{\scriptsize #1}}
+%\newcommand{\tab}{~~~~~}
+\newcommand{\tab}{~~~~}
+\newcommand{\apriori}{\textit{a priori}}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\eg}{\textit{e.g.,}}
+\newcommand{\ie}{\textit{i.e.,}}
+\newcommand{\adhoc}{ad hoc}
+
+% Paper-specific acronyms
+
+% Paper setup
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+%------------------------------------------------------------------------------
+%                               Fancy header setup.
+%------------------------------------------------------------------------------
+%
+\pagestyle{fancyplain}
+\lhead{}
+\lfoot{}
+\chead{}
+\rhead{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+\renewcommand{\baselinestretch}{1}
+
+%------------------------------------------------------------------------------
+%                              Title and Authors.
+%------------------------------------------------------------------------------
+\begin{document}
+
+\title{Testing Native Cross-Platform\\Mobile App Development Frameworks}
+\author{\IEEEauthorblockN{Nader Boushehrinejadmoradi, Vinod Ganapathy, Santosh
+Nagarakatte, Liviu Iftode}
+\IEEEauthorblockA{Department of Computer Science, Rutgers University}
+\{naderb,vinodg,santosh.nagarakatte,iftode\}@cs.rutgers.edu}
+
+\maketitle
+%------------------------------------------------------------------------------
+%                                  Abstract.
+%------------------------------------------------------------------------------
+\begin{abstract}
+%
+\input{sections/abstract}
+%
+\end{abstract}
+
+%------------------------------------------------------------------------------
+%                                Main Contents. 
+%------------------------------------------------------------------------------
+
+\input{sections/introduction}
+\input{sections/background}
+\input{sections/example}
+\input{sections/design}
+\input{sections/implementation}
+\input{sections/evaluation}
+\checkme{\input{sections/threats}}
+\input{sections/related}
+\input{sections/conclusion}
+
+%------------------------------------------------------------------------------
+%                                  References.
+%------------------------------------------------------------------------------
+%\footnotesize
+%\let\oldthebibliography=\thebibliography
+%  \let\endoldthebibliography=\endthebibliography
+%  \renewenvironment{thebibliography}[1]{%
+%    \begin{oldthebibliography}{#1}%
+%      \setlength{\parskip}{0.01ex}%
+%      \setlength{\itemsep}{.02ex}%
+%  }%
+%  {%
+%    \end{oldthebibliography}%
+%  }
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\begin{center}
+\fbox{All URLs in references were last verified on \today.}
+\end{center}
+
+\end{document}

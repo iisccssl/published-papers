@@ -1,0 +1,24 @@
+Transcript is a system that extends Web browsers with the ability to
+speculatively execute JavaScript code. It extends the JavaScript language with
+support for a new transaction construct, which hosting Web applications can
+use to demarcate regions that contain untrusted guest code. Actions performed
+within a transaction are logged and considered speculative until they are
+examined by the host and committed.  Transcript therefore provides hosting Web
+applications with powerful mechanisms to mediate or examine the actions of
+untrusted guests. It also allows hosts to cleanly recover from the effects of
+security-violating guest code.
+
+This paper describes the design of Transcript and its implementation in
+Firefox. Our exposition focuses on the novel features introduced by Transcript
+to support transactions, including: 
+
+(1) a suspend/resume mechanism for JavaScript, 
+
+(2) support for speculative DOM updates, and 
+
+(3) a gluing mechanism that allows transactions to be implemented with minimal 
+    changes to commodity JavaScript interpreters.  
+
+In our evaluation, we present case studies showing that Transcript can be used
+to enforce powerful security policies on untrusted JavaScript code and report
+its performance on real-world applications and microbenchmarks.

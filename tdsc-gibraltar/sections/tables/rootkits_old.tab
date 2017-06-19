@@ -1,0 +1,42 @@
+\begin{center}
+\begin{tabular}[htb]{|l|l|l|l|}
+\hline
+{\bf{Attack Name}} &  {\bf{Data Structures modified}} & {\bf{Alert Messages}} & {\bf{Miner}} \\ 
+\hline\hline
+{Adore-0.42} & {sys\_write, sys\_getdents, sys\_kill} & {sys\_call\_table(D), root\_user(D)} & {constancy} \\ 
+{} & { sys\_fork, sys\_clone, sys\_close, sys\_open, sys\_stat} & {} & {} \\
+{} & {sys\_lstat, sys\_oldstat, sys\_oldlstat, sys\_stat64} & {} & {}\\
+{} & {sys\_lstat64, sys\_mkdir, sys\_getdents64} & {} & {}\\ \hline
+{Adore-ng} & {hooks vfs function pointers and udp recvmsg} & {proc\_root\_operations(D)} & {constancy}\\ 
+{} & {} & { proc\_inode\_operations(D)} & {} \\
+{} &{} & {unix\_dgram\_ops(D)} & {}\\ \hline 
+{All-root} & {} & {} & {}\\ \hline
+{Hp} & {have to show we can detect this } & {SBCFI cannot} & {}\\ \hline
+{Kbd v3} & {sys\_utime, sys\_getuid32} & {sys\_call\_table(D), module\_list(D)} & {constancy}\\ \hline
+{Kis 0.9} & {} & {} & {}\\ \hline
+{Knark 2.4.3} & {sys\_getdents, sys\_getdents64} & {sys\_call\_table(D), module\_list(D)} & {constancy}\\ 
+{} & { sys\_kill, sys\_read, sys\_ioctl, sys\_fork, } & {} & {} \\
+{} & {sys\_clone, sys\_settimeofday, sys\_execve} & {} & {} \\
+{} & {proc\_root} & {proc\_root(D)} & {} \\\hline
+{Linspy2} & {sys\_write} & {sys\_call\_table(D), root\_user(D)} & {constancy} \\
+{} & {} & {module\_list(D)} & {}\\\hline 
+{Modhide} & {} & {} & {}\\ \hline
+{Mood-nt} & {} & {} & {}\\ \hline
+{Phantasmagoria} & {} & {} & {}\\ \hline
+{Phide} & {} & {} & {}\\ \hline
+{Rial} & {sys\_getdents, sys\_query\_module, sys\_read} & {sys\_call\_table(D), root\_user(D)} & {constancy}\\
+{} & {sys\_open, sys\_close} & {module\_list(D)} & {}\\ \hline
+{Rkit 1.01} & {sys\_setuid}& {sys\_call\_table(D), module\_list(D)} & {constancy}\\ \hline
+{Taskigt} & {} & {} & {}\\ \hline
+{Shtroj2} & {} & {} & {}\\ \hline
+{Suckit} & {system\_call function} & {system\_call(T), raw\_v4\_lock(D)} & {text}\\\hline
+{Suckit2priv} & {system\_call function} & {system\_call(T), raw\_v4\_lock(D)} & {text}\\ \hline
+{Superkit} & {system\_call function} & {system\_call(T), raw\_v4\_lock(D)} & {text}\\ \hline
+{Synapsys-0.4} & {sys\_open, sys\_getuid, sys\_getdents, sys\_kill} & {sys\_call\_table(D), module\_list(D)} & {constancy}\\
+{} & {sys\_fork, sys\_clone, sys\_write, sys\_query\_module} & {} & {} \\ \hline
+{THC Backdoor} & {} & {} & {}\\ \hline
+\hline
+\end{tabular}
+\caption{\small Tests on real world rootkits shows data structures being manipulated by them :[(D)Data (T)Text]}
+\label{rootkitlist}
+\end{center}

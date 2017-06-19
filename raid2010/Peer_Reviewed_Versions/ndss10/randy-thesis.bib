@@ -1,0 +1,1842 @@
+Useful emacs BibTeX shortcuts:
+
+ESC C-a		beginning of bibtex entry
+ESC C-e		end of bibtex entry
+C-c C-o		remove OPT
+C-c C-k		kill field
+C-c C-d 	empty field
+C-c "		remove double quotes
+
+Article		C-c C-e C-a
+Book		C-c C-e b
+InBook		C-c C-e C-b
+InCollection	C-c C-e i
+InProceedings	C-c C-e C-p
+Manual		C-c C-e C-m
+MastersThesis	C-c C-e m
+Misc		C-c C-e M
+PhdThesis	C-c C-e P
+preamble	C-c C-e ESC-p
+Proceedings	C-c C-e p
+string		C-c C-e C-s
+TechReport	C-c C-e C-t
+Unpublished	C-c C-e C-u
+
+STANDARD MACROS DEFINED IN plain.bst are:
+MACRO {jan} {"January"}			MACRO {jul} {"July"}
+MACRO {feb} {"February"}		MACRO {aug} {"August"}
+MACRO {mar} {"March"}			MACRO {sep} {"September"}
+MACRO {apr} {"April"}			MACRO {oct} {"October"}
+MACRO {may} {"May"}			MACRO {nov} {"November"}
+MACRO {jun} {"June"}			MACRO {dec} {"December"}
+
+MACRO {acmcs} {"ACM Computing Surveys"}
+MACRO {acta} {"Acta Informatica"}
+MACRO {cacm} {"Communications of the ACM"}
+MACRO {ibmjrd} {"IBM Journal of Research and Development"}
+MACRO {ibmsj} {"IBM Systems Journal"}
+MACRO {ieeese} {"IEEE Transactions on Software Engineering"}
+MACRO {ieeetc} {"IEEE Transactions on Computers"}
+MACRO {ieeetcad}
+MACRO {ipl} {"Information Processing Letters"}
+MACRO {jacm} {"Journal of the ACM"}
+MACRO {jcss} {"Journal of Computer and System Sciences"}
+MACRO {scp} {"Science of Computer Programming"}
+MACRO {sicomp} {"SIAM Journal on Computing"}
+MACRO {tocs} {"ACM Transactions on Computer Systems"}
+MACRO {tods} {"ACM Transactions on Database Systems"}
+MACRO {tog} {"ACM Transactions on Graphics"}
+MACRO {toms} {"ACM Transactions on Mathematical Software"}
+MACRO {toois} {"ACM Transactions on Office Information Systems"}
+MACRO {toplas} {"ACM Transactions on Programming Languages and Systems"}
+MACRO {tcs} {"Theoretical Computer Science"}
+
+@preamble{ "\def\url#1{\texttt{{\small #1}}}" }
+%string{cacm = "Communications of the ACM"}
+@string{acmcr = "ACM Computing Reviews"}
+@string{acmcs = "ACM Computing Surveys"}
+@string{cn = "Computer Networks"}
+@string{cnis = "Computer Networks and {ISDN} Systems"}
+%string{jacm = "Journal of the ACM"}
+@string{sigcomm = "ACM SIG Computer Communications Review"}
+
+% Proceedings
+@string{ proceedings = "Proceedings of the"}
+@string{ p-sigcomm = proceedings # "~ACM SIGCOMM"}
+@string{ p-sigmod = proceedings # "~ACM SIGMOD"}
+@string{ p-infocom = "IEEE~" # proceedings # "~INFOCOM"}
+@string{ p-i3cn = proceedings # "~International Conference on Computer
+		  Communications and Networks"}
+@string{ p-simulation = "Annual Simulation Symposium"}
+@string{ p-swtesting = proceedings # "~International Symposium on
+		  Software Testing and Analysis"}
+
+
+@string{ joi = "Internetworking: Research and Experience"}
+@string{ ieeecomm = "IEEE Transactions on Communications"}
+@string{ ieeenet = "IEEE Network"}		  
+@string{ ton = "IEEE/ACM Transactions on Networking"}
+@string{ ieeejsac = "IEEE Journal on Selected Areas in Communications"}
+@string{ jpadc = "Journal of Parallel and Distributed Computation"}
+@string{ spe = "Software---Practise and Experience"}
+@string{ jsys = "Journal of Systems Software"}
+@string{ ieeeproceedings = "Proceedings of the IEEE"}
+@string{ acmccr = "ACM Computer Communications Review"}
+
+@string{ pstv = "Protocol Specification, Testing, and Verification"}
+@string{ lncs = "Lecture Notes in Computer Science"}
+@string{ elseiver = "Elseiver Science Publishing B.V. (North-Holland)"}
+
+string{ sigcomm = proceedings # "~ACM SIGCOMM"}
+string{ infocom = "IEEE~" # proceedings # "~INFOCOM"}
+@string{ i3cn = proceedings # "~International Conference on Computer
+		  Communications and Networks"}
+@string{ simulation = "Annual Simulation Symposium"}
+@string{ swtesting = proceedings # "~International Symposium on
+		  Software Testing and Analysis"}
+
+@STRING{rfceds = "USC/Information Sciences Institute"}
+
+
+
+
+
+
+%% Compiler/PL  Refs
+%% -----------------
+@book{Muchnick:compilerdesign,
+author="Steven S. Muchnick",
+title="Advanced Compiler Design and Implementation",
+publisher="Morgan Kaufmann",
+year="1997"}
+
+@book{Nielson:PrincOfProgramAnalysis,
+author="Flemming Nielson and Hanne Riis Nielson and Chris Hankin",
+title="Principles of Program Analysis",
+publisher="Springer",
+year="1999"}
+
+
+@unpublished{Schwartzbach:staticanalysis,
+author=      {Michael I.\ Schwartzbach},
+title=       "{Lecture Notes on Static Analysis}",
+year=        {2003},
+note=        "Available at {\texttt{http://www.brics.dk/$\sim$mis/static.pdf}}",
+}
+
+@book{DragonBook,
+  author = "Alfred V. Aho and Ravi Sethi and Jeffrey D. Ullman",
+  title  = {Compilers: Principles, Techniques, and Tools},
+  year   = 1988,
+  publisher = {Addison Wesley}
+}
+  
+@unpublished{Roelker:HTTPevade,
+  author = {Daniel J. Roelker},
+  title  = {{HTTP} {IDS} Evasions Revisited},
+  year   = 2003,
+  note   = {Available at {\texttt{http://www.idsresearch.org/}}}
+}
+
+@unpublished{Norton:SnortAC,
+  author = {Marc Norton},
+  title  = {Optimizing Pattern Matching for Intrusion Detection},
+  year   = 2004,
+  note   = {Available at {\texttt{http://www.idsresearch.org/}}}
+}
+
+
+@inproceedings{begel:bpfplus,
+ author = {Andrew Begel and Steven McCanne and Susan L. Graham},
+ title = {{BPF}+: exploiting global data-flow optimization in a generalized packet filter architecture},
+ booktitle = {SIGCOMM '99: Proceedings of the conference on Applications, technologies, architectures, and protocols for computer communication},
+ year = {1999},
+ isbn = {1-58113-135-6},
+ pages = {123--134},
+ location = {Cambridge, Massachusetts, United States},
+ doi = {http://doi.acm.org/10.1145/316188.316214},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@inproceedings{begel:bpf+,
+   author = {Andrew Begel and Steven McCanne and Susan L. Graham},
+   title  = {{BPF}+: exploiting global data-flow optimization in a 
+             generalized packet filter architecture},
+   booktitle = {ACM SIGCOMM '99},
+   year = {1999},
+   pages = {123--134},
+   location = {Cambridge, Massachusetts, United States},
+}
+
+
+@article{kohler:modular_router,
+ author = {Eddie Kohler and Robert Morris and Benjie Chen},
+ title = {Programming language optimizations for modular router configurations},
+ journal = {SIGARCH Comput. Archit. News},
+ volume = {30},
+ number = {5},
+ year = {2002},
+ issn = {0163-5964},
+ pages = {251--263},
+ doi = {http://doi.acm.org/10.1145/635506.605424},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@inproceedings{engler:DPF,
+ author = {Dawson R. Engler and M. Frans Kaashoek},
+ title = {DPF: fast, flexible message demultiplexing using dynamic code generation},
+ booktitle = {SIGCOMM '96: Conference proceedings on Applications, technologies, architectures, and protocols for computer communications},
+ year = {1996},
+ isbn = {0-89791-790-1},
+ pages = {53--59},
+ location = {Palo Alto, California, United States},
+ doi = {http://doi.acm.org/10.1145/248156.248162},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@inproceedings{chen:shangrila,
+ author = {Michael K. Chen and Xiao Feng Li and Ruiqi Lian and Jason H. Lin and Lixia Liu and Tao Liu and Roy Ju},
+ title = {Shangri-La: achieving high performance from compiled network applications while enabling ease of programming},
+ booktitle = {PLDI '05: Proceedings of the 2005 ACM SIGPLAN conference on Programming language design and implementation},
+ year = {2005},
+ isbn = {1-59593-056-6},
+ pages = {224--236},
+ location = {Chicago, IL, USA},
+ doi = {http://doi.acm.org/10.1145/1065010.1065038},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+
+@book{HopcroftUllman:theory,
+  author="John E. Hopcroft and Jeffrey D. Ullman",
+  title="Introduction to Automata Theory, Languages, and Computation",
+  publisher="Addison Wesley",
+  year="1979"
+}
+
+@book{LewisPapadimitriou:theory,
+   author    = "Harry Lewis and Christos H. Papadimitriou",
+   title     = "Elements of the Theory of Computation",
+   publisher = "Prentice Hall",
+   year      = 1981
+}
+
+
+%% Misc Algorithms
+%% ---------------
+
+@article{SIAMcliques,
+author  = "S. Tsukiyama and M. Ide and H. Ariyoshi and I. Shirakawa",
+title   = "A New Algorithm for Generating All the Maximal Independent Sets",
+journal = "{SIAM} Journal of Computing",
+volume  = "6",
+number  = "3",
+pages   = {505--517},
+year    = {1977},
+month   = sep
+}
+
+@InProceedings{timingwheels87,
+author    = {G. Varghese and A. Lauck},
+title     = {Hashed and hierarchical timing wheels: Data structures
+             for the efficient implementation of a timer facility},
+booktitle = {Proceedings of the 11th ACM Symposium on Operating Systems Principles (SOSP)},
+year      = {1987}
+}
+
+@InProceedings{SEJ06Backtracking,
+  author =	 {Randy Smith and Cristian Estan and Somesh Jha},
+  title = 	{Backtracking Algorithmic Complexity Attacks against a {NIDS}},
+  pages =	 {89-98},
+  year = 	 2006,
+  month =	 dec,
+  booktitle =    {Proceedings of the 22nd Annual Computer Security 
+                  Applications Conference (ACSAC)}
+}
+
+@Misc{SEJ06TR1561,
+  author =	{Randy Smith and Cristian Estan and Somesh Jha},
+  title =	{Backtracking Algorithmic Complexity Attacks against a {NIDS}},
+  howpublished= {Technical Report 1561 , University of Wisconsin--Madison},
+  month =	 September,
+  year =	 {2006}
+}
+
+@InProceedings{m_act:securecomm:2008,
+  author =       {S. Kong and R. Smith and C. Estan},
+  title  =       {Efficient Signature Matching 
+                  with Multiple Alphabet Compression Tables},
+  booktitle =    "International Conference on Security and Privacy in
+                  Communication Networks (Securecomm)",
+  month  =       "September",
+  year   =       2008
+}
+
+@InProceedings{paxson99bro,
+    author = "Vern Paxson",
+    title = "Bro: a system for detecting network intruders in real-time",
+    booktitle = "Computer Networks",
+    volume = "31",
+    number = "23--24",
+    pages = "2435--2463",
+    year = "1999",
+}
+
+@InProceedings{Snort99,
+       author = "M. Roesch",
+       title = {Snort - Lightweight Intrusion Detection for Networks},
+       year = "1999",
+       booktitle = {Proceedings of the 13th Systems Administration Conference},
+       publisher = "USENIX",
+       url = "http://www.usenix.org/publications/library/proceedings/lisa99/roesch.html"
+}
+
+@Misc{ciscoNBAR,
+  author =	 {Cisco},
+  OPTtitle = 	 {Network-based application recognition},
+  howpublished = {\url{http://www.cisco.com/univercd/cc/td/doc/product/software/ ios122/122newft/122t/122t8/dtnbarad.htm}}
+}
+
+
+@Misc{CiscoIPS,
+  title =        {Cisco Intrusion Prevention System},
+  note  =        {\url{http://www.cisco.com/en/US/products/ps6634/ products\_ios\_protocol\_group\_home.html}},
+  key   =        {CiscoIPS}
+}
+
+%% Efficient Regular Expression Matching approaches
+%% ------------------------------------------------
+@InProceedings{becchi:infocom07,
+  title = {Memory-Efficient Regular Expression Search Using State Merging},
+  author = {M. Becchi and S. Cadambi},
+  booktitle = {Proceedings of IEEE Infocom},
+  year = {2007},
+  month = {May}
+}
+
+
+@InProceedings{kumar06hwrematching,
+  author = 	 {S. Kumar and S. Dharmapurikar and F. Yu and 
+                  P. Crowley and J. Turner},
+  title = 	 {Algorithms to Accelerate Multiple Regular Expressions 
+                  Matching for Deep Packet Inspection},
+  booktitle = 	 {ACM SIGCOMM},
+  year =	 {2006},
+  month =	 sep
+}
+
+@inproceedings{kumar06cd2fa,
+  author = {S. Kumar and J. Turner and J. Williams},
+  title = {Advanced algorithms for fast and scalable deep packet inspection},
+  booktitle = {ANCS 2006},
+  isbn = {1-59593-580-0},
+  pages = {81--92},
+  location = {San Jose, California, USA},
+  doi = {http://doi.acm.org/10.1145/1185347.1185359},
+}
+%%  author = {Sailesh Kumar and Jonathan Turner and John Williams},
+%%  year = {2006},
+%%  booktitle = {ANCS 2006: Proceedings of the 2006 ACM/IEEE symposium on 
+%%               Architectures for networking and communications systems},
+
+@inproceedings{kumar:amnesia,
+  author    = {S. Kumar and
+               B. Chandrasekaran and
+               J. Turner and
+               G. Varghese},
+  title     = {Curing regular expressions matching algorithms from insomnia,
+               amnesia, and acalculia},
+  booktitle = {ANCS 2007},
+  pages     = {155-164}
+}
+%%  author    = {Sailesh Kumar and
+%%               Balakrishnan Chandrasekaran and
+%%               Jonathan Turner and
+%%               George Varghese},
+%%  year      = {2007},
+
+
+@inproceedings{fangyu:ANCS06,
+  author = {F. Yu and Z. Chen and Y. Diao and T. V. Lakshman 
+            and R. H. Katz},
+  title  = {Fast and memory-efficient regular expression matching for 
+            deep packet inspection},
+  booktitle = {ANCS '06: Proceedings of the 2006 ACM/IEEE symposium on 
+               Architecture for networking and communications systems},
+  year = {2006},
+  pages = {93--102},
+  location = {San Jose, California, USA},
+}
+
+@Misc{sperbergMcQueen04cfa,
+  author =	 {Michael Sperberg-McQueen},
+  title =	 {Notes on finite state automata with counters},
+  howpublished = {\url{http://www.w3.org/XML/2004/05/msm-cfa.html}},
+  month =	 may,
+  year =	 {2004}
+}
+
+
+%% String Matching
+%% ---------------
+
+@InProceedings{ac75,
+author    = {A. V. Aho and M. J. Corasick},
+title     = {Efficient string matching: An aid to bibliographic search},
+booktitle = {Communications of the ACM},
+year      = {1975},
+month     = jun
+}
+
+
+@InProceedings{bm77stringmatch,
+  author = 	 {R. S. Boyer and J. S. Moore},
+  title = 	 {A fast string searching algorithm},
+  booktitle = 	 cacm,
+  year =	 {1977},
+  volume =	 {20},
+  number =	 {10},
+  month =	 oct
+}
+
+@Misc{wm:strmatch,
+  author =	 {S. Wu and U. Manber},
+  title =	 {A fast algorithm for multi-pattern searching},
+  howpublished = {TR 94-17, Department of Computer Science, 
+                  University of Arizona},
+  year =	 {1994}
+}
+
+
+@inproceedings{muth96approximate,
+    author = "Robert Muth and Udi Manber",
+    title = "Approximate Multiple String Search",
+    booktitle = "Proceedings of the 7th Annual Symposium on 
+                 Combinatorial Pattern Matching",
+    number = "1075",
+    publisher = "Springer-Verlag, Berlin",
+    address = "Laguna Beach, CA",
+    editor = "D. S. Hirschberg and E. W. Myers",
+    pages = "75--86",
+    year = "1996",
+    url = "citeseer.ist.psu.edu/muth96approximate.html" }
+
+
+@InProceedings{tuck04,
+  author = "N. Tuck and T. Sherwood and B. Calder and G. Varghese",
+  title = "Deterministic memory-efficient string matching algorithms 
+           for intrusion detection",
+  booktitle = {IEEE {INFOCOM} 2004},
+  pages     = {333--340},     
+}
+%%  booktitle = {23rd Conference of the IEEE Communications Society 
+%%               ({INFOCOM} 2004)},
+%%  year      = {2004},
+%%  month     = {march},
+
+@article{kmp77,
+ author = {Donald E. Knuth and James H. Morris and Vaughan R. Pratt},
+ title = {Fast Pattern Matching in Strings},
+ journal = {SIAM Journal on Computing},
+ volume = {6},
+ number = {2},
+ year = {1977},
+ issn = {1539-9087},
+ pages = {323-350},
+}
+
+
+@inproceedings{Baker95a,
+   author = {Brenda S. Baker},
+   title = {Parameterized Pattern Matching by {B}oyer-{M}oore Type Algorithms},
+   booktitle = {Proc. Sixth Annual ACM-SIAM Symposium on Discrete Algorithms},
+   year = 1995,
+   month = {January},
+   pages = {541--550}
+}
+
+
+@article{Baker96a,
+   author = {Brenda S. Baker},
+   title = {Parameterized Pattern Matching: Algorithms and Applications},
+   journal = {J. Comput. Syst. Sci.},
+   year = {1996},
+   volume = 52,
+   number = 1,
+   month = {February},
+   pages = {28--42}
+}
+
+
+@inproceedings{cw79,
+   author = {Beate Commentz-Walter},
+   title  = {A String Matching Algorithm Fast on the Average},
+   booktitle = {Proc. 6th International Cooloquium on Automata, 
+                Languages, and Programming},
+   year = 1979,
+   pages = {118--132},
+}
+
+@InProceedings{coit01multiplestringmatching,
+  author = 	 {C. Jason Coit and Stuart Staniford and Joseph McAlerney},
+  title = 	 {Towards Faster Pattern Matching for Intrusion Detection, or 
+                  Exceeding the Speed of Snort},
+  booktitle = 	 {2nd {DARPA} Information Survivability Conference and 
+                  Exposition},
+  year =	 {2001},
+  month =	 jun
+}
+
+@InProceedings{alicherry06TCAMstringmatching,
+  author = 	 {Mansoor Alicherry and M. Muthuprasannap and Vijay Kumar},
+  title = 	 {High Speed Pattern Matching for Network {IDS/IPS}},
+  booktitle = 	 {ICNP},
+  year =	 {2006},
+  month =	 nov
+}
+
+@InProceedings{yu04TCAMmatching,
+  author = 	 {Fang Yu and Randy H. Katz and T. V. Lakshman},
+  title = 	 {Gigabit Rate Packet Pattern-Matching Using TCAM},
+  booktitle = 	 {ICNP},
+  year =	 {2004},
+  month =	 oct
+}
+
+@InProceedings{tan05strmatch,
+  author = 	 {L. Tan and T. Sherwood},
+  title = 	 {A High Throughput String Matching Architecture for 
+                  Intrusion Detection and Prevention},
+  booktitle = 	 {ISCA},
+  year =	 {2005},
+  month =	 jun
+}
+
+@InProceedings{exclusion02,
+  author = { E. P. Markatos and S. Antonatos and 
+             M. Polychronakis and K. D. Anagnostakis},
+  title =  { Exclusion-based Signature Matching for Intrusion Detection},
+  booktitle = {IASTED International Conference on Communications and 
+               Computer Networks (CCN 2002)},
+  year   =  {2002},
+  month  =  {October},
+  pages  =  {146--151},
+}
+
+@InProceedings{Kim:multiplestring,
+  author = { Sun Kim and Yanggon Kim},
+  title  = {A Fast Multiple String-Pattern Matching Algorithm},
+  booktitle = {17th {AoM}/{IAoM} Conference on Computer Science},
+  month = {August},
+  year  = {1999},
+}
+
+@article{salmela:qgrams,
+  author = {Leena Salmela and Jorma Tarhio and Jari Kytojoki},
+  title = {Multipattern string matching with q-grams},
+  journal = {Journal of Experimental Algorithmics},
+  volume = {11},
+  year = {2006},
+  issn = {1084-6654},
+  pages = {1.1},
+  doi = {http://doi.acm.org/10.1145/1187436.1187438},
+  publisher = {ACM Press},
+  address = {New York, NY, USA},
+ }
+
+@article{navarro:strmatch,
+  author = {Gonzalo Navarro and Mathieu Raffinot},
+  title = {Fast and flexible string matching by combining 
+          bit-parallelism and suffix automata},
+  journal = {J. Exp. Algorithmics},
+  volume = {5},
+  year = {2000},
+  issn = {1084-6654},
+  pages = {4},
+  doi = {http://doi.acm.org/10.1145/351827.384246},
+  publisher = {ACM Press},
+  address = {New York, NY, USA},
+ }
+
+@InProceedings{watson:strperformance,
+  author = {Bruce W. Watson},
+  Title = {The Performance of Single and Multiple Keyword Pattern Matching 
+           Algorithms},
+  booktitle = {Proceedings of the Third South American Workshop on 
+               String Processing},
+  month = {August},
+  year = {1996},
+  address = {Recife, Brazil}
+}
+
+
+@article{lockwood:parallelbloom,
+  author    = {S. Dharmapurikar and
+               P. Krishnamurthy and
+               T. S. Sproull and
+               J. W. Lockwood},
+  title     = {Deep Packet Inspection using Parallel Bloom Filters},
+  journal   = {IEEE Micro},
+  volume    = {24},
+  number    = {1},
+  year      = {2004},
+  pages     = {52-61}
+}
+
+@article{lockwood:fastandscalable,
+  author    = {S. Dharmapurikar and J. W. Lockwood},
+  title     = {Fast and Scalable Pattern Matching for Network Intrusion
+               Detection Systems},
+  journal   = {IEEE Journal on Selected Areas in Comm.},
+  volume    = {24},
+  number    = {10},
+  year      = {2006},
+  pages     = {1781-1792}
+}
+%%  author    = {Sarang Dharmapurikar and
+%%               John W. Lockwood},
+
+%% Hardware Approaches
+%% -------------------
+
+@article{liu04faststrmatch,
+  author = {R. Liu and N. Huang and C. Chen and C. Kao},
+  title = {A fast string-matching algorithm for network processor-based 
+           intrusion detection system},
+  journal = {Trans. on Embedded Computing Sys.},
+  volume = {3},
+  number = {3},
+  year = {2004},
+  issn = {1539-9087},
+  pages = {614--633},
+  doi = {http://doi.acm.org/10.1145/1015047.1015055},
+  publisher = {ACM Press},
+  address = {New York, NY, USA},
+}
+%% author = {Rong-Tai Liu and Nen-Fu Huang and Chih-Hao Chen and Chia-Nan Kao},
+
+
+@InProceedings{sourdis03strmatch,
+  author = 	 {I. Sourdis and D. Pnevmatikatos},
+  title = 	 {Fast, Large-Scale String Match for a 10Gbps FPGA-based Network Intrusion Detection System},
+  booktitle = 	 {Int. Conf. on Field Programmable Logic and Applications},
+  year =	 {2003},
+  month =	 {sep.}
+}
+%%  author = 	 {Ioannis Sourdis and Dionisios Pnevmatikatos},
+
+@InProceedings{sidhu01fast,
+  author = 	 {R. Sidhu and V. Prasanna},
+  title = 	 {Fast Regular Expression Matching using {FPGA}s},
+  booktitle = 	 {IEEE Symposium on Field-Programmable Custom Computing Machines},
+  year =	 {2001},
+  month =	 apr
+}
+
+@InProceedings{sourdis04CAMNIDS,
+  author = 	 {I. Sourdis and D. Pnevmatikatos},
+  title = 	 {Pre-decoded {CAMs} for Efficient and High-Speed {NIDS} Pattern Matching},
+  booktitle = 	 {FCCM},
+  year =	 {2004},
+  month =	 apr
+}
+
+
+@InProceedings{clark04FPGAPatternMatching,
+   author = {C. R. Clark and D. E. Schimmel},
+   title = {Scalable Pattern Matching for High-Speed Networks},
+   bookTitle = {IEEE FCCM},
+   year = {2004},
+   month =      apr
+}
+%%   bookTitle = {IEEE Symp. on Field-Programmable Custom Computing Machines (FCCM)},
+%%   pages = {249-257},
+%%   address= {Napa, California},
+%%   year = {2004},
+%%   month =      apr
+
+@article{brodie:isca:2006,
+ author = {B. Brodie and  R. Cytron and D. Taylor},
+ title = {A Scalable Architecture For High-Throughput 
+          Regular-Expression Pattern Matching},
+ journal = {SIGARCH Comput. Archit. News},
+ volume = {34},
+ number = {2},
+ year = {2006},
+ issn = {0163-5964},
+ pages = {191--202},
+ doi = {http://dx.doi.org/10.1109/ISCA.2006.7},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+
+
+%% Mealy and Moore Machines
+%% ------------------------
+@InProceedings{SekarUppuluri99,
+  author = 	 {R. Sekar and P. Uppuluri},
+  title = 	 {Synthesizing Fast Intrusion Prevention/Detection 
+                  Systems from High-Level Specifications},
+  booktitle = 	 {Usenix Security Symposium},
+  year =	 {1999},
+  month =	 aug
+}
+
+@InProceedings{sengar06voipIDS,
+  author = 	 {H. Sengar and D. Wijesekera and H. Wang and S. Jajodia},
+  title = 	 {{VoIP} Intrusion Detection Through Interacting Protocol 
+                   State Machines},
+  booktitle = 	 {DSN},
+  year =	 {2006},
+  month =	 jun
+}
+
+@article{petrenkoEFSM,
+ author = {Alexandre Petrenko and Sergiy Boroday and Roland Groz},
+ title = {Confirming Configurations in EFSM Testing},
+ journal = {IEEE Transactions on Software Engineering},
+ volume = {30},
+ number = {1},
+ year = {2004},
+ issn = {0098-5589},
+ pages = {29--42},
+ doi = {http://dx.doi.org/10.1109/TSE.2004.1265734},
+ publisher = {IEEE Press},
+ address = {Piscataway, NJ, USA},
+ }
+
+
+@inproceedings{sekar:CCS:02,
+ author = {R. Sekar and A. Gupta and J. Frullo and T. Shanbhag and 
+           A. Tiwari and H. Yang and S. Zhou},
+ title = {Specification-based anomaly detection: a new approach for 
+          detecting network intrusions},
+ booktitle = {CCS '02: Proceedings of the 9th ACM conference on Computer 
+              and communications security},
+ year = {2002},
+ isbn = {1-58113-612-9},
+ pages = {265--274},
+ location = {Washington, DC, USA},
+ doi = {http://doi.acm.org/10.1145/586110.586146},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+%% Evasion Control
+%% ---------------
+@InProceedings{shankar03mapping,
+  author = 	 {U. Shankar and V. Paxson},
+  title = 	 {Active Mapping: Resisting NIDS Evasion Without 
+                  Altering Traffic},
+  booktitle = 	 {IEEE Symp. on Security and Privacy},
+  year =	 {2003},
+  month =	 may
+}
+%%  author = 	 {Umesh Shankar and Vern Paxson},
+
+@InProceedings{dharmapurikar05reassembly,
+  author = 	 {S. Dharmapurikar and V. Paxson},
+  title = 	 {Robust TCP Stream Reassembly In the Presence of Adversaries},
+  booktitle = 	 {USENIX Security},
+  year =	 {2005},
+  month =	 aug
+}
+
+@InProceedings{handley01trafficnorm,
+  author = 	 {M. Handley and V. Paxson and C. Kreibich},
+  title = 	 {Network Intrusion Detection: Evasion, Traffic Normalization, 
+                  and End-to-End Protocol Semantics},
+  booktitle = 	 {Usenix Security},
+  year =	 {2001},
+  month =	 aug
+}
+
+@INPROCEEDINGS{Malan00transportand,
+    author = {G. Robert Malan and David Watson and Farnam Jahanian and Paul Howell},
+    title = {Transport and Application Protocol Scrubbing},
+    booktitle = {In Proceedings of INFOCOM 2000},
+    year = {2000},
+    pages = {1381--1390},
+    publisher = {IEEE}
+}
+
+@InProceedings{ptacek98evasion,
+  author = 	 {T. Ptacek and T. Newsham},
+  title = 	 {Insertion, Evasion and Denial of Service: Eluding Network 
+                  Intrusion Detection},
+  booktitle = 	 {Secure Networks, Inc.},
+  year =	 {1998},
+  month =	 jan
+}
+
+@inproceedings{Paxson:RAID:1999,
+  author="V. Paxson", 
+  title="Defending against network {IDS} evasion",
+  booktitle="Recent Advances in Intrusion Detection (RAID)", 
+  year="1999"}
+
+
+@InProceedings{crosby03algorithmicattacks,
+  author = 	 {Scott Crosby and Dan Wallach},
+  title = 	 {Denial of Service via Algorithmic Complexity Attacks},
+  booktitle = 	 {Usenix Security},
+  year =	 {2003},
+  month =	 aug
+}
+%%  author = 	 {Scott A. Crosby and Dan S Wallach},
+
+
+@inproceedings{rubin:protomatching,
+  author = {S. Rubin and S. Jha and B. P. Miller},
+  title  = {Protomatching network traffic for high throughputnetwork 
+            intrusion detection},
+  booktitle = {CCS '06: Proceedings of the 13th ACM conference on 
+               Computer and communications security},
+  year = {2006},
+  isbn = {1-59593-518-5},
+  pages = {47--58},
+  location = {Alexandria, Virginia, USA},
+  doi = {http://doi.acm.org/10.1145/1180405.1180413},
+  publisher = {ACM Press},
+  address = {New York, NY, USA},
+ }
+
+@inproceedings{rubin:attack:acsac,
+  author={S. Rubin  and S. Jha and B. Miller},
+  title={Automatic generation and analysis of NIDS attacks},
+  booktitle={Proceedings of the 20th Annual Computer Security Applications Conference (ACSAC)},
+  year={2004},
+  month={December},
+  volume={},
+  number={},
+  pages={ 28--38}
+}
+
+%% Packet Classification
+%% ---------------------
+@inproceedings{lakshman:98:bv_alg,
+ author = {T. V. Lakshman and D. Stiliadis},
+ title = {High-speed policy-based packet forwarding using efficient 
+          multi-dimensional range matching},
+ booktitle = p-sigcomm,
+ year = {1998},
+ isbn = {1-58113-003-1},
+ pages = {203--214},
+ location = {Vancouver, British Columbia, Canada},
+ doi = {http://doi.acm.org/10.1145/285237.285283},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@Book{varghese05netalgorithmics,
+  author =	 {George Varghese},
+  title = 	 {Network Algorithmics, An Interdisciplinary Approach 
+                  to Designing Fast Networked Devices},
+  publisher = 	 {Morgan Kaufmann},
+  year = 	 {2005}
+}
+
+@Misc{dong:packetclass,
+  author =	 {Qunfeng Dong and Suman Banerjee and Jia Wang and 
+                  Dheeraj Agrawal},
+  title =	 {Wire Speed Packet Classification without {TCAMS}:  One 
+                  More Register (and a Bit of Logic) is Enough},
+  howpublished = {TR1549, Department of Computer Sciences, 
+                  University of Wisconsin--Madison},
+  year =	 {2006}
+}
+
+@InProceedings{singh03hypercuts,
+  author = 	 {Sumeet Singh and Florin Baboescu and 
+                  George Varghese and Jia Wang},
+  title = 	 {Packet classification using multidimensional cutting},
+  booktitle = 	 {SIGCOMM},
+  year =	 {2003}
+}
+
+@article{taylor:pclass_survey,
+ author = {David E. Taylor},
+ title = {Survey and taxonomy of packet classification techniques},
+ journal = {ACM Comput. Surv.},
+ volume = {37},
+ number = {3},
+ year = {2005},
+ pages = {238--275},
+ }
+
+
+@article{gupta:classification,
+ author = {Pankaj Gupta and Nick McKeown},
+ title = {Algorithms for Packet Classification},
+ journal = {IEEE Network},
+ volume = {15},
+ number = {2},
+ year = {2001},
+ pages = {24--32},
+ month = {March}
+ }
+
+
+
+
+@Misc{layer7,
+   author = {J. Levandoski and E. Sommer and M. Strait},
+   title  = {Application Layer Packet Classifier for Linux},
+   howpublished = {\url{http://l7-filter.sourceforge.net/}}
+}
+
+@inproceedings{bpf93,
+  author    = {Steven McCanne and Van Jacobson},
+  title     = {The {BSD} Packet Filter: A New Architecture for User-level
+               Packet Capture},
+  booktitle = {Winter USENIX Technical Conference},
+  year      = {1993},
+  pages     = {259-270},
+}
+
+
+@inproceedings{bailey94pathfinder,
+    author = "Mary L. Bailey and Burra Gopal and Michael A. Pagels and 
+              Larry L. Peterson and Prasenjit Sarkar",
+    title = "PathFinder: A Pattern-Based Packet Classifier",
+    booktitle = "First Symposium on Operating Systems Design and 
+                 Implementation (OSDI)",
+    pages = "115--123",
+    year = "1994",
+    url = "citeseer.ist.psu.edu/bailey94pathfinder.html" }
+}
+
+@inproceedings{engler96dpf,
+   author = {Dawson Engler and M. F. Kaashoek},
+   title  = {{DPF}: Fast, flexible message demultiplexing using 
+             dynamice code generation},
+   booktitle = p-sigcomm,
+   year = {1996},
+   pages = {53--59},
+   location = {Cambridge, Massachusetts, United States},
+}
+
+@inproceedings{cmu_packetfilter:87,
+   author = {Jeffrey C. Mogul and Richard F. Rashid and Michael J. Accetta},
+   title  = {The packet filter:  An efficient mechanism for user-level 
+             network code},
+   booktitle = {11th ACM Symposium on Operating Systems Principles},
+   pages = {39--51},
+   location = {Austin, TX},
+   year = {1997},
+   month = {November},
+}
+
+%% Session Signatures
+%% ------------------
+
+@inproceedings{Rubin:oakland:2005,
+   author="S. Rubin and  S. Jha and  B. Miller",
+   title="Language-Based Generation and Evaluation of NIDS Signatures", 
+   booktitle="IEEE Symposium on Security and Privacy", 
+   address="Oakland, California", 
+   month="May", 
+   year="2005"
+}
+
+
+@InProceedings{yegneswaran05semawaresigs,
+  author = 	 {V. Yegneswaran and J. T. Giffin and 
+                  P. Barford and S. Jha},
+  title = 	 {An architecture for generating semantics-aware signatures},
+  booktitle = 	 {14th {USENIX} {S}ecurity {S}ymposium},
+  year =	 {2005},
+  address =	 {Baltimore,Maryland},
+  month =	 aug
+}
+
+
+@inproceedings{Sommer:CCS:2003,
+ author = "R. Sommer and V. Paxson",
+ title  = "Enhancing Byte-Level Network Intrusion Detection Signatures 
+           with Context",
+ booktitle = {ACM Conference on Computer and Communications Security ({CCS})},
+ year = {2003},
+ month = {Oct.},
+}
+%% address = "Washington, DC",
+%% author = "Robin Sommer and Vern Paxson",
+
+@inproceedings{giffin:NDSS:dyck,
+  author =     {Jonathon Giffin and Somesh Jha and Barton P. Miller},
+  title  =     {Efficient Context-Sensitive Intrusion Detection},
+  booktitle =  {11th Network and Distributed System Security Conference 
+               ({NDSS})},
+  year   =     {2004},
+  month  =     {February},
+  address =    {San Diego, CA}
+}
+
+
+%% Vulnerability Signatures
+%% ------------------------
+
+@inproceedings{SHIELD,
+   author = "H. J. Wang and  C. Guo and D. R. Simon 
+             and A. Zugenmaier", 
+   title  = "Shield: Vulnerability-driven network filters for preventing 
+             known vulnerability exploits", 
+   booktitle = "ACM SIGCOMM", 
+   month     = "August",
+   year      = "2004"}
+
+@inproceedings{Brumley:oakland:2006,
+title="Towards Automatic Generation of Vulnerability-Based Signatures", 
+author="D. Brumley and J. Newsome and  D. Song and  H. Wang and S. Jha", 
+booktitle="IEEE Symposium on Security and Privacy", 
+month="May",
+year="2006"}
+%%address="Oakland, California", 
+
+
+%% Rewriting systems
+%% -----------------
+
+@inproceedings{levin:regpatterns,
+ author = {Michael Y. Levin},
+ title = {Compiling regular patterns},
+ booktitle = {{ICFP} '03: Proceedings of the eighth {ACM} {SIGPLAN} 
+              international conference on Functional programming},
+ year = {2003},
+ isbn = {1-58113-756-7},
+ pages = {65--77},
+ location = {Uppsala, Sweden},
+ doi = {http://doi.acm.org/10.1145/944705.944712},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@inproceedings{hosoyapierece:popl2001,
+ author = {Haruo Hosoya and Benjamin Pierce},
+ title = {Regular expression pattern matching for XML},
+ booktitle = {POPL '01: Proceedings of the 28th ACM SIGPLAN-SIGACT 
+              symposium on Principles of programming languages},
+ year = {2001},
+ isbn = {1-58113-336-7},
+ pages = {67--80},
+ location = {London, United Kingdom},
+ doi = {http://doi.acm.org/10.1145/360204.360209},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@inproceedings{ahojohnson,
+ author = {A. V. Aho and S. C. Johnson},
+ title = {Optimal code generation for expression trees},
+ booktitle = {STOC '75: Proceedings of seventh annual ACM symposium on 
+              Theory of computing},
+ year = {1975},
+ pages = {207--217},
+ location = {Albuquerque, New Mexico, United States},
+ doi = {http://doi.acm.org/10.1145/800116.803770},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@inproceedings{plg:burs,
+ author = {E. Pelegri-Llopart and S. L. Graham},
+ title = {Optimal code generation for expression trees: an 
+          application BURS theory},
+ booktitle = {POPL '88: Proceedings of the 15th ACM SIGPLAN-SIGACT 
+              symposium on Principles of programming languages},
+ year = {1988},
+ isbn = {0-89791-252-7},
+ pages = {294--308},
+ location = {San Diego, California, United States},
+ doi = {http://doi.acm.org/10.1145/73560.73586},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@article{burg,
+ author = {Christopher W. Fraser and Robert R. Henry and Todd A. Proebsting},
+ title = {BURG: fast optimal instruction selection and tree parsing},
+ journal = {SIGPLAN Not.},
+ volume = {27},
+ number = {4},
+ year = {1992},
+ issn = {0362-1340},
+ pages = {68--76},
+ doi = {http://doi.acm.org/10.1145/131080.131089},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@article{aho:twig,
+ author = {Alfred V. Aho and Mahadevan Ganapathi and Steven W. K. Tjiang},
+ title = {Code generation using tree matching and dynamic programming},
+ journal = {ACM Trans. Program. Lang. Syst.},
+ volume = {11},
+ number = {4},
+ year = {1989},
+ issn = {0164-0925},
+ pages = {491--516},
+ doi = {http://doi.acm.org/10.1145/69558.75700},
+ publisher = {ACM Press},
+ address = {New York, NY, USA},
+ }
+
+@book{fischer_notes,
+ author = {Charles N. Fischer and Richard LeBlanc and Ron Cytron},
+ title = {Crafting a Compiler featuring Java},
+ publisher = {Addison Wesley Longman},
+ year = {to appear},
+} 
+
+%% General
+%% ----------
+
+@Misc{Consystant03SnortOnIXP,
+  key =          {Consystant},
+  title =	 {The {Snort} Network Intrusion Detection System on 
+                  the Intel IXP2400 Network Processor},
+  howpublished = {Consystant White Paper},
+  year =	 {2003}
+}
+
+@InProceedings{vermeiren04multicoreSnort,
+  author = 	 {Tim Vermeiren and Eric Borghs and Bart Haagdorens},
+  title = 	 {Evaluation of Software Techniques for Parallel Packet 
+                  Processing on Multi-Core Processors},
+  booktitle = 	 {IEEE Consumer Communications and Networking Conference},
+  year =	 {2004},
+  month =	 jan
+}
+
+@article{Denning87,
+ author = {Dorothy E. Denning},
+ title = {An intrusion-detection model},
+ journal = {IEEE Trans. Softw. Eng.},
+ volume = {13},
+ number = {2},
+ year = {1987},
+ issn = {0098-5589},
+ pages = {222--232},
+ publisher = {IEEE Press},
+ address = {Piscataway, NJ, USA},
+ }
+
+@Misc{Anderson80,
+ author  = {James P. Anderson},
+ title   = {Computer Security Threat Monitoring and Surveillance},
+ howpublished = {Technical Report, James P. Anderson Co.},
+ address = {Fort Washington, PA},
+ month   = {April},
+ year    = {1980},
+ url     = {http://csrc.nist.gov/publications/history/ande80.pdf}
+}
+
+@Article{kemmerer02:intrusion,
+  author = 	 {Richard Kemmerer and Giovanni Vigna},
+  title = 	 {{Intrusion Detection: A Brief History and Overview}},
+  journal = 	 {IEEE Computer},
+  month = 	 {April},
+  pages = 	 {27--30},
+  year = 	 2002,
+  note =	 {Special publication on Security and Privacy}
+}
+
+@Misc{innella01:idsevolution,
+ author  = {Paul Innella},
+ title   = {The Evolution of Intrusion Detection Systems},
+ month   = {November},
+ year    = {2001},
+ url     = {http://www.securityfocus.com/infocus/1514}
+}
+
+
+@InProceedings{crosby03regexpattack,
+  author = 	 {Scott Crosby},
+  title = 	 {Denial of Service through Regular Expressions},
+  booktitle = 	 {Usenix Security work in progress report},
+  year =	 {2003},
+  month =	 aug
+}
+
+
+@inproceedings{sekar99highperformance,
+    author = "R. Sekar and Y. Guang and S. Verma and T. Shanbhag",
+    title = "A High-Performance Network Intrusion Detection System",
+    booktitle = "{ACM} Conference on Computer and Communications Security",
+    pages = "8-17",
+    year = "1999",
+    url = "citeseer.ist.psu.edu/sekar99highperformance.html"
+}
+
+@InProceedings{kruegel05:reveng,
+  author = 	 {Christopher Kruegel and D. Mutz and W. Robertson and 
+                  Giovanni Vigna and Richard Kemmerer},
+  title = 	 {{Reverse Engineering of Network Signatures}},
+  booktitle = 	 {Proceedings of the {AusCERT} Asia Pacific Information 
+                  Technology Security Conference},
+  year =	 2005,
+  address =	 {Gold Coast, Australia},
+  month =	 {May}
+}
+
+@InProceedings{attig05sift,
+  author = 	 {Michael Attig and John W. Lockwood},
+  title = 	 {{SIFT}: {S}nort Intrusion Filter for {TCP}},
+  booktitle = 	 {Hot Interconnects},
+  year =	 {2005},
+  month =	 aug
+}
+
+@Misc{fisk01faststringmatching,
+  author =	 {Mike Fisk and George Varghese},
+  title =	 {Fast Content-Based Packet Handling for Intrusion Detection},
+  howpublished = {TR CS2001-0670, UC San Diego},
+  month =	 may,
+  year =	 {2001}
+}
+
+@InProceedings{kruegel02:stateful,
+  author = 	 {Christopher Kruegel and Fredrik Valeur and 
+                  Giovanni Vigna and Richard Kemmerer},
+  title = 	 {{Stateful Intrusion Detection for High-Speed Networks}},
+  booktitle =	 {Proceedings of the IEEE Symposium on Security and Privacy},
+  year =	 2002,
+  address =	 {Oakland, CA},
+  pages =	 {285--293},
+  month =	 {May},
+  publisher =	 {IEEE Press}
+}
+
+
+@InProceedings{dreger04operationalnids,
+  author = 	 {Holger Dreger and Anja Feldmann and Vern Paxson 
+                  and Robin Sommer},
+  title = 	 {Operational Experiences with High Volume Network 
+                  Intrusion Detection},
+  booktitle = 	 {CCS},
+  year =	 {2004},
+  month =	 oct
+}
+
+@InProceedings{lakshminarayan05tcams,
+  author = 	 {Karthik Lakshminarayan and Anand Rangarajan and 
+                  Srinivasan Venkatachary},
+  title = 	 {Algorithms for Advanced Packet Classification with 
+                  Ternary {CAMs}},
+  booktitle = 	 {SIGCOMM},
+  year =	 {2005},
+  month =	 aug
+}
+
+@InProceedings{LCTBSZ2002,
+  author =       "Wenke Lee and Jo{\~a}o B. D. Cabrera and Ashley Thomas
+                 and Niranjan Balwalli and Sunmeet Saluja and Yi Zhang",
+  title =        "Performance Adaptation in Real-Time Intrusion
+                 Detection Systems",
+  booktitle =    {RAID},
+  month =        oct,
+  address =      "Zurich, Switzerland",
+  year =         "2002",
+
+}
+
+
+@InProceedings{liao02intrusiondetection,
+  author = 	 {Yihua Liao and V. Rao Vemuri},
+  title = 	 {Using Text Categorization Techniques for 
+                  Intrusion Detection},
+  booktitle = 	 {Usenix Security},
+  year =	 {2002},
+  month =	 aug
+}
+
+@Misc{ciscoNBAR,
+  author =	 {Cisco},
+  OPTtitle = 	 {Network-based application recognition},
+  howpublished = {\url{http://www.cisco.com/univercd/cc/td/doc/product/software/ ios122/122newft/122t/122t8/dtnbarad.htm}}
+}
+
+@Misc{ciscowiredspeedintrusiondetection,
+  title =	 {Cisco offers wire-speed intrusion detection},
+  month =	 dec,
+  year =	 2000,
+  note =	 "http://www.nwfusion.com/ reviews/ 2000/ 1218rev2.html"
+}
+
+@Misc{polymorphicshellcode,
+  title =      {Polymorphic shellcode engine using spectrum analsyis},
+  author =     {Theo Detristan and Tyll Ulenspiegel and 
+                Y. Malcom and M.V. Underduk},
+  howpublished = {\url{http://www.phrack.org/archives/61/p61-0x09\_Polymorphic\_Shellcode\_Engine.txt}}
+}
+
+
+@inproceedings{autograph,
+  author    = {Hyang-Ah Kim and                Brad Karp},
+  title     = {Autograph: Toward Automated, Distributed Worm Signature
+               Detection},
+  booktitle = {USENIX Security Symposium},
+  year      = {2004},
+  pages     = {271-286}
+}
+
+@inproceedings{polygraph,
+  author = {James Newsome and Brad Karp and Dawn Song},
+  title = {Polygraph: Automatically Generating Signatures for 
+           Polymorphic Worms},
+ booktitle = {SP '05: Proceedings of the 2005 IEEE Symposium on Security 
+             and Privacy},
+ year = {2005},
+ isbn = {0-7695-2339-0},
+ pages = {226--241},
+ doi = {http://dx.doi.org/10.1109/SP.2005.15},
+ publisher = {IEEE Computer Society},
+ address = {Washington, DC, USA},
+ }
+
+@inproceedings{earlybird,
+  author    = {Sumeet Singh and
+               Cristian Estan and
+               George Varghese and
+               Stefan Savage},
+  title     = {Automated Worm Fingerprinting},
+  booktitle = {OSDI},
+  year      = {2004},
+  pages     = {45-60}
+}
+
+
+@inproceedings{GMT:anomalies,
+  author    = {Yu Gu and
+               Andrew McCallum and
+               Donald F. Towsley},
+  title     = {Detecting Anomalies in Network Traffic Using Maximum Entropy
+               Estimation},
+  booktitle = {Internet Measurment Conference},
+  year      = {2005},
+  pages     = {345-350}
+}
+
+
+@inproceedings{KSZC:anomalies,
+  author    = {Balachander Krishnamurthy and
+               Subhabrata Sen and
+               Yin Zhang and
+               Yan Chen},
+  title     = {Sketch-based change detection: methods, evaluation, and
+               applications},
+  booktitle = {Internet Measurement Comference},
+  year      = {2003},
+  pages     = {234-247}
+}
+
+@inproceedings{SGPC:anomalies,
+  author    = {Robert T. Schweller and
+               Ashish Gupta and
+               Elliot Parsons and
+               Yan Chen},
+  title     = {Reversible sketches for efficient and accurate change detection
+               over network data streams},
+  booktitle = {Internet Measurement Conference},
+  year      = {2004},
+  pages     = {207-212}
+}
+
+@inproceedings{lakhina:anomalies,
+  author    = {Anukool Lakhina and
+               Mark Crovella and
+               Christophe Diot},
+  title     = {Diagnosing network-wide traffic anomalies},
+  booktitle = {SIGCOMM},
+  year      = {2004},
+  pages     = {219-230}
+}
+
+@inproceedings{barford:wavelet,
+  author    = {Paul Barford and Jeffery Kline and
+               David Plonka and Amos Ron},
+  title     = {A signal analysis of network traffic anomalies},
+  booktitle = {Internet Measurement Workshop},
+  year      = {2002},
+  pages     = {71-82}
+}
+
+@ARTICLE{thottan:anomaly,
+title={Anomaly detection in IP networks},
+author={Marina Thottan and Chuanyi Ji},
+journal={IEEE Transactions on Signal Processing},
+year={2003},
+month={August},
+volume={51},
+number={8},
+pages={ 2191-2204},
+}
+
+
+ %http://security.nnov.ru/docs3634.html
+@Misc{ATPhttpd:exploit,
+  title =      {{ATP}httpd exploit},
+  author =     {r code},
+  howpublished = {\url{http://security.nnov.ru/files/atphttp0x06.c}},
+}
+
+@article{metamorphism,
+  title = {Dealing with Metamorphism},
+  year = {2002},
+  author = {M. Jordan},
+  journal = {Virus Bulletin Weekly}
+}  
+
+@article{NIDS_growth_1,
+  title = {Hacker Alert},
+  author = {Ellen Messmer},
+  year = {1999},
+  month = {September},
+  journal = {Network World}
+}
+
+@Misc{NIDS_growth_2,
+  title = {Network security market to pass \$5 billion mark in 2007},
+  author = {Jeff Wilson},
+  year = {2007},
+  month = {March},
+  howpublished = {\url{http://www.infonetics.com/}}
+}
+
+@misc{voip_block,
+  title = {Vonage complaining of {VoIP} blocking},
+  author = {P. Kapustka},
+  year = 2005,
+  howpublished = {\url{http://www.networkcomputing.com/channels/ networkinfrastructure/60400413}}
+}
+
+@misc{voip_block2,
+  key = "guardian",
+  author = {The Guardian},
+  title = {Trouble on the line},
+  year = 2006,
+  howpublished = {\url{http://technology. guardian.co.uk/weekly/story/0{,}{,}1747343,00.html}}
+}
+  
+@article{dpi_QoS,
+  author = {M. Neider},
+  title  = {Deep Packet Inspection: A Service Provider's Solution for Secure
+            {VoIP}},
+  year   = 2005,
+  month  = {Oct},
+  journal= {{VoIP} Magazine}
+}
+
+
+@article{Snort_pop,
+  title = {{IDS} Deconstructed},
+  author = {Jordan Wiens},
+  year = {2006},
+  month = {January},
+  journal = {Network Computing}
+}
+
+
+@Misc{Snort_community,
+  key = {snort},
+  title = {Snort community homepage},
+  howpublished = {\url{http://www.snort.org/community}}
+}
+
+@Misc{compress_faq,
+  key = {compression},
+  title = "comp.compression Usenet newsgroup frequently asked questions {FAQ}",
+  howpublished = {\url{http://www.faqs.org/faqs/compression-faq/part1/}},
+  date = {1999}
+}
+
+@inproceedings{kachris:webswitch,
+ author = {C. Kachris and S. Vassiliadis},
+ title = {Design of a web switch in a reconfigurable platform},
+ booktitle = {ANCS 2006},
+ isbn = {1-59593-580-0},
+ }
+%% pages = {31--40},
+%% author = {Christoforos Kachris and Stamatis Vassiliadis},
+%% year = {2006},
+%% booktitle = {ANCS '06: Proceedings of the 2006 ACM/IEEE symposium 
+%%              on Architecture for networking and communications systems},
+%% location = {San Jose, California, USA},
+%% doi = {http://doi.acm.org/10.1145/1185347.1185352},
+%% publisher = {ACM Press},
+%% address = {New York, NY, USA},
+
+@misc{netbios,
+  author = {Gavin Winston},
+  title = {NetBIOS Specification},
+  year = {2005},
+  howpublished = {\url{http://www.netbiosgude.com}}
+}
+
+@unpublished{stamp:space-time,
+  author = {Mark Stamp},
+  title = {Once upon a time-memory tradeoff},
+  year = {2003},
+  note = {Available at \url{http://www.cs.sjsu.edu/faculty/stamp/RUA/TMTO.pdf}}
+}
+
+@unpublished{UW:space-time,
+  author = {Paul Beame and Erik Vee},
+  title = {University of Washington Time-Space Tradeoffs site},
+  note = {Available at \url{http://www.cs.washington.edu/homes/beame/projects/timespace.html}}
+}
+
+@article{STATL,
+title="STATL: An Attack Language for State-based Intrusion Detection",
+author="Steven T. Eckmann and  Giovanni Vigna and Richard Kemmerer",
+journal="Journal of Computer Security",  
+volume="10", 
+number="1/2", 
+pages="71--104", 
+publisher="IOS Press", 
+year="2002"}
+
+@inproceedings{hybrid,
+  author="Thomas A. Henzinger",
+  title="The Theory of Hybrid Automata", 
+  booktitle="Proceedings of the 11th Annual Symposium on Logic in Computer Science (LICS)",
+  year="1996", 
+  pages="278--292"
+}
+
+@inproceedings{timed,
+author="Rajeev Alur", 
+title="Timed Automata", 
+booktitle="Proceedings of the International Conference on Computer Aided Verification (CAV)", 
+year="1999", 
+pages="8--22"}
+
+@article{thompsonconstruction68,
+  author = {Ken Thompson},
+  title = {Programming Techniques: Regular expression search algorithm},
+  journal = {Commun. ACM},
+  volume = {11},
+  number = {6},
+  year = {1968},
+  issn = {0001-0782},
+  pages = {419--422},
+  doi = {http://doi.acm.org/10.1145/363347.363387},
+  publisher = {ACM},
+  address = {New York, NY, USA},
+}
+
+@InProceedings{SEJ:construction,
+  author =       {Some Set of Authors},
+  title  =       {Anonymized for Submission},
+}
+
+@book{HennessyP96,
+  author    = {John L. Hennessy and David A. Patterson},
+  title     = {Computer Architecture: A Quantitative Approach, 2nd Edition},
+  publisher = {Morgan Kaufmann},
+  year      = {1996},
+  isbn      = {1-55860-329-8},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@book{hawking:time,
+   author = {Stephen W. {Hawking}},
+    title = "{A brief history of time. From the Big Bang to Black Holes}",
+publisher = {Bantam Book},
+     year = 1988
+}
+
+@InProceedings{mpr06niagara2,
+  author = 	 {H. McGhan},
+  title = 	 {Niagara 2 opens the floodgates},
+  booktitle = 	 {Microprocessor Report},
+  year =	 {2006},
+  month =	 nov
+}
+
+
+@inproceedings{SLAM,
+title="The {SLAM} Project: Debugging System Software via Static Analysis", 
+author="Thomas Ball and Sriram Rajamani",  
+inproceedings="Symp. on Principles of Programming Languages", 
+year="2002", 
+month="January"
+}
+
+
+@book{model-checking:book,
+title="Model Checking",
+author="Edmund M. Clarke and Orna Grumberg and Doron Peled",
+publisher="The MIT Press",
+year="1999"
+}
+%%author="Edmund M. Clarke and Orna Grumberg and Doron A. Peled",
+
+@book{automata:book,
+title="Introduction to Automata Theory, Languages, and Computation",
+author="J. Hopcroft and  R. Motwani and  J. Ullman",
+publisher="Addison Wesley",
+year="2006"
+}
+
+@InProceedings{CGLM04ipsprocessingtimes,
+  author =       {Jo{\~a}o B.D. Cabrera and Jaykumar Gosar and Wenke Lee and Raman K. Mehra},
+  title =        {On the Statistical Distribution of Processing Times in Network Intrusion Detection},
+  booktitle =    {43rd IEEE Conference on Decision and Control},
+  year =         {2004},
+  month =        dec
+}
+
+@Misc{Yacc,
+  author =      {S.C. Johnson},
+  title =       {Yacc -- yet another compiler compiler},
+  howpublished= {Computing Science Technical Report 32, AT\&T Bell
+                 Laboratories},
+  year =         {1975}
+}
+
+@Misc{Flex,
+  author =      {Vern Paxson},
+  title  =      {The FLEX fast scanner generator},
+  year   =      {1995},
+  note=        "Available at {\texttt{http://flex.sourceforge.net/}}",
+}
+
+@article{Dencker,
+ author = {Peter Dencker and Karl Durre and Johannes Heuft},
+ title = {Optimization of parser tables for portable compilers},
+ journal = {ACM Trans. Program. Lang. Syst.},
+ volume = {6},
+ number = {4},
+ year = {1984},
+ pages = {546--572},
+}
+
+
+@inproceedings{Clark:design:1988,
+ author = {David Clark},
+ title = {The design philosophy of the DARPA internet protocols},
+ booktitle = {ACM SIGCOMM 1988: Symposium proceedings on Communications architectures and protocols},
+ year = {1988},
+ isbn = {0-89791-279-9},
+ pages = {106--114}
+ }
+
+@article{Baran:Distrib,
+  author = {Paul Baran},
+  title = {On Distributed Communioations Networks},
+  journal = {IEEE Transactions on Communication Systems},
+  volume = {CS-12},
+  year = {1964},
+  month = {March},
+  pages = {1--9}
+}
+
+@inproceedings{andersen:aip,
+ author = {Andersen, David G. and Balakrishnan, Hari and Feamster, Nick and Koponen, Teemu and Moon, Daekyeong and Shenker, Scott},
+ title = {Accountable internet protocol (aip)},
+ booktitle = {SIGCOMM '08: Proceedings of the ACM SIGCOMM 2008 Conference on Data Communication},
+ year = {2008},
+ isbn = {978-1-60558-175-0},
+ pages = {339--350},
+ location = {Seattle, WA, USA},
+ doi = {http://doi.acm.org/10.1145/1402958.1402997},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ }
+
+
+@inproceedings{fortnow:97,
+  author="Lance Fortnow",
+  title="Nondeterministic polynomial time versus nondeterministic logarthmic space: Time-space tradeoffs for satisfiability",
+  booktitle="Proceedings of Twelfth IEEE Conference on Computational Complexity",
+  year="1997"
+}
+
+@inproceedings{narayanan:2005,
+  author="Arvind Narayanan and  Vitaly Shmatikov",
+  title="Fast dictionary attacks on passwords using time-space tradeoff",
+  booktitle="ACM Conference on Computer and Communications Security (CCS)",
+  year="2005"
+}
+
+@inproceedings{oechslin:2003,
+  author="Philippe Oechslin",
+  title="Making a Faster Cryptanalytic Time-Memory Trade-Off",
+  booktitle="23rd Annual International Cryptology Conference (CRYPTO)",
+  year="2003"
+}
+
+@INPROCEEDINGS{Heberlein,
+  title={A Network Security Monitor},
+  author={L. Todd Heberlein and Gihas V. Dias and Karl N. Levitt and 
+          Biswanath Mukherjee and Jeff Wood and David Wolber},
+  journal={Proceedings of the IEEE Computer Society Symposium on 
+           Research in Security and Privacy},
+  year={1990},
+  month={May},
+  pages={296-304},
+}
+
+@phdthesis{giffin:phd,
+  author="Jonathan Giffin",
+  title="Model-based Intrusion Detection System Design and Evaluation",
+  school="University of Wisconsin--Madison",
+  year="2006"
+}
+
+@inproceedings{giffin:usenix,
+ author = {Giffin, Jonathon T. and Jha, Somesh and Miller, Barton P.},
+ title = {Detecting Manipulated Remote Call Streams},
+ booktitle = {Proceedings of the 11th USENIX Security Symposium},
+ year = {2002},
+ pages = {61--79},
+ }
+
+
+
+@article{ToddGreenLazyDFA,
+ author = {Green, Todd J. and Gupta, Ashish and Miklau, Gerome and Onizuka, Makoto and Suciu, Dan},
+ title = {Processing XML streams with deterministic automata and stream indexes},
+ journal = {ACM Transactions on Database Systems},
+ volume = {29},
+ number = {4},
+ year = {2004},
+ issn = {0362-5915},
+ pages = {752--788},
+}
+
+@inproceedings{LuchuapSpeculative,
+   author = {Daniel Luchaup and Randy Smith and Cristian Estan and Somesh Jha},
+   title = {Multi-Byte Regular Expression Matching with Speculation},
+   booktitle = {Recent Advances in Intrusion Detection {RAID}},
+   year = 2009
+}
+
+@article{SPIN,
+ author = {Gerard J. Holzmann},
+ title = {The Model Checker SPIN},
+ journal = {IEEE Transactions on Software Engineering},
+ volume = {23},
+ number = {5},
+ year = {1997},
+ issn = {0098-5589},
+ pages = {279--295},
+}
+
+
+@article{Ficara:deltaFA,
+ author = {Ficara, Domenico and Giordano, Stefano and 
+           Procissi, Gregorio and Vitucci, Fabio and Antichi, Gianni and 
+           Di Pietro, Andrea},
+ title = {An improved DFA for fast regular expression matching},
+ journal = {SIGCOMM Computer Communications Review},
+ volume = {38},
+ number = {5},
+ year = {2008},
+ issn = {0146-4833},
+ pages = {29--40},
+ }
+
+
+@inproceedings{sommers04harpoon,
+  author    = {Joel Sommers and Paul Barford},
+  title     = {Self-configuring network traffic generation.},
+  booktitle = {Internet Measurement Conference},
+  year      = {2004},
+  pages     = {68-81}
+} 
+
+@book{memoizationCLR,
+  author =     {Cormen, Thomas H. and Charles E. Leiserson and Ronald L. Rivest},
+  title =     {Introduction to Algorithms},
+  publisher =     {MIT Press/McGraw-Hill},
+  year =         1990,
+} 
+%  pages     = {312-314}
+
+@book{bellovin:firewalls,
+   author = "William R. Cheswick and Steven M. Bellovin and Aviel D. Rubin",
+   title  = "Firewalls and Internet Security:  Repelling the Wily Hacker (2nd Edition)",
+   publisher = "Addison-Wesley",
+   year = "2003"
+}
+
+
+@misc{Nimda2001,
+  key = {Nimda},
+  title = {Nimda Worm, CERT Advisory CA-2001-26},
+  note = {\url{http://www.cert.org /advisories /CA-2001-26.html}},
+  year = {2001}
+}
+
+@misc{Wmf2006,
+  title = {CERT Vulnerability Note VU\#181038},
+  url = {http://www.kb.cert.org/vuls/id/181038},
+  year = {2006}
+}
+
+@article{Reps:maxmunch,
+  author = 	 {Thomas Reps},
+  title = 	 {{``Maximal-munch''} Tokenization in Linear Time},
+  journal = 	 "ACM Transactions on Programming Languages and Systems",
+  volume =       "20",
+  number =       "2",
+  pages =	 {259--273},
+  year =	 {1998},
+  month =	 March
+
+}
+
+@misc{pcre,
+  key =   {PCRE},
+  title = {{PCRE}: The Perl Compatible Regular Expression Library},
+  note = {\url{http://www.pcre.org}}
+}
+
+
+@book{Brualdi:combinatorics,
+  author="Richard M. Brualdi",
+  title="Introductory Combinatorics, 2nd edition",
+  publisher="Prentice Hall",
+  year="1992"
+}
+
+
+@inproceedings{WagnerDean,
+  author = "David Wagner and Drew Dean",
+  title  = "Intrusion Detection via Static Analysis",
+  booktitle = "IEEE Symposium on Security and Privacy (Oakland)",
+  month = "May",
+  year   = "2001"
+}
+
+@inproceedings{davidson:normalization,
+  author="Drew Davidson and Randy Smith and Nic Doyle and Somesh Jha",
+  title="Protocol Normalization using Attribute Grammars",
+  booktitle="14th European Symposium on Research in Computer Security",
+  year = {2009}
+}
+
+@article{MuthuDataStreams,
+  author    = {S. Muthukrishnan},
+  title     = {Data Streams: Algorithms and Applications},
+  journal   = {Foundations and Trends in Theoretical Computer Science},
+  volume    = {1},
+  number    = {2},
+  year      = {2005},
+}
+
+
+@book{gareyjohnson,
+ author = {Michael R. Garey  and David S. Johnson},
+ title = {Computers and Intractability; A Guide to the Theory of NP-Completeness},
+ year = {1990},
+ publisher = {W. H. Freeman \& Co.},
+ address = {New York, NY, USA},
+ }

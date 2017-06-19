@@ -1,0 +1,86 @@
+\begin{thebibliography}{10}
+
+\bibitem{80211_standard}
+{802.11b standard}.
+\newblock \url{http://standards.ieee.org/getieee802/802.11.html}.
+
+\bibitem{DOS_bellardo}
+J.~Bellardo and S.~Savage.
+\newblock 802.11 denial-of-service attacks: Real vulnerabilities and practical
+  solutions.
+\newblock In {\em USENIX Security Symposium}, August 2003.
+
+\bibitem{brik_mobicom08}
+V.~Brik, S.~Banerjee, M.~Gruteser, and S.~Oh.
+\newblock Wireless device identification with radiometric signatures.
+\newblock In {\em Mobicom}, Sep 2008.
+
+\bibitem{yingying_secon07}
+Y.~Chen, W.~Trappe, and R.~P. Martin.
+\newblock Detecting and localizing wireless spoofing attacks.
+\newblock In {\em IEEE SECON}, oct 2007.
+
+\bibitem{eiman_secon}
+E.~Elnahrawy, X.~Li, and R.~P. Martin.
+\newblock The limits of localization using signal strength: A comparative
+  study.
+\newblock In {\em IEEE SECON}, pages 406--414, oct 2004.
+
+\bibitem{faria_wise06}
+D.~Faria and D.~R. Cheriton.
+\newblock Detecting identity-based attacks in wireless networks using
+  signalprints.
+\newblock In {\em ACM Workshop on Wireless Security (WiSe)}, September 2006.
+
+\bibitem{sandia_NL}
+J.~Franklin, D.~McCoy, P.~Tabriz, V.~Neagoe, J.~V. Randwyk, and D.~Sicker.
+\newblock Passive data link layer 802.11 wireless device driver fingerprinting.
+\newblock In {\em USENIX Security}, 2006.
+
+\bibitem{sequence_guo}
+F.~Guo and T.~cker Chiueh.
+\newblock Sequence number-based mac address spoof detection.
+\newblock In {\em Proceedings of 8th International Symposium on Recent Advances
+  in Intrusion Detection(RAID)}, September 2005.
+
+\bibitem{kohno_oak05}
+T.~Kohno, A.~Broido, and K.~C. Claffy.
+\newblock Remote physical device fingerprinting.
+\newblock In {\em IEEE Symposium on Security and Privacy}, May 2005.
+
+\bibitem{wade_secon06}
+Q.~Li and W.~Trappe.
+\newblock Relationship -based detection of spoofing -related anomalous traffic
+  in ad hoc networks.
+\newblock In {\em IEEE SECON}, pages 50--59, September 2006.
+
+\bibitem{sequence_dartmouth}
+D.~Madory.
+\newblock New methods of spoof detection in 802.11 wireless networking.
+\newblock Master's thesis, Dartmouth College, Hanover, New Hampshire, June
+  2006.
+
+\bibitem{madwifi}
+MADWiFi.
+\newblock {\em Multiband Atheros Driver for {WiFi}}.
+\newblock http://madwifi.org, 2007.
+
+\bibitem{1710694}
+P.~Nepa, G.~Manara, S.~Mugnaini, G.~Tribellini, S.~Cioci, G.~Albasini, and
+  E.~Sacchi.
+\newblock Differential planar antennas for 2.4/5.2 ghz wlan applications.
+\newblock In {\em IEEE Int. Symposium of Antennas and Propagation Society},
+  pages 973--976, July 2006.
+
+\bibitem{orbit1}
+D.~Raychaudhuri and et.al.
+\newblock Overview of the orbit radio grid testbed for evaluation of
+  next-generation wireless network protocols.
+\newblock In {\em Proc. {IEEE WCNC}}, volume~3, pages 1664--1669, March 2005.
+
+\bibitem{kotz_infocom}
+Y.~Sheng, K.~Tan, G.~chen, D.~Kotz, and A.~Campbell.
+\newblock Detecting 802.11 mac layer spoofing using receiver signal strength.
+\newblock In {\em IEEE INFOCOM}, 2008.
+
+\end{thebibliography}

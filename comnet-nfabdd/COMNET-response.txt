@@ -1,0 +1,189 @@
+Dear Editor,
+
+Please find enclosed our revised COMNET submission COMNET-D-10-983. This
+document explains how we addressed reviewer comments. We have categorized our
+changes based upon individual reviews.
+
+
+Comments by Reviewer #1: This review did not require action.
+
+Comments by Reviewer #2: This review was blank and did not require action.
+
+Comments by Reviewer #3: This review did not require action.
+
+Comments by Reviewer #4: We have separated each of this reviewer's concerns,
+and explain how we have attempted to address them:
+
+CONCERN #4.1: "The description of your selection of signatures is very
+confusing. Signature Set Reduction:
+
+   1. You start with snapshots from snort 2009 (2612 and 98 rules).
+
+   2. You only consider rules from the pcre fields (which leads to a reduction of app. 50%)
+
+   3. You further remove those with non-regular expressions (which are 1837
+   and 41 in numbers) (doing some math: you start with 2710 and remove half =>
+   2710/2=1355; now you remove another 1837+41=1878 => and end up with -523
+   rules) Obviously this is not what you meant, but it can be read that way.
+   Please clarify. Say how many rules are in the Snort Sets to begin with and
+   work your way through your reductions."
+
+OUR RESPONSE: Thank you for noting that our description is confusing. We have
+revised the paper to clarify our presentation (see the description of the
+signature sets in Section 4.1). In short, we do NOT just use rules that have
+pcre fields; rather our signatures are based upon both the uricontent fields
+as well as pcre fields (for rules that contain a pcre field), as explained
+below. Please note that the same methodology to extract signatures was also
+used in prior research by Smith et al. (Oakland 2008 and SIGCOMM 2008)
+
+CONCERN #4.2: "Footnote 5 is contradictory to your statement to only use the
+pcre field signatures."
+
+OUR RESPONSE: This comment is not contraditory; rather, we believe that a
+clarification is in order. 
+
+In Footnote 5 we said the number of matches triggered is not indicative of
+number of alerts produced by Snort. The reason for that is: A Snort rule often
+has two parts: header and option fields, where the header specifies
+information like "action", "protocol", "IP addresses", "ports", and
+"direction", etc. The option fields of a rule may include (but not
+necessarily) information such as "IP TTL", "payload size", "uricontent",
+"content offset", "pcre", etc. A rule is counted to be matched only if all
+conditions specified in the header and the option fields are matched. Only
+matching "uricontent" or "pcre" fields do not necessarily trigger a Snort
+alert since other conditions in the header and option fields may not be
+satisfied.
+
+
+CONCERN #4.3: "Also why do you only consider those from the pcre fields? Are
+those much different from those in the uricontent field?"
+ 
+OUR RESPONSE: We do not consider only the pcre fields; we have also included
+the uricontent fields, as has been clarified in responses to CONCERN #4.1 and 
+CONCERN #4.2.
+
+
+CONCERN #4.4: "How many rules are non-regular expression in the complete snort
+set? If this is a substantial (>10%) fraction, how would your approach still
+benefit the addressed problem? Somehow these rules have to be applied, no?"
+ 
+OUR RESPONSE: In all, the 2009 Snort snapshot contained 15047 rules, where
+4288 were HTTP rules. Among the 4288 HTTP rules, 1853 have non-regular
+constructs.  The reviewer is correct in that our approach does not yet benefit
+the non-regular portion of the Snort set; it is targetted towards regular
+expressions. Our approach aims to improve the matching performance of regular
+expression, but does not yet support non-regular constructs, which is a topic
+that requires further research. We have included this point in the future work
+section of the article (in particular, the non-regular portion cannot be
+represented as an NFA, and therefore cannot benefit from NFA-OBDDs).
+
+
+CONCERN #4.5: "Furthermore are the selected sets and order of magnitude
+smaller than mentioned in the introduction, please be consistent."
+
+OUR RESPONSE: In the introduction, we mentoined the overall number of Snort
+rules in 2009 as being 15,047. However, the rule sets we considered in the
+Section 4.1 were taken from the HTTP and FTP rule sets, which were only a
+portion of Snort rules; hence the illusion of inconsistency. However, as the
+overall number of rules in Snort increases over the years, so have the number
+of HTTP and FTP rules, so the problem that we're addressing in the paper is
+introduced by the trend towards increased number of rules.
+
+The main reason that we restricted ourselves to HTTP and FTP rules was based
+on practical considerations for our evaluation. For example, our organization
+refused to give us network traffic to evaluate SMTP rules due to privacy
+concerns. We therefore restricted ourselves to HTTP and FTP traffic and rules
+only. 
+
+
+CONCERN #4.6: "In Section 5.4.1. you again remove rules: Why did you not
+remove the 8 and 3 rules for HTTP and FTP from the beginning?"
+
+OUR RESPONSE: The reason for us to remove 8 HTTP and 3 FTP regular expressions
+was that MDFA ran out of memory for the 2612 HTTP and 98 FTP regular
+expressions. Some of the individual regular expressions consumed more than
+1.6GB memory. To construct MDFAs, we had to use reduced regular expression
+sets. 
+
+
+CONCERN #4.7: "Furthermore the data set description lacks some important
+information:
+
+(1) "How many packets are in the traces?"
+
+OUR RESPONSE: The Rutgers trace contained 10,069,369 packets in total. The
+DARPA traces contained 53,174,585 packets in total. We have included this
+information in the paper.
+
+(2) "For the matches triggered: is that how many packets matched the
+signatures, or the total number of any signature matched."
+
+OUR RESPONSE: We have reported both the total number of matches (each network
+packet may trigger multiple matches, so the number of matches is not the same
+as the number of network packets), as well as the number of distinct
+signatures that triggered a match.
+
+(3) "Why are there no GET requests in the FTP traces? Did you
+not include data connections?"
+
+OUR RESPONSE: We were forbidden from recording data connections due to privacy
+concerns.
+
+(4) "In general I am surprised that the average payload sizes
+are 126, 351 and 40 for Rutgers/HTTP, DARPA, Rutgers/FTP respectively. This is
+very small given and average in the Internet of around 750 bytes. I would
+assume that this is due to the very specific content hosted at your servers
+and the age of the DARPA traces. You need to discuss or better add another
+data set to show how larger avg. packets sizes impact your evaluation."
+
+OUR RESPONSE: To address this concern, we have included evaluation results
+with a synthetic HTTP trace. The average payload size for this traffic was
+1200 bytes, and this trace was obtained by crawling URLs listed on Twitter.
+The throughput and memory consumption of NFA-OBDDs remained in the same
+ballpark, as reported in the paper.
+
+CONCERN #4.8: "At several places in the evaluation you cannot follow your
+story due to limited memory. Given that 2GB is not a whole lot for recent
+machines and memory is extremely cheap, can't you repeat you evaluation on a
+machine with 32 GB of RAM? Or just reduce the complexity of your problem to
+have something that is comparable."
+
+OUR RESPONSE: We are not sure that we understand the reviewer's concern about
+not being able to follow our story. On the contrary, performing experiments on
+a 2GB machine *supports* our story because we show that NFA-OBDDs can result
+in a compact representation of regular expressions, whereas alternative
+representations run out of memory. Although we can repeat the epxeriments on a
+machine with 32GB RAM, we are unclear how the main message of our paper will
+change as a result of doing so.
+
+CONCERN #4.9: "Minor Issues:" We have addressed the minor concerns raised by
+this reviewer.
+
+CONCERN #4.10: "page 19, Section 5.3: "Figure 8 reports three numbers ...
+corresponding to ... parameters". These parameters are Format and Termination,
+both with two options. I get 2 (parameters) times 2 (option) = 4 (numbers) and
+not three. Something is weird!"
+
+OUR RESPONSE: Yes, there should be 4 numbers. The reason that we only have
+three numbers was that a segmentation fault happened in a function of
+libprcre.so.0 when we were trying to evaluate the 4th configuration: global
+mode with utf8 enabled. This was probably a bug in PCRE library, so we
+ommitted that case from the results.
+
+
+Comments by Reviewer #5: 
+
+"The paper does not examine the effectiveness of the proposed mechanism in
+detecting attacks. Although I understand that this is out of the scope of the
+paper (as the authors state in several parts), in my opinion at least some
+indicative results/commments on how it affects the effectiveness of attack
+detection are missing. This would provide a more accurate view on the
+practical contribution of the paper."
+
+OUR RESPONSE: Our approach does not compromize the detection ability of an
+intrusion detection system in any way. We take an off-the-shelf IDS, such as
+Snort, and the main goal of our work is to improve the *performance* of Snort
+without impacting its detection ability. Therefore, a tool that uses an
+NFA-OBDD representation can detect the same kinds of attacks as a tool that
+does not use NFA-OBDDs.
+

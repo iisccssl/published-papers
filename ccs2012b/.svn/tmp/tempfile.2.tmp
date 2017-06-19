@@ -1,0 +1,132 @@
+% Outline: Analysis of the technique: 
+% Guarantee
+\vspace{-0.1in}
+%\section{Analyis of the Technique} 
+
+\noindent\textbf{Proving complete mediation.} We present an
+\textit{oracle-based argument} that our technique ensures complete mediation of
+all security-sensitive operations. That is, we can reason about the correctness
+of the output of our approach assuming the correctness of certain oracles upon
+which it depends.  Complete mediation stipulates that {\em every
+security-sensitive operation must be control flow dominated by an authorization
+hook}.   This involves showing that (a) the identification security-sensitive
+operations is complete, i.e., we have identified all security-sensitive
+operations in the program, and (b) the completeness of hook placement to
+authorize the security-sensitive operations. 
+
+First, let us consider the identification of security-sensitive operations.
+This task depends on the identification of {\em security-sensitive objects} and
+{\em user-choice operations}.  The completeness of these steps depends on the
+output of static taint analysis and manual specification of user-request
+variables.  Proving that static taint analysis is complete depends on knowing
+which variables can alias each other. Since alias analysis is intractable in a
+language like C, we cannot show that static taint tracking it is complete.
+Additionally, the identification of security-sensitive objects is also
+dependent on the complete specification of all container lookup functions.
+Therefore, the completeness of identification of security-sensitive operations
+is contingent on the completeness of two oracles: (1)~static taint analysis,
+which although intractable, can be made conservative, and (2)~the specification
+of user-request inputs and lookup functions, which requires domain-specific
+expert input.
+
+Second, we need to show the completeness of hook placement.  Our approach
+starts by placing a hook at every security-sensitive operation identified. Note
+that this  placement provides complete mediation of the operations that were
+identified in the first step. We now have to show that subsequent optimization
+phases do not violate complete mediation. The first hoisting stage shown in
+Algorithm~\ref{btm} propagates the hooks pertaining to operations that are
+common to all branches of a control statement in a bottom-up fashion in the
+CDG. This stage does not remove any hooks.  The second redundancy removal stage
+in Algorithm~\ref{cfd} propagates information about hooks placed in a top-down
+fashion in the CDG. When each node $n$ of the CDG is processed, the set of
+propagated hooks that reach $n$ represent the hooks that control dominate $n$.
+Therefore, if a hook placed at node $n$ is in the set of propagated hooks then
+that hook can be safely removed without violating the completeness guarantee.
+Therefore, the two hook optimization stages of hook maintain completeness. 
+
+
+\noindent\textbf{Mapping hook placements.} To compare manual and automated hook
+placements, we need a method to map each manually-placed hook to the set of
+automatically placed hooks that perform the same authorization. First, we need
+to establish the criteria for comparing two hook placements. We say that a hook
+$h_1$ dominates a hook $h_2$ if two conditions hold: 
+ 
+\begin{itemize}
+\item $h_2$ authorizes an object that is {\em dataflow dependent} on the object that 
+$h_1$ authorizes.  For example, in Listing~\ref{lst:example3}, variable {\tt pProp} is 
+derived from a container inside {\tt win}, so hooks that authorize the two variables 
+may potentially be comparable. 
+\item $h_1$ control flow  dominates $h_2$.  
+\end{itemize} 
+ 
+Next, to extract the mapping between manually-placed hooks and
+automatically-placed hooks, we need to determine which manually-placed hook is
+an {\em immediate dominator} of an automatically placed hook. We say that a
+manually-placed hook $m_1$ is an {\em immediate dominator} of an
+automatically-placed hook $a_1$ if $m_1$ {\em dominates} $a_1$ and there exists
+no other manually-placed hook $m_2$ such that $m_1$ {\em dominates} $m_2$ and
+$m_2$ {\em dominates} $a_1$. Given this definition we can extract for each
+manually-placed hook the set of automatically-placed hooks for which it is the
+{\em immediate dominator}.  This mapping helps us compare the granularity at
+which the manual hooks are placed compared to the automated placement. 
+
+\begin{comment}
+\subsection{Proving Complete Mediation}
+In this section, we show that approach we have proposed satisfies the {\em complete mediation} 
+guarantee with some assumptions.  The complete mediation guarantee stipulates that {\em every 
+security-sensitive operation must be control flow dominated by an authorization hook}.   This 
+involves proving two cases: a) the identification of security-sensitive operations is complete, i.e. 
+we have identified all security-sensitive operations in the program and b) placement of hooks to 
+authorize the security-sensitive operations is complete. 
+
+First, let us consider the identification of security-sensitive operations.   This task depends 
+on the identification of {\em security-sensitive objects} and {\em user-choice operations}.   Both of these 
+steps in depend on the static taint analysis and the manual specification of user-request variables. 
+Proving that static taint analysis is complete depends on knowing which variables can 
+alias each other.   Since alias analysis is intractable in a language like C, we cannot show that 
+static taint tracking it is complete.   Additionally, the identification of security-sensitive objects is 
+also dependent on the complete specification of all container lookup functions.   Therefore, the 
+completeness of identification of security-sensitive operations is contingent on having a complete 
+taint analysis and a complete specification of user-request inputs and lookup functions.   
+
+Second, we need to show that the hook placement approach results in a complete placement. 
+Our approach starts by placing a hook at every security-sensitive operation identified. Note that this  
+placement provides the completeness guarantee. We now have to show that subsequent optimization phases 
+do not violate complete mediation. The first `hoisting' stage shown in 
+Algorithm~\ref{btm} propagates the hooks pertaining to operations that are common to all branches 
+of a control statement in a bottom-up fashion in the CDG. This stage does not remove any hooks.  The 
+second `redundancy removal' stage in Algorithm~\ref{cfd} propagates information 
+about hooks placed in a top-down fashion in the CDG. When each node $n$ of the CDG is processed, 
+the set of propagated hooks that reach $n$ represent the hooks that control dominate $n$. Therefore, 
+if a hook placed at node $n$ is in the set of propagated hooks then that hook can be safely removed 
+without violating the completeness guarantee. Therefore, the two hook optimization stages of hook 
+maintain the completeness guarantee. 
+
+\begin{comment} 
+\vspace{-0.05in}
+ \subsection{Mapping Hook Placements} 
+ In order to compare manual and automated hook placements, we need a method to map each manual hook 
+ to the set of automatically placed hooks that perform the same authorization. First, we need 
+ to establish the criteria for comparing any two hooks. We say that a hook $h_1$ dominates a hook $h_2$ 
+ if two conditions hold: 
+ 
+ \begin{itemize}
+\vspace{-0.05in}
+ \item $h_2$ authorizes an object that is {\em dataflow dependent} on the object that 
+ $h_1$ authorizes.  For example, in Listing~\ref{lst:example3}, variable {\tt pProp} is 
+ derived from a container inside {\tt win}, so hooks that authorize the two variables 
+ may potentially be comparable. 
+\vspace{-0.05in}
+ \item $h_1$ control flow  dominates $h_2$.  
+\vspace{-0.05in}
+ \end{itemize} 
+ 
+ Next, in order to extract the mapping between manually placed hooks and automatically placed hooks, we 
+ need to determine which manually placed hook is an {\em immediate dominator} of an automatically placed 
+ hook. We say that a manually placed hook $m_1$ is an {\em immediate dominator} of an automatically placed 
+ hook $a_1$ if $m_1$ {\em dominates} $a_1$ and there exists no other manually placed hook $m_2$ such 
+ that $m_1$ {\em dominates} $m_2$ and $m_2$ {\em dominates} $a_1$. Given this definition we can extract 
+ for each manually placed hook the set of automatically placed hook for which it is the {\em immediate dominator}. 
+ This mapping helps us compare the granularity at which the manual hooks are placed compared to the 
+ automated placement. 
+\end{comment}

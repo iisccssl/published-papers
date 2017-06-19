@@ -1,0 +1,56 @@
+\mysection{Vetting Host Requests}
+\label{section:vetting}
+
+We implemented a cloud-based trusted vetting service to allow guests to
+determine the safety of a host's requests. The guest device forwards the host's
+requests together with a copy of its memory image to the vetting service (via
+the UI app). We assume that the device and the vetting service have
+authenticated each other as in \figref{figure:authentication}, thus
+establishing an integrity-protected channel between the vetting server and the
+guest device TCB.
+
+The UI app obtains an HMAC'ed memory image from the secure world as in
+\sectref{section:mechanism:rmo} and transmits it to the vetting server. The
+vetting server checks the requests against its safety policies and returns a
+\textsc{Safe} or \textsc{Unsafe} response to the device. The response is bound
+with a random nonce and an HMAC to the original request in the standard way to
+prevent replay attacks. The secure world performs the operations only if the
+response is \textsc{Safe}. 
+
+Vetting servers can determine safety using arbitrary, domain-specific policies.
+Our prototype vetting service, which we built as a plugin to the Hex-Rays IDA
+toolkit~\cite{ida-pro}, analyzes memory images and checks for the following
+safety policies. Although simple and conservative, these policies worked well
+during our experiments, proving safety without raising false positives.
+
+
+% \begin{mybullet}
+%
+% \item \textit{\textbf{Read Requests.}} 
+\myparagraph{Read Requests} For each request to read from address
+\textit{vaddr}$_i$, we return \textsc{Safe} only if \textit{vaddr}$_i$ falls in
+a pre-determined range of addresses. The vetting server pre-computes this range
+of addresses by analyzing the memory image of the device. In our prototype,
+acceptable address ranges only include pages that contain kernel code and data
+structures. In particular, the vetting server returns \textsc{Unsafe} if the
+read request attempts to fetch any addresses from kernel buffers that store
+user app data, or virtual address ranges for user app code and data.
+
+%\item \textit{\textbf{Write Requests.}} 
+
+\myparagraph{Write Requests} Our prototype currently only allows write requests
+to \textsc{null}ify peripheral interfaces or install dummy drivers. Dummy
+drivers are determined to be \textsc{Safe} using the following policy. For each
+function $f$ implemented in the dummy driver, consider its counterpart $f_{\it
+orig}$ from the original driver, which the vetting service obtains from the
+device's memory image. We return \textsc{Safe} only if (1)~the function $f$ is
+identical to $f_{\it orig}$, or (2)~$f$'s body consists of a single
+\code{return} statement that returns a \textit{valid} error code
+(\eg~\textsc{-enomem}). We define an error code as being valid for $f$ if and
+only if the same error code is returned along at least one path in $f_{\it
+orig}$. The intuition behind this safety check is that $f$ does not modify the
+memory state of the device or introduce new and possibly buggy code, but
+returns an error code that is acceptable to the kernel and client user apps.
+%
+%\end{mybullet}
+%

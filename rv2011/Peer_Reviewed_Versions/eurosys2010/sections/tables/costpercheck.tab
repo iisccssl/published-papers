@@ -1,0 +1,15 @@
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+{Check} & {Cost per check (ns)} & {Description}  \\
+{} & {} & {} \\\hline
+{Subset} & {\texttt{34426.12}} &  {Checks if list $L_{1}$ is a subset of list $L_{2}$}\\ \hline
+{Sortedness} & {\texttt{-}} &  {Checks if the list nodes are in sorted order}\\ \hline
+{Length} & {\texttt{-}} &  {Computes the length of the list}\\ \hline
+{isNull(Head)} & {\texttt{-}} &  {Checks if the head node of the list has a null value}\\ \hline
+{Empty} & {\texttt{-}} &  {Performs an empty check}\\ \hline
+\end{tabular}
+\vspace{1mm}
+\mycaption{Costs associated with different types of data structure checks.}
+{\label{costpercheck}}
+\end{center}

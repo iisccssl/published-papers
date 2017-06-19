@@ -1,0 +1,15 @@
+\begin{center}
+\begin{tabular}{|l|r|r||r|r|}
+\hline
+{} & \multicolumn{2}{|c|}{Invariants} & \multicolumn{2}{|c|}{False Positives} \\\hline
+{\bf{Template} } & {\bf{\small{Object}}} & {\bf{\small{Collection}}} & {\small{\bf{Object}}} & {\small{\bf{Collection}}}\\ \hline\hline
+\small{Membership} & $643,\!622$ & $422$ & $0.71\%$ & $1.18\%$   \\ \hline
+\small{Non-zero} & $49,\!058$ & $266$ & $0.17\%$ & $2.25\%$  \\ \hline
+\small{Bounds}  & $16,\!696$ & $600$ & $0\%$ & $0\%$  \\ \hline
+\small{Length} & NA & $4,\!696$ & NA & $0.66\%$   \\ \hline
+\small{Subset} & NA & $3,\!580$ & NA & $0\%$    \\ \hline
+%\textbf{Total} & $709,\!376$ & $9,\!564$  \\ \hline
+\end{tabular}
+\mycaption{Invariants and false positives classified by the type of invariant and the template used to mine the invariant.\tool\ infers a total of $718,940$ invariants. Average false positive rate: $0.65\%$.}
+{\label{invfp}}
+\end{center}

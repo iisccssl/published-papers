@@ -1,0 +1,28 @@
+This article is a revised and expanded version of a paper published at the 13th
+International Symposium on Recent Advances in Intrusion Detection (RAID 2010).
+It contains the following additional material that does not appear in the RAID
+2010 paper:
+
+* Experiments with publicly-available traces: The RAID paper contains numbers
+  from experiments that we performed using network traces collected in our
+  departmental network. These traces are not available publicly because of
+  privacy concerns. To ensure that our experiments are repeateable by other
+  researchers, we additionally conducted experiments with publicly available
+  network traces (in particular, the 1999 DARPA IDS evaluation traces) with 
+  results similar to those obtained using traces from our departmental network.
+  (Section 4.1 and Section 5)
+
+* Evaluation of the impact of OBDD variable ordering: We report our analysis
+  on the impact of various OBDD variable orderings on the performance of
+  NFA-OBDDs. (Section 5.6)
+
+* Description and evaluation of alphabet compression: Our work uses a variant
+  of prior alphabet compression algorithms to produce 2-stride NFAs. Our
+  algorithm can compress larger sets of regular expressions for 2-stride NFAs
+  than prior algorithms. We describe this algorithm in Section 6.3 and also 
+  describe the construction of 2-stride NFAs in detail.
+
+In addition to the above major contributions over the conference version, 
+the present article also incorporates several minor improvements, such as
+an enhanced exposition of background material, and an expanded discussion
+of future research directions.

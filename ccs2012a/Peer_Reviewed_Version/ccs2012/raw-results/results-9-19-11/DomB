@@ -1,0 +1,17 @@
+Creating a domain of 2GB RAM & 2 vcpus, no devices and kernel & initrd images are in memory (/dev/shm).
+
+Dom0
+2.1310 sec 0.01149 SD 
+
+DomB
+2.1440 sec 0.01275 SD 
+
+
+Creating a domain of 2GB RAM, no devices and kernel & initrd images are on disk.
+
+
+Dom0
+2.4076 sec 0.06326 SD 
+
+DomB
+2.3080 sec 0.04224 SD 

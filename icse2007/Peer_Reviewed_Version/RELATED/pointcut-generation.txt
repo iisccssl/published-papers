@@ -1,0 +1,20 @@
+Google search: "Pointcut generation", "Aspect mining", "Aspect refactoring"
+               "Aspect mining concept analysis"
+
+1. http://ssel.vub.ac.be/ssel/teaching:thesis0607:proposals:pointcutgeneration
+   "Existing aspect refactoring techniques also automatically generate a pointcut"
+	 
+2. Mathieu Braem, Kris Gybels, Andy Kellens, and Wim Vanderperren. Automated
+   pattern-based pointcut generation. In Welf Lowe and Mario Sudholt, editors,
+   Proc. of the 5th Int. Symp. on Software Composition, March 2006.
+	 
+3. Kris Gybels and Andy Kellens. An experiment in using inductive logic
+   programming to uncover pointcuts. In Kris Gybels, Stefan Hanenberg, 
+	 Stephan Herrmann, and Jan Wloka, editors, European Interactive Workshop 
+	 on Aspects in Software (EIWAS), September 2004.
+
+4. http://doi.ieeecomputersociety.org/10.1109/WCRE.2004.13 
+
+5. http://doi.ieeecomputersociety.org/10.1109/SCAM.2005.9
+
+6. Aspect-mining tool: http://www.cs.ubc.ca/~jan/amt/

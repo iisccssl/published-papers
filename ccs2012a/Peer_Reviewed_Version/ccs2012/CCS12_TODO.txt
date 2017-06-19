@@ -1,0 +1,53 @@
+Main pending items:
+* Change Figure 1 to make it look more "non-nested".
+* Change Figure 4 to make it more generic storage SD, rather than encryption SD.
+* Add a discussion section.
+
+
+
+We need to do the following things for CCS'12.
+
+-- 1. System call or anomaly detection SD.
+
+-- 2. Storage IDS SD. Figure out a suitable SD, implement it, and evaluate it.
+
+-- 3. MTSD manifests design, implementation, and enforcement. This includes
+      languages used in the manifests, implementation in the hypervisor of how
+      manifests are parsed and enforced, and modifications to the protocol on 
+	    how manifests are sent during MTSD creation.
+
+-- 4. Improve description of related work, especially for CloudVisor and
+--   XenBlanket. 
+
+-- 5. Add a discussion section of "cloud app store" model of deployment.
+
+-- 6. Add a citation to "Enabling Secure VM-vTPM Migration in Private Clouds", 
+--   ACSAC'11. We need to say that although we used original vTPM idea but 
+--   newer like ACSAC'11 can be used.
+
+7. Add a citation to 'KeyKOS factory method' to U.S. Patent 4,584,639.
+
+Writing:
+-- 1. Reorder the case studies to present security case studies first.
+-- 2. Add syscall and storage IDS case studies after Shakeel gives numbers.
+-- 3. Add description of these SDs to motivating examples. Remove the ones (or
+-- shorten them) not directly related to security.
+4. Add discussion on MTSD manifests.
+
+EuroSys comments:
+
+-- 1. If we combine CloudVisor and Xen-blanket out of the box (i.e. using three
+--   level of virtualization), will it solves the two problems we are targeting, 
+--   protecting against malicious/curious admins and control to users.
+ 
+2. Does by disabling logins to the dom0 (even root) solve the problem of protection 
+   against cloud operators.
+
+3. SSC currently have six operations (or capabilities), are these fine-grained 
+   enough? What if a new service requires even more finer control?
+
+4. Instead of MTSD, why not provider gives a binary to the user to run in his VM 
+   and the user after executing that binary provide the provider the proof of the 
+   correct execution of the binary. 
+
+

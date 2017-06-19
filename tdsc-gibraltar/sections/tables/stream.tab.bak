@@ -1,0 +1,28 @@
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+\multicolumn{6}{|l|}{With monitoring turned OFF} \\
+\hline
+{\small Func.} & {\small Rate (MB/s)} &  \multicolumn{3}{|c|}{Time} & {\small Penalty} \\
+{} & {} & {\small Avg}  &   {\small Min}  &   {\small Max}  & {} \\
+\hline
+{\small Copy}    & {\small 1410.2319}   &  {\small 0.2271}    &   {\small 0.2269}    &   {\small 0.2300} & 0\% \\
+
+\hline
+\hline
+\multicolumn{6}{|l|}{With monitoring turned ON} \\
+\hline
+%{\small Func.} & {\small Rate (MB/s)} &  {\small Avg time}  &   {\small Min time}  &   {\small Max time} & {\small Penalty} \\
+{\small Func.} & {\small Rate (MB/s)} &  \multicolumn{3}{|c|}{Time} & {\small Penalty} \\
+{} & {} & {\small Avg}  &   {\small Min}  &   {\small Max}  & {} \\
+\hline
+{\small Copy}    & {\small 1393.8368}   &  {\small 0.2297}    &   {\small 0.2296}    &   {\small 0.2301} & 1.2\% \\
+{\small Scale}   & {\small 1413.7209}   &  {\small 0.2266}    &   {\small 0.2264}    &   {\small 0.2270} & 1.17\% \\
+{\small Add}     & {\small 1459.9826}   &  {\small 0.3290}    &   {\small 0.3288}    &   {\small 0.3293} & 0.88\% \\
+{\small Triad}   & {\small 1454.3074}   &  {\small 0.3303}    &   {\small 0.3301}    &   {\small 0.3306}  & 0.87\%  \\
+\hline
+\end{tabular}
+\begin{center}
+\caption{Results from Stream microbenchmark after 100 runs. Shows a maximum performance penalty of 1.2\% due to PCI overhead}
+\label{stream}
+\end{center}
+

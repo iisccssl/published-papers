@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/jointwork/tzra/!svn/ver/91/ccs15
+END
+paper.pdf
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/jointwork/tzra/!svn/ver/101/ccs15/paper.pdf
+END
+sig-alternate.cls
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/jointwork/tzra/!svn/ver/91/ccs15/sig-alternate.cls
+END
+acmstyle.cls
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/jointwork/tzra/!svn/ver/97/ccs15/acmstyle.cls
+END
+ccs15reviews-rebuttalstage.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/jointwork/tzra/!svn/ver/103/ccs15/ccs15reviews-rebuttalstage.txt
+END
+make.sh
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/jointwork/tzra/!svn/ver/95/ccs15/make.sh
+END
+paper.tex
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/jointwork/tzra/!svn/ver/101/ccs15/paper.tex
+END
+widow.sty
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/jointwork/tzra/!svn/ver/91/ccs15/widow.sty
+END
+titlesec.sty
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/jointwork/tzra/!svn/ver/92/ccs15/titlesec.sty
+END
+algorithm2e.sty
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/jointwork/tzra/!svn/ver/91/ccs15/algorithm2e.sty
+END
+fancyhdr.sty
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/jointwork/tzra/!svn/ver/91/ccs15/fancyhdr.sty
+END
+references.bib
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/jointwork/tzra/!svn/ver/100/ccs15/references.bib
+END
+rebuttal-ccs15.txt
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/jointwork/tzra/!svn/ver/104/ccs15/rebuttal-ccs15.txt
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/jointwork/tzra/!svn/ver/91/ccs15/Makefile
+END

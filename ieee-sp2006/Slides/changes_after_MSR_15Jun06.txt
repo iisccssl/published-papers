@@ -1,0 +1,14 @@
+Main changes to the talk, based upon feedback at MSR:
+
+(1) The talk was very unclear about the portion on basis-finding.
+    Either talk about this VERY clearly, stating precisely what
+    the inputs are, and what the output is, or completely skip
+    this part of the talk.
+
+(2) Which part is automatic, and which part is not is not clear.
+    Make it clear what is automatic, and what is not automatic.
+
+(3) Find a good explanation for why protocol-level protection will
+    not suffice. That is, why modify the code? Find also a good
+    explanation for why protecting the API alone is not sufficient.
+    Why should we look at low-level operations.

@@ -1,0 +1,83 @@
+We thank the reviewer for carefully reading our manuscript and suggesting
+additional changes. We addressed all the concerns raised by this reviewer,
+as explained below (we have elided descriptions of how we addressed minor
+grammatical errors, as noted by the reviewer).
+
+
+ISSUE: Page 1, column 1, line 25:  Why is the "E" in "KErnel" capitalized?
+
+RESPONSE: This was automatically produced by the IEEE TDSC format
+
+
+ISSUE: 1, 1, 37: "first quarter of 2008":  this is now dated.  How about data
+from late 2009 instead?
+
+RESPONSE: We could not find data from late 2009 (the website antirootkit.com
+is no longer updated). However, we have cited the latest report from MacAfee,
+which provides evidence that the rootkit threat is growing.
+
+
+ISSUE: 7, 1, 48: "a kernel snapshot": change to "a (partial) kernel snapshot".
+Explain that not all data structures are recorded, and that they aren't all
+recorded at once in a consistent manner.
+
+RESPONSE: We have added a footnote describing this issue in detail.
+
+
+ISSUE: 8,2,13: "Our implementation remedies":  the remedy is not clearly related
+to the problem; please spell out the connection, and why one might expect
+this to be a reasonable and effective strategy.  Also, state here (or
+cross-reference to elsewhere -- I couldn't find it, though) how long, on
+average, it takes to collect a complete snapshot.  Also, the remedy is not
+guaranteed to work, and that should be made clear in the writing.
+
+RESPONSE: 
+* We have described more clearly the problem that our solution remedies
+  (i.e., the data structure extractor may fetch a large number of spurious
+  objects)
+* We have clarified the shortcomings of using such an approach.
+* We have provided experimental numbers on the time to extract one snapshot.
+
+
+ISSUE: 8,2,20: "rarely":  such wording is of no use to readers.  Please
+quantify or omit.
+
+RESPONSE: We have qualified this with concrete numbers.
+
+
+ISSUE: 9,2,figure 13: In the text that discusses this figure, you might want to
+explain the rather obscure terminology "hashcode" which seems to just mean
+"pointer".  Also, put a "\" at the end of any line that you have split.
+Finally, the two columns are not aligned; align them.
+
+RESPONSE: The text of the paper explains the term "hashcode".
+
+
+ISSUE: 9,2,48: "Daikon infers invariants ...": the first half of this sentence
+is a general statement about Daikon, and the second half is a statement about
+its output when run on your particular data.  (Is that data publicly available,
+by the way?)  These belong in separate sentences, or the distinction should be
+made more clear.
+
+RESPONSE: We've removed the second half of the sentence as that point is made
+again later in the text. Data is not publicly available at the moment but we
+have plan to make it publicly available sometime in the future.
+
+13,1,57: "90% line coverage":  Line coverage is irrelevant to a learning
+technique that operates over data:  you should care about value coverage,
+not line coverage, and that is not addressed by current approaches, even if
+they produced invariants.  They would need to be tuned to generate *tests*
+that produce good invariants.  You should cite Neelam Gupta, "Generating
+test data for dynamically discovering likely program invariants", in
+WODA2003, for an attempt at generating relevant test data.  For the
+distinction between line coverage and value coverage, you could cite
+Michael Harder, "Improving test suites via operational abstraction", in
+ICSE2003.
+
+RESPONSE: We have changed the corresponding text and have cited Neelam Gupta's work.
+
+
+In addition to these changes, we also made a change to Section 3. We
+consolidated all the figures in this section into a single figure (Figure 1 of
+this manuscript). This change consolidated all the invariants into a single
+location.

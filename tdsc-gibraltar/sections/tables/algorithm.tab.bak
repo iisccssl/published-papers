@@ -1,0 +1,3 @@
+\begin{algorithm}[H]
+\SetLine \KwIn{Queue of Roots} \KwOur{Daikon Trace Files or Alerts} \While{Roots.size() > 0 and
+Max_Objects_Traversed < MAX_COUNT}{ Type = Get_Type_Definition(Root); \ForEach{Field within Type}{ } }

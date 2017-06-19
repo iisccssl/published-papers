@@ -1,0 +1,6 @@
+#INDEX	PHASE 	NFS	POLEX
+0 	untar	1	1
+1	configure	41	42
+2	compile	47	47
+3	install	5	4
+4	remove	0	1

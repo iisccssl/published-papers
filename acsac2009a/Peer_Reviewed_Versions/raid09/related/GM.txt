@@ -1,0 +1,65 @@
+Greasemonkey is a Mozilla Firefox add-on that allows users to install scripts
+that make on-the-fly changes to most HTML-based web pages. In 2005, a security
+vulnerability was discovered in Greasemonkey v0.3.3, that enabled malicious web
+sites to read any file from a user's hard disk without their consent. This was
+possible through the use of the XMLHttpRequest, which is not bounded by the
+same origin policy unless executing on a webpage. The severity of the bug can
+be gauged by the facts i) that an attacker can retrieve a complete directory
+listing by submitting a URL like "file:///c:/" instead of a file name, and ii)
+the attack can be made equally effective on all operating systems, with only
+changing the starting root symbol.\cite{markpilgrim} It must be noted that this
+was possible due to a browser bug operating in combination with a benign but
+vulnerable extension and malicious websites. 
+
+We simulate this malicious behaviour, by writing a malicious extension and
+webpage combination that communicate through JavaScript events. The webpage
+presents itself as a search form, while the malicious script in the webpage
+creates an event and includes the name of the file to be read from the local
+disk as an attribute. The extension captures this event as soon as the webpage
+is loaded and makes an XMLHttpRequest call to retrieve the desired file
+asynchronously. Once the extension receives the entire file, it embeds the
+contents of the file within invisible DOM elements which will be received by
+the server when the user submits the form.
+
+SCRIPT CODE
+
+<script>
+var element = document.createElement("MyExtensionDataElement");
+// set the file name
+element.setAttribute("attribute", "/home/mdhawan/test");
+document.documentElement.appendChild(element);
+
+var evt = document.createEvent("Events");
+evt.initEvent("MyExtensionEvent", true, false);
+element.dispatchEvent(evt);
+</script>
+
+EXTENSION CODE
+
+var myExtension = {
+	myListener: function(evt) {
+	
+	// extracts the file name
+	
+	var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Components.interfaces.nsIXMLHttpRequest);  
+	req.open('GET', 'file:///home/mdhawan/test', false);   
+	req.send(null);  
+	
+	if(req.status == 0){
+		// extract req.responseText, which contains the data
+		// embeds the contents in the DOM
+	} 
+  }
+}
+document.addEventListener("MyExtensionEvent", function(e) { myExtension.myListener(e); }, false, true);
+
+Our tool taints all sensitive sources, including the input streams that may be
+used to read data. This includes data from both local storage as well as over
+the network. Once the data is read from the disk, it automatically gets tainted
+and is then received by the 'req' object in line 'x'. If the extension tries to
+extract the 'responseText', the tool identifies that the incoming response is
+tainted and would prompt an alert to the user. If the extension does not
+extract the response but instead chooses to embeds the 'req' object itself
+within the DOM fields, the corresponding form field would get tainted,
+subsequently causing the tool to raise an alert on form submission.
+

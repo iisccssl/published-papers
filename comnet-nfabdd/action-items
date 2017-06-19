@@ -1,0 +1,92 @@
+
+Comments by Reviewer #1
+-----------------------
+** The review does not require action.
+
+
+Comments by Reviewer #3
+-----------------------
+** The review does not require action.
+
+
+Comments by Reviewer #4
+-----------------------
+** CONCERN #1: "The description of your selection of signatures is very confusing:
+ (1) CONCERN #1.1: "Signature Set Reduction:
+   1. You start with snapshots from snort 2009 (2612 and 98 rules).
+   2. You only consider rules from the pcre fields (which leads to a reduction of app. 50%)
+   3. You further remove those with non-regular expressions (which are 1837 and 41 in numbers)
+   (doing some math: you start with 2710 and remove half => 2710/2=1355; now you remove another 1837+41=1878 => and end up with -523 rules)
+   Obviously this is not what you meant, but it can be read that way. Please clarify.
+   Say how many rules are in the Snort Sets to begin with and work your way through your reductions."
+
+++ RESPONSE: The second set of regular expressions were taken from the October 2009 snapshot of the Snort HTTP rule set, containing 4288 HTTP rules, where 1658 regular expressions were taken from the uricontent fields of the rules, and the rest were extracted from the pcre fields. We excluded Snort rules that contained non-regular constructs, such as back-references and subroutines (which are allowed by Perl-compatible regular expression package (PCRE)), because these constructs are not regular and therefore cannot be implemented in NFA-based models. In all, we excluded 1837 HTTP rules due to non-regular constructs. As a result, we obtained 2612 HTTP regular expressions. The third set of regular expressions were taken from the October 2009 snapshot of the Snort FTP rule set plus the synthesized FTP regular expressions obtained from the authors of the XFA paper. After excluding 41 FTP signatures having non-regular constructs, we obtained 98 FTP regular expressions. TODO: make changes in the paper. 
+
+ (2) CONCERN #1.2: "Also: Footnote 5 is contradictory to your statement to only use the pcre field signatures."
+
+ ++ RESPONSE: In Footnote 5 we said the number of matches triggered is not indicative of number of alerts produced by Snort. The reason for that is: A Snort rule often has two parts: header and option fields, where the header specifies information like "action", "protocol", "IP addresses", "ports", and "direction", etc. The option fields of a rule may include (but not necessarily) information such as "IP TTL", "payload size", "uricontent", "content offset", "pcre", etc. A rule is counted to be matched only if all conditions specified in the header and the option fields are matched. Only matching "uricontent" or "pcre" fields do not necessarily trigger a Snort alert since other conditions in the header and option fields may not be satisfied. TODO: make changes in the paper. 
+
+ (2) CONCERN #1.3: "Also why do you only consider those from the pcre fields? Are those much different from those in the uricontent field?"
+ 
+ ++ RESPONSE: A Snort rule consists of two parts: header and option fields. The header specifies information such as "action", "protocol", "IP addresses", "ports", and "direction", etc. The option fields include information such as "IP TTL", "payload size", "uricontent", "content offset", "pcre", etc. Among the information specified in the option fields, "pcre" and "uriconcent" are relevant to regular expressions. PCRE is the richest representation in a snort rule. It is an extension of regular expressions. PCRE is a richer representation (much more complex) than the "uricontent" field. Some constructs in PCRE are not regular constructs, such as back-references and subroutines. The main reason for us to chose "pcre" was that we wanted to include the richest representation in our evaluation. 
+
+ (3) CONCERN #1.4: "How many rules are non-regular expression in the complete snort set? If this is a substantial (>10%) fraction, how would your approach still benefit the addressed problem? Somehow these rules have to be applied, no?"
+ 
+ ++ RESPONSE: In all, the 2009 Snort snapshot contained 15047 rules, where 4288 were HTTP rules. Among the 4288 HTTP rules, 1837 have non-regular constructs.  Our approach aims to improve the matching performance of regular expression, but does not support non-regular constructs, which will be a future work for our approach. Vinod, we need a better argument here.
+
+
+ (4) CONCERN #1.5: "Furthermore are the selected sets and order of magnitude smaller than mentioned in the introduction, please be consistent."
+
+ ++ RESPONSE: In the introduction, we said the number of Snort rules in 2009 was 15,047. The rule sets we considered in the Section 4.1 were taken from the HTTP and FTP rule sets, which were only a portion of Snort rules. The main reason for us to only take HTTP and FTP rules was based on evaluation consideration. For example, it will be difficult for us to find network traffic to evaluate SMTP rules due to the privacy concern.
+
+ (5) CONCERN #1.6: "In Section 5.4.1. you again remove rules: Why did you not remove the 8 and 3 rules for HTTP and FTP from the beginning?"
+
+ ++ RESPONSE: The reason for us to remove 8 HTTP and 3 FTP regular expressions was that MDFA ran out of memory for the 2612 HTTP and 98 FTP regular expressions. Some of the individual regular expressions consumed more than 1.6GB memory. To construct MDFAs, we had to use reduced regular expression sets. 
+
+** CONCERN #2: "Furthermore the data set description lacks some important information:
+ (1) CONCERN #2.1: "How many packets are in the traces?"
+ ++ RESPONSE: The Rutgers trace contained 10,069,369 packets in total. The DARPA traces contained 53,174,585 packets in total.
+
+ (2) CONCERN #2.2: "For the matches triggered: is that how many packets matched the signatures, or the total number of any signature matched."
+ ++ RESPONSE: The matches triggered mean the number of packets which matched the signatures.
+
+ (3) CONCERN #2.3: "Why are there not GET requests in the FTP traces? Did you not include data connections?"
+ ++ RESPONSE: We did not record data connections due to privacy concern.
+
+ (4) CONCERN #2.4: "In general i am surprised that the average payload sizes are 126, 351 and 40 for Rutgers/HTTP, DARPA, Rutgers/FTP respectively. This is very small given and average in the Internet of around 750 bytes. I would assume that this is due to the very specific content hosted at your servers and the age of the DARPA traces. You need to discuss or better add another data set to show how larger avg. packets sizes impact your evaluation."
+ ++ RESPONSE: TODO
+
+
+** CONCERN #3: "At several places in the evaluation you cannot follow your story due to limited memory. Given that 2GB is not a whole lot for recent machines and memory is extremely cheap, can't you repeat you evaluation on a machine with 32 GB of RAM? Or just reduce the complexity of your problem to have something that is comparable."
+
+ ++ RESPONSE: We would like to do such an evaluation, but we don't have a machine which has large memory such as 32GB.
+
+** CONCERN #4: "Minor Issues:"
+ (1) CONCERN #4.1: "Labeling tabulars and Figures is confusing! Use Table for tabulars and Figure for plots and diagrams."
+ ++ RESPONSE: easy to TODO, need confirmation from Vinod.
+
+ (2) CONCERN #4.2: "please sort the citation numbers (e.g. ist para of intro) in LateX you can achieve this by loading \usepackage{cite}."
+ ++ RESPONSE: easy to TODO, need confirmation from Vinod.
+
+ (3) CONCERN #4.3 "Figure 2: Please rearrange the diagrams to have the same successor nodes for x as in Figure 1 (i.e. the "0" edge always on the left or vice versa)"
+ ++ RESPONSE: Figure 2(b) will look funny by doing that. Vinod?
+
+ (4) CONCERN #4.4: "page 8, para before Section 2.1: Try to reformat this. It is hard to keep track of the parenthesis and brackets."
+ ++ RESPONSE: Need Vinod's input.
+
+ (5) CONCERN #4.5: "page 19, Section 5.2, 2nd para: "Since there are a large number of HTTP signatures ..." -> "Since there *is* a large number ...""
+ ++ RESPONSE: easy to TODO, need confirmation from Vinod.
+
+ (6) CONCERN #4.6: "page 19, Section 5.3: "Figure 8 reports three numbers ... corresponding to ... parameters". These parameters are Format and Termination, both with two options. I get 2 (parameters) times 2 (option) = 4 (numbers) and not three. Something is weird!"
+
+ ++ RESPONSE: Yes, there should be 4 numbers. The reason that we only have three numbers was that a segmentation fault happened in a function of libprcre.so.0 when we were trying to evaluate the 4th configuration: global mode with utf8 enabled. This was probably a bug in PCRE library. Below was a traced snapshot we obtained when we were performing the evaluation.
+(gdb) backtrace
+#0  0x00682bf3 in ?? () from /lib/libpcre.so.0
+#1  0x006870e9 in pcre_exec () from /lib/libpcre.so.0
+#2  0x08049308 in main (argc=<value optimized out>, argv=0xbffff414) at pcre_match_test_utf8.cc:218
+
+Comments by Reviewer #5
+** CONCERN: "The paper does not examine the effectiveness of the proposed mechanism in detecting attacks. Although I understand that this is out of the scope of the paper (as the authors state in several parts), in my opinion at least some indicative results/commments on how it affects the effectiveness of attack detection are missing. This would provide a more accurate view on the practical contribution of the paper."
+
+++ RESPONSE: Our approach would benefit Intrusion Detection Systems where regular expressions are heavily used for matching test. Need Vinod's input.
+

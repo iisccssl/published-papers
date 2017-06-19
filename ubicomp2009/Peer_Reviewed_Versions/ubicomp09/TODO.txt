@@ -1,0 +1,15 @@
+1. Introduction: shorten description in para 4.
+2. Address issue of correlation attacks.
+
+
+Why is endpoint generation the same as path generation?
+   Why does it suffice to generate similar endpoints in order to get similar
+   paths? Can we provide some intuition for this? Or is this just a design
+   decision that simplifies implementation and yet yields good results?
+
+Arati's comment: "Statistically similar" must be made clearer earlier in the
+	paper.
+
+"Performance": Don't we contradict ourselves in the paper when we mention range
+queries we have poorer performance? Also mention that cloaked region radius
+depends on distribution of vehicles. Also mention POI density.

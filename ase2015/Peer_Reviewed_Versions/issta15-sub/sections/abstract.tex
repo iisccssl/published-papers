@@ -1,0 +1,31 @@
+% Technical and experience paper submissions: January 23, 2015
+%
+% Technical papers and experience papers must be prepared in ACM conference
+% format and must not exceed 10 pages (including figures and appendices but NOT
+% including references).  That is, any pages after the tenth must contain only
+% references.  All submissions must be in English.  The submissions should list
+% the paper authors recognizably not anonymously (i.e., ISSTA does not use
+% double blind reviews).
+
+Mobile app developers often wish to make their apps available on a wide variety
+of platforms, \eg~Android, iOS, and Windows devices. Each of these platforms
+uses a different programming environment, each with its own language and APIs
+for app development. Small app development teams lack the resources and the
+expertise to build and maintain separate code bases of the app customized for
+each platform. As a result, we are beginning to see a number of cross-platform
+mobile app development frameworks. These frameworks allow the app developers to
+specify the business logic of the app once, using the language and APIs of a
+home platform (\eg~Windows Phone), and automatically produce versions of the
+app for multiple target platforms (\eg~iOS and Android). 
+
+In this paper, we focus on the problem of testing cross-platform app
+development frameworks. Such frameworks are challenging to develop because
+they must correctly translate the home platform API to the (possibly disparate)
+target platform API while providing the same behavior. We develop a
+differential testing methodology to identify inconsistencies in the way that these
+frameworks handle the APIs of the home and target platforms.  We have built a
+prototype testing tool, called \tool, and have applied it to test Xamarin, a
+popular framework that allows Windows Phone apps to be cross-compiled into
+native Android (and iOS) apps.  To date, \tool\ has found \checkme{47}
+inconsistencies in the way that Xamarin translates between the semantics of the
+Windows Phone and the Android APIs.

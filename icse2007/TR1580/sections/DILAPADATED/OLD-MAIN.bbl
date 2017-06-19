@@ -1,0 +1,93 @@
+\begin{thebibliography}{10}
+
+\bibitem{a72}
+J.~P. Anderson.
+\newblock Computer security technology planning study, volume {II}.
+\newblock Technical Report ESD-TR-73-51, Deputy for Command and Management
+  Systems, L. G. Hanscom Field, Bedford, MA, October 1972.
+
+\bibitem{aspectc}
+The home of {AspectC++}.
+\newblock \url{http://www.aspectc.org}.
+
+\bibitem{aspectj}
+{AspectJ} project.
+\newblock \url{http://www.eclipse.org/aspectj}.
+
+\bibitem{cw02}
+H.~Chen and D.~Wagner.
+\newblock {MOPS}: an infrastructure for examining security properties of
+  software.
+\newblock In {\em Proc. ACM CCS}, November 2002.
+
+\bibitem{ecc+00}
+D.~Engler, B.~Chelf, A.~Chou, and S.~Hallem.
+\newblock Checking system rules using system-specific programmer-written
+  compiler extensions.
+\newblock In {\em 4th Symp. on Operating System Design and Implementation},
+  October 2000.
+
+\bibitem{f06}
+B.~Fletcher.
+\newblock Case study: {Open} source and commercial applications in a
+  {Java}-based {\selinux} cross-domain solution.
+\newblock In {\em Second Annual Security-enhanced Linux Symp.}, March 2006.
+
+\bibitem{gjj05}
+V.~Ganapathy, T.~Jaeger, and S.~Jha.
+\newblock Automatic placement of authorization hooks in the {Linux} security
+  modules framework.
+\newblock In {\em Proc. ACM CCS}, November 2005.
+
+\bibitem{gjj06}
+V.~Ganapathy, T.~Jaeger, and S.~Jha.
+\newblock Retrofitting legacy code for authorization policy enforcement.
+\newblock In {\em Proc. 2006 IEEE S\&P}, May 2006.
+
+\bibitem{hms06}
+M.~Hocking, K.~Macmillan, and D.~Shankar.
+\newblock Case study: {Enhancing} {IBM} {Websphere} with {\selinux}.
+\newblock In {\em Second Annual Security-enhanced Linux Symp.}, March 2006.
+
+\bibitem{jez04}
+T.~Jaeger, A.~Edwards, and X.~Zhang.
+\newblock Consistency analysis of authorization hook placement in the {Linux}
+  security modules framework.
+\newblock {\em ACM TISSEC}, 7(2):175--205, May 2004.
+
+\bibitem{ksv03}
+D.~Kilpatrick, W.~Salamon, and C.~Vance.
+\newblock Securing the {X} {Window} system with {SELinux}.
+\newblock Technical Report 03-006, NAI Labs, March 2003.
+
+\bibitem{ls01a}
+P.~Loscocco and S.~Smalley.
+\newblock Integrating flexible support for security policies into the {Linux}
+  operating system.
+\newblock In {\em FREENIX track: USENIX Annual Technical Conf.}, June 2001.
+
+\bibitem{ls01b}
+P.~Loscocco and S.~Smalley.
+\newblock Meeting critical security objectives with security-enhanced {Linux}.
+\newblock In {\em Ottawa Linux Symp.}, July 2001.
+
+\bibitem{selinux-symposium-04}
+{Summary of first annual \selinux\ meeting}, May 2004.
+\newblock \url{http://www.selinux-symposium.org/meeting.php}.
+
+\bibitem{s05}
+S.~Smalley, June 2005.
+\newblock Personal Communication.
+
+\bibitem{wcs+02}
+C.~Wright, C.~Cowan, S.~Smalley, J.~Morris, and G.~Kroah-Hartman.
+\newblock {Linux} security modules: {General} security support for the {Linux}
+  kernel.
+\newblock In {\em USENIX Security Symp.}, August 2002.
+
+\bibitem{zej02}
+X.~Zhang, A.~Edwards, and T.~Jaeger.
+\newblock Using {CQUAL} for static analysis of authorization hook placement.
+\newblock In {\em USENIX Security Symp.}, August 2002.
+
+\end{thebibliography}

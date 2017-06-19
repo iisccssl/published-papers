@@ -1,0 +1,240 @@
+\begin{thebibliography}{10}
+
+\bibitem{gnulibc}
+The {GNU} {C} library (glibc).
+\newblock \url{https://www.gnu.org/software/libc/index.html}.
+
+\bibitem{win10:sdk}
+Intel software guard extensions ({Intel SGX}) {SDK}.
+\newblock \url{https://software.intel.com/en-us/sgx-sdk/download}.
+
+\bibitem{musllibc}
+musl libc: standard {C/POSIX} library and extensions.
+\newblock \url{https://www.musl-libc.org}.
+
+\bibitem{qemu}
+{QEMU}: a generic, open-source machine emulator \& virtualizer.
+\newblock \url{http://qemu.org}.
+
+\bibitem{intelinstructionset:june16}
+Intel64 and {IA-32} architectures software developer's manual volume 2 (2a, 2b,
+  2c \& 2d): Instruction set reference, {A-Z}, 2016.
+
+\bibitem{sgx:v2:na}
+{SGX} protected memory limit in {SGX}, 2016.
+\newblock Platform and Technology Discussion, {Intel} Software Guard Extensions
+  ({Intel SGX}),
+  \url{https://software.intel.com/en-us/forums/intel-software-guard-extensions-intel-sgx/topic/670322}.
+
+\bibitem{sgx:attest:hasp13}
+I.~Anati, S.~Gueron, S.~P. Johnson, and V.~R. Scarlata.
+\newblock Innovative technology for {CPU} based attestation and sealing.
+\newblock In {\em HASP Workshop}, 2013.
+
+\bibitem{haven:tocs15}
+A.~Baumann, M.~Peinado, and G.~Hunt.
+\newblock Shielding applications from an untrusted cloud with {Haven}.
+\newblock {\em ACM TOCS}, 33(3), 2015.
+
+\bibitem{securekeeper:middleware16}
+S.~Brenner, C.~Wulf, M.~Lorenz, N.~Weichbrodt, D.~Goltzsche, C.~Fetzer,
+  P.~Pietzuch, and R.~Kapitza.
+\newblock Securekeeper: {Confidential} zookeeper using {Intel} {SGX}.
+\newblock In {\em ACM Middleware}, 2016.
+
+\bibitem{davenportford:vbtn}
+S.~Davenport and R.~Ford.
+\newblock {SGX}: {The} good, the bad and the downright ugly.
+\newblock In {\em Virus Bulletin}, January 2014.
+\newblock
+  \url{https://www.virusbtn.com/virusbulletin/archive/2014/01/vb201401-SGX}.
+
+\bibitem{elfsharedlib}
+U.~Drepper.
+\newblock How to write shared libraries.
+\newblock
+  \url{https://software.intel.com/sites/default/files/m/a/1/e/dsohowto.pdf}.
+
+\bibitem{xfi:osdi06}
+U.~Erlingsson, M.~Abadi, M.~Vrable, M.~Budiu, and G.~C. Necula.
+\newblock {XFI}: software guards for system address spaces.
+\newblock In {\em ACM/USENIX OSDI}, 2006.
+
+\bibitem{stackcanaries:handbookofinfosec}
+U.~Erlingsson, Y.~Younan, and F.~Piessens.
+\newblock Low-level software security by example.
+\newblock In {\em Handbook of Information and Communication Security}, 2010.
+
+\bibitem{moat:ccs15}
+R.~Sinha \etal.
+\newblock Moat: {Verifying} confidentiality of enclave programs.
+\newblock In {\em ACM CCS}, 2015.
+
+\bibitem{sgx:instructions:hasp13}
+M.~Hoekstra, R.~Lal, P.~Pappachan, V.~Phegade, and J.~Del Cuvillo.
+\newblock Using innovative instructions to create trustworthy software
+  solutions.
+\newblock In {\em HASP Workshop}, 2013.
+
+\bibitem{hunt:osdi16}
+T.~Hunt, Z.~Zhu, Y.~Xu, S.~Peter, and E.~Witchel.
+\newblock Ryoan: {A} distributed sandbox for untrusted computation on secret
+  data.
+\newblock In {\em ACM/USENIX OSDI}, 2016.
+
+\bibitem{intelsgx:sep13}
+Intel.
+\newblock {Intel Software Guard Extensions} programming reference (rev.~1)
+  \#329298-001{US}, September 2013.
+
+\bibitem{intelsgx:oct14}
+Intel.
+\newblock {Intel Software Guard Extensions} programming reference (rev.~2)
+  \#329298-002{US}, October 2014.
+
+\bibitem{opensgx:ndss16}
+P.~Jain, S.~Desai, S.~Kim, M.~Shih, J.~Kee, C.~Choi, Y.~Shin, T.~Kim, B.~Kang,
+  and D.~Han.
+\newblock {OpenSGX}: {An} open platform for {SGX} research.
+\newblock In {\em NDSS}, 2016.
+
+\bibitem{minibox:atc14}
+Y.~Li, J.~McCune, J.~Newsome, A.~Perrig, B.~Baker, and W.~Drewry.
+\newblock Minibox: A two-way sandbox for x86 native code.
+\newblock In {\em USENIX Annual Tech. Conf.}, 2014.
+
+\bibitem{dynmgmt:hasp16}
+F.~McKeen, I.~Alexandrovich, I.~Anati, D.~Caspi, S.~Johnson, R.~Leslie-Hurd,
+  and C.~Rozas.
+\newblock Intel software guard extensions ({Intel SGX}) support for dynamic
+  memory management inside an enclave.
+\newblock In {\em HASP Workshop}, 2016.
+
+\bibitem{sgx:isolated:hasp13}
+F.~McKeen, I.~Alexandrovich, A.~Berenzon, C.~V. Rozas, H.~Shafi, V.~Shanhbogue,
+  and U.~R. Shevegaonkar.
+\newblock Innovative instructions and software model for isolated execution.
+\newblock In {\em HASP Workshop}, 2013.
+
+\bibitem{softbound:pldi09}
+S.~Nagarakatte, J.~Zhao, M.~M.~K. Martin, and S.~Zdancewic.
+\newblock Softbound: Highly compatible and complete spatial memory safety for
+  {C}.
+\newblock In {\em PLDI}, 2009.
+
+\bibitem{mip:ccs13}
+B.~Niu and G.~Tan.
+\newblock Monitor integrity protection with space efficiency and separate
+  compilation.
+\newblock In {\em ACM CCS}, 2013.
+
+\bibitem{machinelearningsgx:usenixsec16}
+O.~Ohrimenko, F.~Schuster, C.~Fournet, A.~Mehta, S.~Nowozin, K.~Vaswani, and
+  M.~Costa.
+\newblock Oblivious multi-party machine learning on trusted processors.
+\newblock In {\em USENIX Security Symposium}, 2016.
+
+\bibitem{llvmforwardedgecfi}
+T.~Roeder.
+\newblock {LLVM} - {Add} forward-edge control-flow integrity support.
+\newblock \url{https://reviews.llvm.org/D4167}.
+
+\bibitem{binaryanalysis:AAAI08}
+N.~Rosenblum, X.~Zhu, B.~Miller, and K.~Hunt.
+\newblock Learning to analyze binary computer code.
+\newblock In {\em AAAI Conference}, 2008.
+
+\bibitem{rutkowska:aug13}
+J.~Rutkowska.
+\newblock Thoughts on {Intel's} upcoming {Software Guard Extensions} (part 1),
+  August 2013.
+\newblock
+  \url{http://theinvisiblethings.blogspot.com/2013/08/thoughts-on-intelsupcoming-software.html}.
+
+\bibitem{rutkowska:sep13}
+J.~Rutkowska.
+\newblock Thoughts on {Intel's} upcoming {Software Guard Extensions} (part 2),
+  September 2013.
+\newblock
+  \url{http://theinvisiblethings.blogspot.com/2013/09/thoughts-on-intelsupcoming-software.html}.
+
+\bibitem{sailer:tpm:security04}
+R.~Sailer, X.~Zhang, T.~Jaeger, and L.~van Doorn.
+\newblock Design and implementation of a {TCG}-based integrity measurement
+  architecture.
+\newblock In {\em USENIX Security}, 2004.
+
+\bibitem{vc3:oak15}
+F.~Schuster, M.~Costa, C.~Fournet, C.~Gkantsidis, M.~Peinado, G.~Mainar-Ruiz,
+  and M.~Russinovich.
+\newblock {VC3}: {Trustworthy} data analytics in the cloud using {SGX}.
+\newblock In {\em IEEE S\&P}, 2015.
+
+\bibitem{elfsystemV}
+SCO.
+\newblock System v application binary interface, intel386 architecture
+  processor supplement.
+\newblock \url{http://www.sco.com/developers/devspecs/abi386-4.pdf}.
+
+\bibitem{google:asan:usenix:2012}
+K.~Serebryany, D.~Bruening, A.~Potapenko, and D.~Vyukov.
+\newblock Addresssanitizer: A fast address sanity checker.
+\newblock In {\em USENIX Annual Tech. Conf.}, 2012.
+
+\bibitem{snfv:sdn16}
+M.~Shih, M.~Kumar, T.~Kim, and A.~Gavrilovska.
+\newblock {S-NFV}: {Securing} {NFV} states by using {SGX}.
+\newblock In {\em 1st ACM Intl. Wkshp. on Security in SDN and NFV}, 2016.
+
+\bibitem{functionrecognizing:usenixsec15}
+E.~Chul~Richard Shin, D.~Song, and R.~Moazzezi.
+\newblock Recognizing functions in binaries with neural networks.
+\newblock In {\em USENIX Security Symposium}, 2015.
+
+\bibitem{moatplus:pldi16}
+R.~Sinha, M.~Costa, A.~Lal, N.~Lopes, S.~Rajamani, S.~Seshia, and K.~Vaswani.
+\newblock Design \& verification methodology for secure isolated regions.
+\newblock In {\em PLDI}, 2016.
+
+\bibitem{edgecfi:sec14}
+C.~Tice, T.~Roeder, P.~Collingbourne, S.~Checkoway, U.~Erlingsson, L.~Lozano,
+  and G.~Pike.
+\newblock {Enforcing} forward-edge control-flow integrity in {GCC} and {LLVM}.
+\newblock In {\em USENIX Security Symposium}, 2014.
+
+\bibitem{hypersafe:oak10}
+Z.~Wang and X.~Jiang.
+\newblock Hypersafe: A lightweight approach to provide lifetime hypervisor
+  control-flow integrity.
+\newblock In {\em IEEE S\&P}, 2010.
+
+\bibitem{asyncshock:esorics16}
+N.~Weichbrodt, A.~Kurmus, P.~Pietzuch, and R.~Kapitza.
+\newblock {AsyncShock}: {Exploiting} synchronization bugs in {Intel} {SGX}
+  enclaves.
+\newblock In {\em ESORICS}, 2016.
+
+\bibitem{dynalloc:hasp16}
+B.~Xing, M.~Shanahan, and R.~Leslie-Hurd.
+\newblock Intel software guard extensions ({Intel SGX}) software support for
+  dynamic memory allocation inside an enclave.
+\newblock In {\em HASP Workshop}, 2016.
+
+\bibitem{controlledchannel:oak15}
+Y.~Xu, W.~Cui, and M.~Peinado.
+\newblock Controlled-channel attacks: {Deterministic} side channels for
+  untrusted operating systems.
+\newblock In {\em IEEE S\&P}, 2015.
+
+\bibitem{nativeclient:oak09}
+B.~Yee, D.~Sehr, G.~Dardyk, J.~Bradley Chen, R.~Muth, T.~Ormandy, S.~Okasaka,
+  N.~Narula, and N.~Fullagar.
+\newblock Native client: A sandbox for portable, untrusted x86 native code.
+\newblock In {\em IEEE S\&P}, 2009.
+
+\bibitem{linuxsdk:june16}
+Y.~Yu.
+\newblock Intel software guard extensions for {Linux} {OS}, 2016.
+\newblock \url{https://01.org/intel-softwareguard-eXtensions}.
+
+\end{thebibliography}

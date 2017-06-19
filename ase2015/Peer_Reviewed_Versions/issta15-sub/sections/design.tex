@@ -1,0 +1,149 @@
+\section{Design of \TOOL}
+\label{section:design}
+
+\tool\ aims to find bugs in Xamarin by generating apps, executing these apps on
+Windows Phone and Android, and looking for inconsistencies in them. Thus,
+\tool's design consists of two parts, the test case generator and the
+inconsistency checker.
+
+\myparagraph{Test Case Generation}
+%
+\tool\ generates test cases that exercise the programming API used by Windows
+Phone developers. As illustrated in \figref{section:example}, each test case is
+a sequence of method calls to this API. The arguments to these calls are either
+values with primitive data types, or references to objects constructed and
+modified by method calls appearing earlier in the sequence. The main challenge
+is to generate meaningful method sequences that are also effective, \ie~the
+test case generator should be able to elicit error cases in Xamarin without
+generating too many test cases.
+
+This problem has been investigated in the past in the context of generating
+unit tests for object-oriented programs, and tools such as
+JCrasher~\cite{jcrasher}
+and Randoop~\cite{randoop:icse07} implement such test case generation. In
+particular, Randoop uses a \textit{feedback-directed approach} to random test
+generation and is the basis for \tool's test generator as well. We now briefly
+describe Randoop's (and therefore \tool's) approach to test generation.
+
+The test generator accepts as input a list of classes to be tested, a set of
+filters and contracts (which are sanity checks to be performed), and a timeout.
+Intuitively, the test generation algorithm iteratively ``grows'' method
+sequences from previously-generated shorter sequences. Suppose that the test
+generator has already generated a set of method sequences as valid test cases.
+During each iteration, the test generator picks a method \code{m(T$_1$,
+$\ldots$, T$_n$)} at random from the list of classes provided to it as input,
+and ``extends'' the existing method sequences with a call to \code{m} (\eg~one
+way to ``extend'' is to append \code{m} to the end of the sequence). If the
+parameters of \code{m} are all of primitive type, then the test generator
+randomly selects the values of these parameters from a pool of acceptable
+values. If the parameter is a reference to an object, then the test generator
+uses an object of suitable type created by a method in the sequence that
+\code{m} just extended (or passes a \textsc{null} reference). \tool\ then wraps
+this method sequence with template code to serialize data structures and to
+catch exceptions, as shown in the examples from \sectref{section:example}, to
+produce the test cases.
+
+The test generator then executes the newly-generated test sequences looking for
+violations of filters and contracts. These are sanity checks that look for
+common error cases, such as test cases that throw an exception, or those that
+violate certain invariants (\eg~\code{o.equals(o)} not returning \textsc{true}).
+Test sequences that violate these sanity checks are discarded, and the
+remaining test cases are added to the set of valid test cases, to be extended
+in future iterations.  This process continues till the specified timeout has
+expired.  This iterative approach is key to generating effective test cases. It
+ensures that every prefix of a valid test sequence is also valid, and that test
+sequences that violate simple sanity conditions (\eg~those that throw an
+exception) are never extended.
+
+\myparagraph{Serializing State and Checking Inconsistencies}
+%
+For the test cases generated using the approach above, \tool\ produces a pair
+of apps for Windows Phone and Android. It executes them atop these platforms to
+observe inconsistent behavior. We now discuss the design of the serializer,
+which helps identify inconsistencies when both apps return \textsc{success},
+\ie~the first case in \tabref{table:inconsistency-sources}. The other two cases
+are straightforward and we do not discuss them further.
+
+The serializer recursively traverses object references to create serialized
+representations. Intuitively, a serialized representation is a set of
+(\textsf{key}, \textsf{value}) pairs. The \textsf{key} is the name of a public
+field of the object. For fields of primitive type (\eg~\code{bool}, \code{int},
+\code{String}), the \textsf{value} is simply the actual value of the field. For
+fields that are themselves object references, the value is a serialized
+representation of that object. The example below shows the serialized
+representation of a linked list with two entries. The \code{data} field of the
+entries store \code{1} and \code{2}, respectively.
+%
+$$
+\{
+	(``\code{data}", \code{1}),
+	(``\code{next}", \{(``\code{data}", \code{2}), 
+	                   (``\code{next}", \textsc{null})
+	                 \})
+\}
+$$
+
+\tool's serializer uses the \code{Json.NET}~\cite{jsonnet} library, which
+optionally supports the ability to serialize cyclic data structures. It does so
+by keeping track of object references using an additional identifier. However,
+in our experience, the random test cases that we generate do not produce cyclic
+heap data structures. We therefore did not enable support for serializing
+cyclic data structures in our prototype, and the serialized object
+representations are tree-structured as a result. Note that in the unlikely case
+that a test case does produce a cyclic data structure, our serializer would
+infinitely loop---a situation we have not encountered to date in our
+experiments.
+
+\tool\ identifies inconsistencies by comparing serialized representations of
+objects on the home and target platforms. Comparison proceeds recursively in a
+bottom-up fashion. All the ({\textsf{key}, \textsf{value}) pairs storing
+primitive types must match, and the tree-structure of the serialized
+representation must be the same, \ie~the same \textsf{key}s on both platforms
+at each level of the tree. Any mismatches indicate inconsistent state. In most
+of the bugs that we found, the mismatches were because the \textsf{value}s
+diverged (\eg~the complex number example in \figref{figure:inconsist-eg}).
+However, we also found cases where the fields in the objects were different on
+Windows Phone and Android because a field that was declared to be \code{public}
+on Windows Phone was a \code{private} field in Android, and therefore not
+listed in the serialized representation. 
+
+As previously discussed, the feedback-directed approach to test case generation
+does not extend any method sequences that violate its filters and contracts,
+\eg~sequences that throw an exception when executed. While Randoop was
+originally designed for unit-testing object-oriented programs, \tool\ extends
+it for cross-platform differential testing. For practical reasons described in
+\sectref{section:implementation}, \tool\ first executes the test case generator
+on one platform, where it uses the iterative approach to output test cases.  It
+then executes these test cases on the target platform (Android). Thus, \tool's
+test cases also preserve the property that only non-exception-generating test
+cases are extended in the iterative process. 
+
+However, because \tool\ generates all the test cases on the home platform
+before executing them on the target platform, even those test cases that return
+\textsc{success} but produce inconsistent serialized state across the two
+platforms are extended during test generation. As a result, it is possible that
+multiple test cases produced by \tool\ may report the same inconsistency.
+
+\myparagraph{Discussion}
+%
+Differential testing offers an attractive property. If a test case is executed
+on two API implementations with the same initial state, any inconsistency in
+the final states indicates a problem. However, in cross-platform testing, it is
+possible that the initial states are not identical, and that API calls that
+rely on platform-specific functionality may not behave identically on the home
+and target platforms.
+
+For example, consider a test case that reads the time on the underlying
+platform and stores it in a program variable. Unless the clocks on the home and
+target platforms are synchronized, the value of the variable reported in the
+serializer's log will be different.  As another example, it is possible for a
+test case that obtains the \code{HashCode} of an object to return different
+values on the home and target platforms even if the serialized representations
+of the object are the same on both platforms. In this case, the variable that
+stores the returned \code{HashCode} will have different values.  In both these
+cases, \tool\ will falsely flag the test case as producing inconsistent
+behavior.  We have observed a few such false positives in our experimental
+evaluation. However, for the most part, we have observed that inconsistencies
+found by \tool's test cases are indeed indicative of a problem in the way that
+Xamarin handles the semantics of the translation between the SDKs (or in the
+SDKs themselves).

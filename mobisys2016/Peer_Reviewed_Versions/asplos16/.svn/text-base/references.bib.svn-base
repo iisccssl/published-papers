@@ -1,0 +1,599 @@
+@misc{TODO,
+	title = "\todo{VG}{Citation to be filled}"
+}
+
+@string{acsac = "Annual Computer Security Applications Conference"}
+
+@string{lastaccessed = {}} 
+
+@string{usenixsec = {USENIX Security Symposium}}
+
+@string{ndss = "Network \& Distributed Systems Security Symposium"}
+
+@string{esorics = "European Symposium on Research in Computer Security"}
+
+@string{fc = "International Conference on Financial Cryptography and Data Security"}
+
+@string{asplos = "ACM International Conference on Architectural Support for Programming
+Languages and Operating Systems"}
+
+@string{acmccs = "ACM Conference on Computer and Communications Security"}
+
+@string{hotmobile = "ACM HotMobile"}
+
+@string{sosp = "ACM Symposium on Operating Systems Principles"}
+
+@string{mobisys = "ACM MobiSys"}
+
+@string{oakland = "IEEE Symposium on Security \& Privacy" }
+
+@string{eurosys = "European Symposium on Computer Systems"}
+
+@string{hotos = "USENIX Workshop on Hot Topics in Operating Systems"}
+
+@string{icac = "International Conference on Autonomic Computing"}
+
+@string{most = "IEEE Mobile Security Technologies Workshop" }
+
+@string{asiaccs = "ACM Symposium on Information, Computer and Communications
+Security"}
+
+@string{isc = "Information Security Conference"}
+
+@string{securecomm = "International Conference on Security and Privacy in
+Communication Networks"}
+
+@string{osdi = "USENIX Symposium on Operating Systems Design and Implementation"}
+
+@string{hotsec = "USENIX Workshop on Hot Topics in Security" }
+
+@string{ubicomp = "ACM International Joint Conference on Pervasive and Ubiquitous Computing"}
+
+@string{soups = "ACM Symposium on Usable Privacy and Security"}
+
+@misc{ida-pro,
+	title = "Hex-Rays Software: About {IDA}",
+	note = "\url{https://www.hex-rays.com/products/ida/index.shtml}"
+}
+
+@inproceedings{placeavoider:ndss14,
+	author = "R. Templeman and M. Korayem and D. Crandall and A. Kapadia",
+	title = "{PlaceAvoider}: {Steering} First-Person Cameras away from Sensitive
+	Spaces",
+	booktitle = ndss,
+	year = 2014
+}
+
+@inproceedings{taintdroid:osdi10,
+	author = "W. Enck and P. Gilbert and B-G. Chun and L. P. Cox and J. Jung and P. McDaniel and A. N. Sheth",
+	title = "{TaintDroid}: {An} Information-Flow Tracking System for Realtime
+	Privacy Monitoring on Smartphones",
+	booktitle = osdi,
+	year = 2010
+}
+
+@inproceedings{stowaway:ccs11,
+	author = "A. Felt and E. Chin and K. Greenwood and D. Wagner",
+	title = "Android Permissions Demystified",
+	booktitle = acmccs,
+	year = 2011
+}
+
+@inproceedings{pscout:ccs12,
+	author = "K. Au and B. Zhou and J. Huang and D. Lie",
+	title = "{PScout}: {Analyzing} the {Android} Permission Specification",
+	booktitle = acmccs,
+	year = 2012
+}
+
+@inproceedings{ep:ubicomp12,
+	author = "J. Lin and S. Amini and J. Hong and N. Sadeh and J. Lindqvist and
+	J. Zhang",
+	title = "Expectation and purpose: {Understanding} users' mental models of
+	mobile app privacy through crowdsourcing",
+	booktitle = ubicomp,
+	year = 2012
+}
+
+@inproceedings{felt:soups12,
+	author = "A. Felt and E. Ha and S. Egelman and A. Haney and E. Chin and D. Wagner",
+	title = "Android Permissions: {User} Attention, Comprehension, and Behavior",
+	booktitle = soups,
+	year = 2012
+}
+
+@inproceedings{soundcomber:ndss11,
+	author = "R. Schlegel and K. Zhang and X. Zhou and M. Intwala and A. Kapadia and X. Wang",
+	title = "{Soundcomber: A} Stealthy and Context-Aware Sound Trojan for Smartphones",
+	booktitle = ndss,
+	year = 2011
+}
+
+@inproceedings{placeraider:ndss13,
+	author = "R. Templeman and Z. Rahman and D. Crandall and A. Kapadia",
+	title = "{PlaceRaider}: {Virtual} Theft in Physical Spaces with Smartphones",
+	booktitle = ndss,
+	year = 2013
+}
+
+@inproceedings{howtoask:hotsec12,
+	author = "A. Felt and S. Egelman and M. Finifter and D. Akhawe and D. Wagner",
+	title = "How to Ask For Permission",
+	booktitle = hotsec,
+	year = 2012
+}
+
+@inproceedings{mockdroid:hotmobile10,
+	title = "{MockDroid}: {Trading} privacy for application functionality on smartphones",
+	author = "A. Beresford and A. Rice and N. Skehin and R. Sohan",
+	booktitle = hotmobile,
+	year = 2010
+}
+
+@inproceedings{ar:sec13,
+	author = "S. Jana and D. Molnar and A. Moshchuk and A. Dunn and B. Livshits and H. J. Wang and E. Ofek",
+	title = "Enabling Fine-Grained Permissions for Augmented Reality Applications With Recognizers",
+	booktitle = usenixsec,
+	year = 2013
+}
+
+@inproceedings{darkly:oak13,
+	author = "S. Jana and A. Narayanan and V. Shmatikov",
+	title = "A Scanner Darkly: {Protecting} User Privacy from Perceptual
+	Applications",
+	booktitle = oakland,
+	year = 2013
+}
+
+@inproceedings{mocfi:ndss12,
+	author = "L. Davi and A. Dmitrienko and M. Egele and T. Fischer and
+	T. Holz and R. Hund and S. Nurnberger and A-R. Sadeghi",
+	title = "{MoCFI}: {Mitigating} Control-Flow Attacks on Smartphones",
+	booktitle = ndss,
+	year = 2012
+}
+
+@inproceedings{airbag:ndss14,
+	author = "C. Wu and Y. Zhou and K. Patel and Z. Liang and X. Jiang",
+	title = "{AirBag}: {Boosting} Smartphone Resistance to Malware Infection",
+	booktitle = ndss,
+	year = 2014
+}
+
+@inproceedings{retro:mobisys13,
+	author = "B. Davis and H. Chen",
+	title = "RetroSkeleton: {Retrofitting Android} Apps",
+	booktitle = mobisys,
+	year = 2013
+}
+
+@inproceedings{flaskdroid:sec13,
+	title = "Flexible and Fine-Grained Mandatory Access Control on {Android} for Diverse Security and Privacy Policies",
+	author = "S. Bugiel and S. Hauser and A.-R. Sadeghi",
+	booktitle = usenixsec,
+	year = 2013
+}
+
+@inproceedings{seandroid:ndss13,
+	title = "Security Enhanced {Android}: {Bringing} Flexible {MAC} to {Android}",
+	author = "S. Smalley and R. Craig",
+	booktitle = ndss,
+	year = 2013
+}
+
+@inproceedings{crepe:isc10,
+	title = "{CRePE}: {Context}-related policy enforcement for {Android}",
+	author = "M. Conti and V. T. N. Nguyen and B. Crispo",
+	booktitle = isc,
+	year = 2010
+}
+
+@inproceedings{conucon:securecomm10,
+	title = "Context-aware Usage Control for {Android}",
+	author = "G. Bai and L. Gu and T. Feng and Y. Guo and X. Chen",
+	booktitle = securecomm,
+	year = 2010
+}
+
+@inproceedings{saint:acsac09,
+	booktitle = acsac,
+	year =2009,
+	author = "M. Ongtang and S. McLaughlin and W. Enck and P. McDaniel",
+	title = "Semantically-rich Application-centric security in {Android}",
+}
+
+@inproceedings{conxsense:asiaccs14,
+	author = "M. Miettinen and S. Heuser and W. Kronz and A.-R. Sadeghi and N. Asokan",
+	title = "{ConXsense} -- {Context} Profiling and Classification for Context-aware Access Control",
+	booktitle = asiaccs,
+	year = 2014,
+}
+
+@inproceedings{lime,
+	author = "A. P. Heriyanto",
+	title = "Procedures and tools for acquisition and analysis of volatile memory
+	on {Android} smartphones",
+	booktitle = "11th Australian Digital Forensics Conference",
+	year = "2013"
+}
+
+@article{dmd,
+	author = "J. Sylve and A. Case and L. Marziale and G. G. Richard",
+	title = "Acquisition and analysis of Volatile Memory from {Android}
+	Smartphones",
+	journal  = "Digital Investigation",
+	volume = 8,
+	number = "3-4",
+	year = 2012
+}
+
+@misc{ddms,
+	title = "Using {DDMS} for debugging",
+	author = "Google",
+	note = "\url{http://developer.android.com/tools/debugging/ddms.html}" # lastaccessed
+}
+
+@misc{recoverymode,
+	title = "Boot into Recovery Mode for Rooted and Un-rooted {Android} devices",
+	author = "A. Stevenson",
+	note = "\url{http://androidflagship.com/605-enter-recovery-mode-rooted-un-rooted-android}" # lastaccessed
+}
+
+@misc{mellanox,
+	author = "Mellanox Technologies {Inc.}",
+	title = "Introduction to {InfiniBand}",
+	month = "September",
+	year = 2014,
+	note = "\url{http://www.mellanox.com/blog/2014/09/introduction-to-infiniband}" # lastaccessed
+}
+
+@misc{infiniband,
+	author = "The {InfiniBand} Trade Association",
+	title = "The {InfiniBand}$^{\rm \uppercase{TM}}$ Architecture Specification",
+	note = "\url{http://www.infinibandta.org}" # lastaccessed
+
+}
+
+@inproceedings{sprobes:most14,
+	author = "X. Ge and H. Vijayakumar and T. Jaeger",
+	title = "\textsc{Sprobes}: {Enforcing} Kernel Code Integrity on the {TrustZone} Architecture",
+	booktitle = most,
+	year = 2014
+}
+
+@inproceedings{tlr:asplos14,
+	author = "N. Santos and H. Raj and S. Saroiu and A. Wolman",
+	title = "Using {ARM} {TrustZone} to Build a {Trusted Language Runtime} for
+	Mobile Applications",
+	booktitle = asplos,
+	year = 2014
+}
+
+@inproceedings{obc:asiaccs09,
+	author = "K. Kostiainen and J. Ekberg and N. Asokan and A. Rantala",
+	title = "On-board Credentials with Open Provisioning",
+	booktitle = asiaccs,
+	year = 2009
+}
+
+@inproceedings{tenor:mobisys12,
+	author = "H. Liu and S. Saroiu and A. Wolman and H. Raj",
+	title = "Software Abstractions for Trusted Sensors",
+	booktitle = mobisys,
+	year = 2012
+}
+
+@misc{proxama,
+	author = "Proxama",
+	title = "{TapPoint}\textregistered\ and {Digital Enablement Platform (DEP)}, enabling mobile
+	proximity commerce",
+	note = "\url{http://www.proxama.com/platform}" # lastaccessed
+}
+
+@misc{armtz,
+	title = "{ARM} Security Technology -- {Building} a Secure System using
+	{TrustZone} Technology",
+	note = "{ARM} Technical Whitepaper.
+	\url{http://infocenter.arm.com/help/topic/com.arm.doc.prd29-genc-009492c/PRD29-GENC-009492C_trustzone_security_whitepaper.pdf}" # lastaccessed,
+	year = 2009
+}
+
+
+@misc{polarssl,
+	title = "{PolarSSL}: {Straightforward}, Secure Communication",
+	note = "\url{https://polarssl.org}" # lastaccessed,
+}
+
+@article{shadow:tocs06,
+	author = "M. M. Swift and M. Annamalai and B. N. Bershad and H. N. Levy",
+	title = "Recovering Device Drivers",
+	journal = "ACM Transactions on Computer Systems",
+	volume = 24,
+	number = 4,
+	year = 2006
+}
+
+@inproceedings{chennoble:hotos01,
+  author = "P. M. Chen and B. Noble",
+  title = "When Virtual is Better than Real",
+  booktitle = hotos,
+  year = 2001
+}
+
+@inproceedings{vmi:ndss03,
+ author = "T. Garfinkel and M. Rosenblum",
+ title = "A Virtual Machine Introspection Based Architecture for Intrusion Detection",
+ booktitle = ndss,
+ year = "2003",
+}
+
+@inproceedings{nova:eurosys09,
+	author={U. Steinberg and B. Kauer},
+	title = "{NOVA}: {A} Microhypervisor-Based Secure Virtualization
+	Architecture",
+	booktitle = eurosys,
+	year = {2010},
+}
+}
+
+@inproceedings{copilot:sec04,
+	author    = {N. L. Petroni  and T. Fraser and J. Molina and W. A. Arbaugh},
+  title     = "{Copilot}: {A} Coprocessor-based Kernel Runtime Integrity Monitor",
+  booktitle = usenixsec,
+  year      = {2004},
+}
+
+@inproceedings{backdoor:icac04,
+    author = {A. Bohra and I. Neamtiu and P. Gallard and F. Sultan and L. Iftode},
+    title = {Remote Repair of Operating System State Using Backdoors},
+    booktitle = icac,
+    year = {2004},
+}
+
+@inproceedings{hotmobile10,
+	author = "J. Bickford and R. O'Hare and A. Baliga and V. Ganapathy and L.
+	Iftode",
+	title = "Rootkits on Smart Phones: {Attacks}, Implications and Opportunities",
+	booktitle = hotmobile,
+	year = 2010
+}
+
+@inproceedings{mobisys11,
+	author = "J. Bickford and H. A. Lagar-Cavilla and A. Varshavsky and V.
+	Ganapathy and L. Iftode",
+	title = "Security versus Energy Tradeoffs in Host-based Detection of Mobile
+	Malware",
+	booktitle = mobisys,
+	year = 2011
+}
+
+@inproceedings{specmon:usenix06,
+	author = "N. Petroni and T. Fraser and A. Walters and W. A. Arbaugh",
+	title = "An architecture for specification-based detection of semantic
+		integrity violations in kernel dynamic data",
+	booktitle = usenixsec,
+	year = 2006
+}
+
+@inproceedings{sbcfi:ccs07,
+	author = "N. Petroni and M. Hicks",
+	title = "Automated Detection of Persistent Kernel Control-flow Attacks",
+	booktitle = acmccs,
+	year = 2007
+}
+
+@inproceedings{shadows:oakland07,
+	author = "A. Baliga and P. Kamat and L. Iftode",
+	title = "Lurking in the Shadows: {Identifying} Systemic Threats to Kernel
+	Data",
+	booktitle = oakland,
+	year = 2007
+}
+
+@article{gib:tdsc11,
+	author = "A. Baliga and V. Ganapathy and L. Iftode",
+	title = "Detecting Kernel-level Rootkits using Data Structure Invariants",
+	journal = "IEEE Transactions on Dependable and Secure Computing",
+	volume = 8,
+	number = 5,
+	year = 2011
+}
+
+@inproceedings{kop:ccs09,
+	author = "M. Carbone and W. Cui and L. Lu and W. Lee and M. Peinado and X.
+	Jiang",
+	title = "Mapping Kernel Objects to Enable Systematic Integrity Checking",
+	booktitle = acmccs,
+	year = 2009
+}
+
+@inproceedings{kop:sec12,
+	author = "W. Cui and M. Peinado and Z. Xu and E. Chan",
+	title = "Tracking Rootkit Footprings with a Practical Memory Analysis
+	System",
+	booktitle = usenixsec,
+	year = 2012
+}
+
+@misc{strider:tr14,
+	author = "K. Saur and M. Hicks and J. S. Foster",
+	title = "{C-Strider}: {Type-aware} Heap Traversal for {C}",
+	note = "University of Maryland Technical Report",
+	month = "May",
+	year = 2014
+}
+
+@inproceedings{trustdump:esorics14,
+	title = "{TrustDump}: {Reliable} Memory Acquisition on Smartphones",
+	author = "H. Sun and K. Sun and Y. Wang and J. Jing and S. Jajodia",
+	booktitle = esorics,
+	year = 2014
+}
+
+@inproceedings{deepdroid:ndss15,
+	author = "X. Wang and K. Sun and Y. Wang and J. Jing",
+	title = "{DeepDroid}: {Dyanmically} Enforcing Enterprise Policy on {Android}
+	Device",
+	booktitle = ndss,
+	year = 2015
+}
+
+@inproceedings{knox:ccs14,
+	title = "Hypervision Across {Worlds}: {Real-time} Kernel Protection from the
+	{ARM} {TrustZone} Secure World",
+	author = "A. Azab and P. Ning and J. Shah and Q. Chen and R. Bhutkar and G.
+	Ganesh and J. Ma and W. Shen",
+	booktitle = acmccs,
+	year = 2014
+}
+
+@inproceedings{url:examcheating,
+  author = "N. Anderson and V. Strauss",
+  title = "Cheating concerns force delay in {SAT} scores for {South Koreans} 
+  and {Chinese}",
+  booktitle = "Washington Post",
+  month = "October 30, ",
+  year = 2014,
+}
+
+@inproceedings{url:glassban,
+  author = "M. McGee",
+  title = "{New} Website Tracks ``{Glasshole-Free Zones},''
+  Businesses That Have Banned {Google Glass}",
+	booktitle = "Glass Alamanac (\url{http://glassalmanac.com})",
+  month = "March",
+  year = "2014",
+}
+
+@article{conficker:tifs12,
+	author = "S. Shin and G. Gu and N. Reddy and C. Lee",
+	title = "A Large-Scale Empirical Study of {Conficker}",
+	journal = "IEEE Transactions on Information Forensics and Security",
+	volume = 7,
+	number = 2,
+	pages = "676--690",
+	year = 2012
+}
+
+@inproceedings{smartwatch:fc14,
+  author = "A. Migicovsky and Z. Durumeric and J. Ringenberg and J. Alex
+  Halderman",
+  title = "Outsmarting Proctors with Smartwatches: {A} Case study on Wearable
+  Computing Security",
+  booktitle = fc,
+  year = 2014
+}
+
+@inproceedings{kvmarm:asplos14,
+  author = "C. Dall and J. Nieh",
+  title = "{KVM/ARM}: The Design and Implementation of the {Linux} {ARM}
+  Hypervisor",
+  booktitle = asplos,
+  year = 2014
+}
+
+@inproceedings{cells:sosp11,
+  author = "J. Andrus and C. Dall and A. V. Hof and O. Laadan and J. Nieh",
+  title = "Cells: A Virtual Mobile Smartphone Architecture",
+  booktitle = sosp,
+  year = 2011
+}
+
+@inproceedings{cox:hotmobile07,
+  author = "L. P. Cox and P. M. Chen",
+  title = "Pocket Hypervisors: Opportunities and Challenges",
+  booktitle = hotmobile,
+  year = 2007
+}
+
+@misc{vmwareverizon,
+  title = "{VMware} News Release --- {Verizon Wireless} and {VMware} Securely Mix the Professional and Personal Mobile Experience with Dual Persona {Android} Devices",
+  note = "\url{http://www.vmware.com/company/news/releases/vmw-vmworld-emea-verizon-joint-10-19-11.html}" # lastaccessed,
+  month = "October",
+  year = 2011,
+}
+
+@inproceedings{sonydrm:sec06,
+	author = "J. A. Halderman and E. W. Felten",
+	title = "Lessons from the {Sony} {CD} {DRM} Episode",
+	booktitle = usenixsec,
+	year = 2006
+}
+
+@inproceedings{asm:sec14,
+	author = "S. Heuser and A. Nadkarni and W. Enck and A. R. Sadeghi",
+	title = "{ASM}: {A} Programmable Interface for Extending {Android} Security",
+	booktitle = usenixsec,
+	year = 2014
+}
+
+@INPROCEEDINGS{Covington2002,
+  author = {Covington, M.J. and Fogla, P. and Z. Zhan and Ahamad, M.},
+  title = {A context-aware security architecture for emerging applications},
+  booktitle = acsac,
+  year = {2002}
+}
+
+@ARTICLE{Damiani2007,
+  author = {Damiani, M. and Bertino, E. and Catania, B. and
+	Perlasca, P.},
+  title = {{GEO-RBAC: A spatially aware RBAC}},
+  journal = {ACM TISSEC},
+  year = {2007},
+  volume = {10},
+  number = {1},
+}
+
+@inproceedings{worlddriven:ccs14,
+	author = "F. Roesner and D. Molnar and A. Moshchuk and T. Kohno and H. J.
+	Wang",
+	title = "World-Driven Access Control for Continuous Sensing",
+	booktitle = acmccs,
+	year = "2014"
+}
+
+@inproceedings{blindspot:2009,
+	author = "S. Patel and J. Summet and K. Truong",
+	title = "BlindSpot: Creating Capture-Resistant Spaces",
+	booktitle = "Protecting Privacy in Video Surveillance",
+	year = 2009
+}
+
+@inproceedings{markit:upside14,
+	author = "N. Raval and A. Srivastava and K. Lebeck and L. P. Cox and A.
+	Machanavajjhala",
+	title = "{MarkIt}: {Privacy} Markers for Protecting Visual Secrets",
+	booktitle = ubicomp # " UPSIDE Workshop",
+	year = 2014
+}
+
+@inproceedings{sentry:asplos15,
+	author = "P. Colp and J. Zhang and J. Gleeson and S. Suneja and E. Lara and
+	H. Raj and S. Saroiu and A. Wolman",
+	title = "Protecting Data on Smartphones and Tablets from Memory Attacks",
+	booktitle = asplos,
+	year = 2015
+}
+
+@inproceedings{patagonix:sec08,
+	title = "Hypervisor support to detect covertly executing binaries",
+	author = "L. Litty and A. Lagar-Cavilla and D. Lie",
+	booktitle = usenixsec,
+	year = 2008
+}
+
+@inproceedings{secvisor:sosp07,
+	author = "A. Seshadri and M. Luk and N. Qu and A. Perrig",
+	title = "{SecVisor}: {A} Tiny Hypervisor to Provide Lifetime Kernel Code
+	Integrity for Commodity {OSes}",
+	booktitle = sosp,
+	year = 2007
+}
+
+@misc{jtag,
+	author = "Joint Test Action Group (JTAG)",
+	title = "{1149.1-2013} - {IEEE} {Standard} for Test Access Port and Boundary-scan
+	Architecture",
+	note = "\url{http://standards.ieee.org/findstds/standard/1149.1-2013.html}" # lastaccessed,
+	year = 2013
+}

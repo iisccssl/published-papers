@@ -1,0 +1,226 @@
+\section{Evaluation}
+\label{section:evaluation}
+\begin{table*}[t]
+\centering
+\footnotesize{
+\begin{tabular}{|l|c|}
+\hline
+ \bf Components                    & \bf Lines of code \\
+\hline
+Code Provisioning & 270\\
+\hline
+Loading and Relocating & 188\\
+\hline
+Checking Executables linked against musl-libc & 1949\\
+\hline
+Checking Executables Compiled with Stack Protection & 109\\
+\hline
+Checking Executables Containing Indirect Function-Call Checks & 129\\
+\hline
+Client's side program & 349\\
+\hline
+Musl-libc & 90728\\
+\hline
+Lib crypto (openssl) & 287985\\
+\hline
+Lib ssl (openssl) & 63566\\
+\hline
+Total & 453349\\
+\hline
+\end{tabular}
+}
+\caption{The lines of code for each component in the loader}
+{\label{table:tcb}}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\footnotesize{
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+ \bf Benchmarks                    & \bf Number of Instructions & \bf CPU cycles of  Disassembling & \bf CPU cycles of Policy Checking & \bf CPU cycles of Loading and Relocating\\
+\hline
+Nginx & 262228 & 694405019 & 1307411662 & 128696\\
+\hline
+401.bzip2 & 24112 & 34071240 & 148922245 & 4239\\
+\hline
+Graph-500 & 100411 & 140307017 & 246669796 & 4582\\
+\hline
+429.mcf & 12903 & 18242127 & 123895553 & 4363\\
+\hline
+Memcached & 71437 & 137372517 & 489914732 & 8115\\
+\hline
+Netperf & 51403 & 90616563 & 367356878 & 18090\\
+\hline
+Otp-gen & 28125 & 42823024 & 198587525 & 5388\\
+\hline
+\end{tabular}
+}
+\caption{Overhead of the system when checking different benchmarks linked against musl-libc}{\label{table:checkinglinkedlib}}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\footnotesize{
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+ \bf Benchmarks                    & \bf Number of Instructions & \bf CPU Cycles of  Disassembling & \bf CPU Cycles of Policy Checking & \bf CPU Cycles of Loading and Relocating\\
+\hline
+Nginx & 271106 & 719360640 & 713772098 & 128662\\
+\hline
+401.bzip2 & 24226 & 34292136 & 1751276 & 4206\\
+\hline
+Graph-500 & 100488 & 140588361 & 195218892 & 4548\\
+\hline
+429.mcf & 12985 & 18288921 & 31459881 & 4330\\
+\hline
+Memcached & 71677 & 137877497 & 325442403 & 8081\\
+\hline
+Netperf & 51868 & 91577335 & 183274713 & 18057\\
+
+Otp-gen & 28217 & 43053386 & 217302816 & 5355\\
+\hline
+\end{tabular}
+}
+\caption{Overhead of the system when checking different benchmarks compiled with stack protection}{\label{table:checkingstackprotection}}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\footnotesize{
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+ \bf Benchmarks                    & \bf Number of Instructions & \bf CPU Cycles of  Disassembling & \bf CPU Cycles of Policy Checking & \bf CPU Cycles of Loading and Relocating\\
+\hline
+Nginx & 267669 & 821734999 & 20843253 & 128668\\
+\hline
+401.bzip2 & 24201 & 34235817 & 1751276 & 4206\\
+\hline
+Graph-500 & 100424 & 140429738 & 7014913 & 4548\\
+\hline
+429.mcf & 12903 & 18242127 & 1177429 & 4330\\
+\hline
+Memcached & 71508 & 138231446 & 5301168 & 8081\\
+\hline
+Netperf & 51431 & 91161601 & 3775318 & 18057\\
+
+Otp-gen & 28132 & 42829680 & 2334847 & 5355\\
+\hline
+\end{tabular}
+}
+\caption{Overhead of the system when checking different benchmarks compiled with indirect function-call checks}{\label{table:checkingindirectfunccall}}
+\end{table*}
+In evaluating the system, our main goals were 
+\begin{itemize}
+\item To demonstrate various policy checks that are enabled by the system; and
+\item To understand the performance overhead introduced by the components of the system. 
+\end{itemize}
+Our setup consisted of running OpenSGX atop of Ubuntu 14.04 on a physical machine  equipped 
+with an Intel Core i5 CPU and 16GB of memory. We use clang and llvm version 3.6 to compile 
+and instrument many real world applications: nginx, memcached, netperf, otp-gen, graph-500 
+and two benchmarks 401.bzip2 and 429.mcf. In all experiments, all the applications are compiled 
+as position independent executables (PIEs) and are statically linked. Also, to keep the size of 
+the executables small all applications are linked against musl-libc ~\cite{musl-libc} instead 
+of GNU libc ~\cite{GNU libc}. \tabref{table:tcb} shows the lines of code of all the components of the
+loader.
+
+\subsection{Linked against a Required Library}
+When a cloud provider allows a client to run code on her platform, she often expects the client 
+to run some particular versions of the code, for example a version of the code with security updates. 
+As a result, there is a need for the cloud provider to checks if the client has provided a required 
+version of the code.
+
+We implemented a policy check that verifies whether an executable is linked against musl-libc 
+~\cite{musl-libc} version 1.0.5. To perform this check, we first generate the SHA-256 hashes of all 
+the functions of the required version of musl-libc. The policy check starts by iterating through the 
+instruction buffer and looking for all direct function calls. For each direct function call, the 
+policy check computes the target of the call and then looks up the symbol hash table to get the 
+function name of the target. If the target does not exist in the symbol hash table the check will 
+mark the function call as invalid; otherwise, it will computes the SHA-256 hash of all the 
+instructions starting from the beginning to the end of the function. To determine whether an 
+instruction is the end of the function, we rely on the fact that all the instructions after the 
+beginning of the function to the end of the function are not at the beginning of a function and 
+therefore do not exist in the symbol hash table. The policy check next compares the hash of the 
+function in the executable with its hash in musl-libc. If the two hashes do not match, the client 
+has not provided the required musl-libc; otherwise, the policy check continues with the next 
+iteration until it reaches the end of the instruction buffer.
+
+Similar to ~\cite{OpenSGX}, we assume that each SGX instruction takes 10K CPU cycles and non-SGX 
+instructions run at native speed within the enclave. We leverage OpenSGX's performance counter and 
+QEMU's instruction count ~\cite{http://wiki.qemu.org/download/qemu-doc.html} to count SGX and non-SGX 
+instructions. We calculate the CPU cycles of non-SGX instructions by measuring the instructions per 
+cycle by executing the loader natively without OpenSGX. ~\tabref{table:checkinglinkedlib} presents 
+the results of our experiments when running this policy check against different benchmarks.  
+
+\subsection{Compiled with Stack Protection}
+
+clang gives the option to emit extra code for checking potential buffer overflows similar to that of 
+GCC ~\cite{https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Optimize-Options.html}. Clang's 
+\textit{-fstack-protector} flag lets the compiler to add a guard variable when a function starts and 
+checks the variable when a function exits. For example, when compiling with the flag, the following 
+extra code will be emitted:
+\begin{lstlisting}
+19311: mov    %fs:0x28,%rax
+1931a: mov    %rax,(%rsp)
+
+193fe: mov    %fs:0x28,%rax
+19407: cmp    (%rsp),%rax
+1940b: jne    1941f
+1941f: callq  8d5bf <__stack_chk_fail>
+\end{lstlisting}
+
+The two instructions at addresses 193fe and 19407 check if the variable at the top of the stack is 
+the same as the variable at \%fs:0x28. If the values do not match, control will be transfered to the \_\_stack\_chk\_fail function.
+
+clang also provides \textit{-fstack-protector-all} which is similar to \textit{-fstack-protector} 
+except that all functions are protected. To check whether an executable is compiled with this flag, 
+the policy check iterates through the instruction buffer and identifies the start of a function using 
+the symbol hash table. Within each function, the policy check looks for instructions that affect the 
+stack's variables (mov \%rax,(\%rsp) in the above example). It then identifies the source operand of 
+the instruction (\%rax) and figures out the value of the source operand (mov \%fs:0x28,\%rax). As a 
+next step, it checks if the function contains a \textit{cmp} instruction with the source and destination 
+are the stack's variable and the previous source operand respectively. It also has to checks that right 
+before the \textit{cmp} instruction, there is an instruction that computes the original value of the 
+source operand (mov \%fs:0x28,\%rax). Finally, the policy looks for the \textit{jne} and \textit{callq} 
+instructions. It computes the target of the \textit{callq} instruction and checks the symbol hash table 
+to verify that the target corresponds to the the \_\_stack\_chk\_fail function.
+
+\tabref{table:checkingstackprotection} presents the results of our experiments when running this policy 
+check against different benchmarks.
+
+\subsection{Compiled with Indirect Function-Call Checks}
+Protecting applications against control flow attacks is one of the emerging concern due to the fact 
+that attackers have recently focused on taking advantage of heap-based corruptions to overwrite function 
+pointers to change the flow of a program. Control Flow Integrity (CFI)is a measure that guards against 
+these attacks by restricting the targets of indirect control transfers to a set of precomputed locations.
+
+We implemented a policy check to verify that executables are compiled with Indirect Function-Call Checks 
+(IFCC) ~\citep{Edge CFI}. IFCC protects indirect calls by generating for the targets of indirect calls. 
+It adds code at indirect call sites to ensure that function pointers point to a jump table entry. For 
+example, IFCC emits the following code for an indirect function call:
+
+\begin{lstlisting}
+1b459: lea  0x85c70(%rip),%rax #<__llvm_
+#jump_instr_table_0_1>
+1b460: sub  %eax,%ecx
+1b462: and  $0x1ff8,%rcx
+1b469: add  %rax,%rcx
+1b475: callq *%rcx
+\end{lstlisting}
+
+To instrument executables with these checks, we apply an IFCC patch ~\cite{https://reviews.llvm.org/D4167} 
+to LLVM and clang. To check whether an executable is compiled with FFCI checks, the policy first figures 
+out the range of the jump table by relying on the fact that all FFCI jump table entries have the following 
+format:
+\begin{lstlisting}
+a19d0 <__llvm_jump_instr_table_0_289>:
+a19d0:       jmpq   41090 <ngx_execute_proc>
+a19d5:       nopl   (%rax)
+\end{lstlisting}
+
+The policy check continues by iterating through the instruction buffer and looking for
+indirect function calls. It then verifies that before the indirect function calls, there is a sequence of \textit{lea} (lea 0x85c70(\%rip),\%rax in the above example), \textit{sub} (sub \%eax,\%ecx), \textit{and} 
+(and    \$0x1ff8,\%rcx) and \textit{add} (add \%rax,\%rcx). It then computes the target of the indirect call 
+and verifies that the target is within the range of the jump table.
+
+\tabref{table:checkingindirectfunccall} presents the results of our experiments when running this policy check against different benchmarks.

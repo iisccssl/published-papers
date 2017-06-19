@@ -1,0 +1,32 @@
+// ``stuff'' stores a formatted version
+//  of the client request
+int ChangeWindowProperty(ClientPtr *c,
+    WindowPtr * w, int mode)
+{
+  WindowPtr * win;
+  PropertyPtr * pProp;
+  err = LookupWin(&win,stuff->window, c);
+  rc =  LookupProperty(&pProp, win,
+  	stuff->property, c);
+  if (rc == BadMatch)
+    {/* Op 1*/
+     pProp->name = property;
+     pProp->format = format;
+     pProp->data = data;
+     pProp->size = len;
+    }
+  else
+    { /* Op 2 */}
+      if (mode == REPLACE)
+       { /* Op 2.1 */
+         pProp->data = data;
+         pProp->size = len;
+         pProp->format = format;
+       }
+     else if (mode == APPEND)
+       {/* Op 2.2 */
+         pProp->data = data;
+         pProp->size += len;
+       }
+    }
+}

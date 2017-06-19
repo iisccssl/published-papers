@@ -1,0 +1,105 @@
+===========================================================================
+                           CCS 2015 Review #49A
+                     Updated 22 Jun 2015 4:37:04am UTC
+---------------------------------------------------------------------------
+      Paper #49: Regulating Personal Device Use in Restricted Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject - I'd rather not accept
+                                        this paper, but I am not a strong
+                                        detractor.
+
+                         ===== Paper summary =====
+
+The paper proposed a framework to control the usable functionalities on smart devices so that even in restricted area, such smart devices will not become threats. The framework is built on TrustZone provided by ARM CPUs. A TCB is build and executed within TrustZone to check guest device integrity and enforce security polices imposed by host environments.
+
+                        ===== Paper strengths =====
+
+It is an important problem to restrict the use smart devices in sensitive environments like federal offices, company conference rooms, some special public areas, etc. Such problem is especially important given today's trend that many organizations and companies now enable their employees to bring their own devices (i.e., BYOD).
+
+                       ===== Paper weaknesses =====
+
+The proposed solutions may not work effectively in real world settings. The assumption on adversary's capability is unclear, and did not give details on how to handle some straightforward attacks.
+
+                ===== Additional comments for authors =====
+
+1. It is assumed that during check-in stage, the benign hosts could do memory scanning and guarantee guest devices are free of malicious software.  In reality, it is a hard goal to achieve, as there are always new malicious apps could not be detected by existing anti-virus software. Also, it is also unreliable to check patching status by detecting Linux Kernel version.
+
+2. Assume guest device always on is not reasonable. It is understood that if a device is powered off, it would fail to pass the checking out stage, but this could not prevent attackers to violate the policy and steal sensitive information, and the paper did not give details on how to differentiate and handle normal power-offs due to poor device battery quality or abnormal power-offs done purposely by adversaries after stealing information.  A sample attack is: an adversary first power-off and then power-on again his device to remove the restriction policies added during check-in stage, take a picture of a sensitive document, send it out through 3G/4G/Wi-Fi network, then do some meaningless things to use up all remained battery. It is unclear how the proposed scheme to handle this kind of attack.
+
+3. The scheme relies on a secure TCB, but the paper just said the TCB could be built from ARM TrustZone, but did not give more details.  In fact, TruzeZone only provide a secure execution environment, but itself could not be used as the root of trust. In other words, a capable adversary could modify the firmware, compromise TCB and execute malicious code in TrustZone. This is the reason why in PC world, a hardware module (e.g.,
+TPM) is generally used to establish a root of trust.
+
+4. The privacy concerns could make the proposed scheme impractical in real world. The hosts need to get guest device's raw memory image which may contain sensitive private information.  Although the paper proposed a vetting cloud scheme, it is still unclear how to protect user privacy from legitimate requests against malicious hosts. Even a simple legitimate operation, like getting a list of installed Apps, could leak lots of private information, let alone uploading/scanning whole memory image.
+
+===========================================================================
+                           CCS 2015 Review #49B
+                    Updated 30 Jun 2015 10:30:53am UTC
+---------------------------------------------------------------------------
+      Paper #49: Regulating Personal Device Use in Restricted Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject - I'd rather not accept
+                                        this paper, but I am not a strong
+                                        detractor.
+
+                         ===== Paper summary =====
+
+The paper proposes a way to regulate personal smart devices that incorporate secure hardware such as ARM Trustzone and a remote attestation host. The external host remotely checks the integrity of personal devices via a trusted module running inside ARM TrustZone. In order to regulate the device, the external host remotely changes memory data via the trusted module in ARM TrustZone. The authors introduced a "vetting service", which enables the smart device to check the safety of host's request.
+
+                        ===== Paper strengths =====
+
++ This paper shows a good application of ARM TrustZone technology.
++ It shows an efficient MDM enforcement technique with a simple modification of device driver interface inside guest smart device.
+
+                       ===== Paper weaknesses =====
+
+- The paper introduces one-time remote attestation during “check-in” state. I am not sure if the design is robust against TOCTOU attacks. A detailed explanation on how the device driver states are maintained after check-in is needed.
+- If we are to assume an adversary who tries to modify kernel states to bypass the proposed design, I am not convinced that device and driver identification through kernel memory inspection is trustworthy. Can we really trust the currently installed devices and matching drivers reported by kernel without physically examining the device?
+- I do not see much difference between Samsung Knox [1] and this work. Samsung Knox has remote attestation feature, which the authors insist one of their contributions.
+
+[1] https://www.samsungknox.com/en/products/knox-workspace/technical
+
+                ===== Additional comments for authors =====
+
+The authors refer USB interface to connect the smart device to the host through physical scanners at a kiosk, which we cannot trust. I am wondering whether or not this scanner is not a threat model, which the paper did not mention.
+
+I still don't understand the needs of the "vetting service".   The device and the host are mutually authenticated during check-in, which means the device trusts the host. If the host can be untrusted, vetting service can also be untrusted.
+
+On subsection 3.2, the paper supposes that if the guest calls to an emergency number, the microphone can be enabled, while it is disabled when placing other phone calls. However, the paper does not mention how this can be enforced.
+
+===========================================================================
+                           CCS 2015 Review #49C
+                     Updated 30 Jun 2015 1:46:27am UTC
+---------------------------------------------------------------------------
+      Paper #49: Regulating Personal Device Use in Restricted Spaces
+---------------------------------------------------------------------------
+
+                      Overall merit: 3. Borderline - This is an okay paper
+                                        but I hope we will find stronger
+                                        ones.
+
+                         ===== Paper summary =====
+
+The paper presents a solution for space hosts to regulate the capabilities and use of guest devices within their restricted space. The guests run a trusted agent (based on TrustZone ARM architecture) that enables the host to inspect and control a guest device using read and write operations over guest memory. The guest can also verify the safety of the host’s requests by means of a trusted cloud-based vetting service. All communication between the trusted agent on the guest and the host happens through an untrusted UI app.
+
+                        ===== Paper strengths =====
+
++ Addresses an timely problem that is becoming more and more important with the growing proliferation of smart personal devices. It is also well motivated and there is a growing need for enabling control over smart devices in personal spaces.
++ The paper is well written and is easy to understand.
+
+                       ===== Paper weaknesses =====
+
+There are several weaknesses in the proposed design:
+1) It requires both hosts and guests to invest in signed credentials that, even though relative simple, is still not a very common practice.
+2) There is a lot of data being exchanged between the guest device and the host and between the guest device and the vetting service. For example, the guest has to send a copy of its full memory image to the vetting service along with the request received from the host. One would expect that this would happen over cellular network since the guest has not trusted the host yet and connected to its Wifi. The memory sizes of today’s devices is considerable large and it could be costly both in data size and transfer time. If this needs to be done for each host request, that can become prohibitively expensive. Unfortunately, the paper does not provide any discussion or evaluation on this aspect.
+3) Allowing the host to control capabilities of the guest device comes at its own cost. For example, if the 3G/4G functionality is disabled, it would also prevent the guest from contacting the vetting service for any further verifications. Moreover, data access might be needed for emergency situations.
+
+The paper is expecting friendly and cordial relationship between the guest and the host. However, the host could be a commercial entity (e.g. a shopping store/mall) that would collect fingerprinting (such as device configuration) or personal information. Even to bootstrap the process, the host needs complete memory dump from the guest to analyze for malware or device configuration - the request is genuine for a commercial entity (as it needs to check for malware), however, it would also receive the memory dump to extract other personal information.
+
+                ===== Additional comments for authors =====
+
+For restoring guest state after moving out of the restricted space, the two proposed options of restoring from a checkpoint or reboot would lead to loss of any information / state changes made during the stay within the restricted space. This could potentially lead to valuable data loss.
+
+What can be done by the host when checksum over the data received from the guest fails? What can the guest do if the vetting service marks the host request as unsafe?
+

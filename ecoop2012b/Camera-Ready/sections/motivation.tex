@@ -1,0 +1,329 @@
+\mysection{Overview of \txjs}
+\label{section:motivation}
+
+\add{
+\txjs\ enables hosts to understand the behavior of untrusted guests, detect
+attacks by malicious guests and recover from them, and perform forensic
+analysis. We briefly discuss \txjs's utility and then provide an overview of
+its functionality for confining a malicious guest.
+}
+
+\add{
+\begin{mylist}
+%
+\item \textbf{Understanding guest code.} Analysis of third-party \js\ code is
+often hard due to code obfuscation. Using \txjs, a host can set watchpoints on
+objects of interest. Coupled with suspend/resume, it is possible to perform a
+fine grained debug analysis by inspecting the read/write sets on every guest
+initiated object read/write and method invocation. \txjs's speculative execution
+provides an ideal platform for concolic unit testing \cite{cute,dart} of guests.
+For example, using \txjs, a host can test 
+a guest's behavior under different values of domain cookies.
+%
+\item \textbf{Confining malicious guests.} \txjs's speculative execution permits
+buffering of network I/O and writing to a speculative DOM, thereby allowing
+unprecedented flexibility in confining untrusted guest code. For
+example, to prevent clickjacking-style attacks, the host can simply discard
+guest's modifications to the speculative DOM.
+%
+\item \textbf{Forensic analysis.} Since \txjs\ suspends on
+external and user-defined operations, the suspend/resume mechanism is an
+effective tool for forensic analysis of a suspected vulnerability exploited by
+the guest. For example, code-injection attacks using DOM or host APIs
+\cite{dom_xss} can be analyzed by observing the sequence of suspend calls and
+their arguments.
+%
+\end{mylist}
+}
+
+\myparagraph{\textbf{\txjs\ in action}}
+
+We illustrate \txjs's ability to confine untrusted guests by further elaborating
+on the example introduced in \sectref{section:introduction}. Suppose that the
+word processor hosts the untrusted widget using a \html{script} tag, as follows:
+\html{script src="http://untrusted.com/guest.js"}.  In \figref{figure:motivate},
+lines~\lnobig{6}--\lnobig{9} show a snippet from \code{guest.js}, which displays
+advertisements relevant to keywords entered in the editor. Line~\lnobig{6}
+registers a function to scan for keywords in the editor window by adding it to
+the prototype of the \code{Editor} object. Lines~\lnobig{7} and \lnobig{8} show
+the widget registering an event handler to display advertisements on certain
+mouse events. While lines~\lnobig{6}--\lnobig{8} encode the core functionality
+related to displaying advertisements, line~\lnobig{9} implements a
+clickjacking-style attack by creating a transparent \html{div} element, placed
+suitably on the editor with a link to an evil URL\@.
+
+When hosting such a guest, the word processor can protect itself from attacks by
+defining and enforcing a suitable set of security policies. These may include
+policies to prevent prototype hijacks~\cite{ccc_06}, clickjacking-style attacks,
+drive-by downloads, stealing cookies, snooping on keystrokes, \etc. Further, if
+an attack is detected and prevented, it should not adversely affect normal
+operation of the word processor.  We now illustrate how the word processor can
+use \txjs\ to achieve such protection and cleanly recover from attempted
+attacks.
+
+\begin{figure*}[t]%{rh}{0.60\textwidth}
+%\vspace*{-3.5ex}
+\setlength{\tabcolsep}{2pt}
+\centering
+%\scriptsize
+\begin{tabular}{cl}
+%\hline
+\lno{A} & \codetiny{do \{} \fbox{\textbf{\textrm{\tiny Function gotoIblock
+implements the host's introspection block: Lines A--R}}}\\
+\lno{B} & \mytab \codetiny{var arg = tx.getArgs();~~~var obj =
+tx.getObject();}\\
+\lno{C} & \mytab \codetiny{var rs = tx.getReadSet();~var ws =
+tx.getWriteSet();}\\
+\lno{D} & \mytab \codetiny{for(var i in builtins) \{}\\
+\lno{E} & \mytab \mytab \codetiny{if (ws.checkMembership(Editor.prototype,
+builtins[i])) tocommit = false;}\\
+\lno{F} & \mytab \codetiny{\} ... /* definition of `IsClickJacked' to go here
+*/}\\
+\lno{G} & \mytab \codetiny{if (IsClickJacked(tx.getTxDocument())) tocommit =
+false;}\\
+\lno{H} & \mytab \codetiny{... /* more policy checks go here */}
+\fbox{\textbf{\textrm{\tiny inlined code from libTranscript: Lines I--O}}}\\
+  \rowcolor[gray]{0.9}
+\lno{I} & \mytab \codetiny{switch(tx.getCause()) \{}\\
+  \rowcolor[gray]{0.9}
+\lno{J} & \mytab \mytab \codetiny{case "addEventListener":}\\
+  \rowcolor[gray]{0.9}
+\lno{K} & \mytab \mytab \mytab \codetiny{var txHandler =
+MakeTxHandler(arg[1]);}\\
+  \rowcolor[gray]{0.9}
+\lno{L} & \mytab \mytab \mytab \codetiny{obj.addEventListener(arg[0],
+txHandler, arg[2]); break;}\\
+  \rowcolor[gray]{0.9}
+\lno{M} & \mytab \mytab \codetiny{case "write": WriteToTxDOM(obj, arg[0]);
+break; ... /* more cases */}\\
+  \rowcolor[gray]{0.9}
+\lno{N} & \mytab \mytab \codetiny{default: break;}\\
+  \rowcolor[gray]{0.9}
+\lno{O} & \mytab \codetiny{\};}\\
+\lno{P} & \mytab \codetiny{tx = tx.resume();}\\
+\lno{Q} & \codetiny{\} while(tx.isSuspended());}\\
+\lno{R} & \codetiny{return tocommit;}\\
+%\hline
+\end{tabular}
+\remove{
+\mycaptionsquish{An iblock. \describecaption{The above code shows the body
+of the function \code{gotoIblock} and implements the host's iblock for the guest
+in \figref{figure:motivate}. An iblock consists of two parts: a host-specific
+part, which encodes the host's policies to confine the guest (lines 4--8), and a
+mandatory part, which contains functionality that is generic to all hosts (lines
+9--15). The mandatory part of iblock is implemented as a JavaScript library
+(\code{libTranscript}) and can be included within the iblock of the host.}}
+}
+\add{
+\mycaptionsquish{An iblock. \describecaption{An iblock consists of two parts: a
+host-specific part, which encodes the host's policies to confine the guest
+(lines D--H), and a mandatory part, which contains functionality that is generic
+to all hosts (lines I--O).}}
+}
+{\label{figure:iblock}}
+%\vspace*{-3.0ex}
+\end{figure*}
+
+%-------------------------------------------------------------------------------
+The host protects itself by embedding the guest within a \code{transaction}
+construct (line~\lnobig{5}, \figref{figure:motivate}) and specifies its security
+policy (lines~\lnobig{D}--\lnobig{O}, \figref{figure:iblock}). When the
+transaction executes, \txjs\ records all reads and writes to \js\ objects in
+per-transaction read/write sets. Any attempts by the guest to modify the host's
+\js\ objects (\eg~on line~\lnobig{6}, \figref{figure:motivate}) are speculative;
+\ie~these changes are visible only to the guest itself and do not modify the
+host's view of the \js\ heap. To ensure that DOM modifications by the guest are
+also speculative, \txjs's DOM subsystem clones the host's DOM at the start of
+the transaction and resolves all references to DOM objects in a transaction to
+the cloned DOM\@. Thus, references to \code{document} within the guest resolve
+to the cloned DOM\@.
+
+When the guest performs DOM operations, such as those on
+lines~\lnobig{7}--\lnobig{9}, and other external operations, such as
+\code{XMLHttpRequest}, \txjs\ \textit{suspends} the transaction and passes
+control to the host.  This situation is akin to a system call in a user-space
+program causing a trap into the operating system.  Suspension allows the host to
+mediate external operations as soon as the guest attempts them.  When a
+transaction suspends or completes execution, \txjs\ creates a
+\textit{transaction object} in \js\ to denote the completed or suspended
+transaction. In \figref{figure:motivate}, the variable \code{tx} refers to the
+transaction object. \txjs\ then passes control to the host at the program point
+that syntactically follows the transaction. There, the host implements an
+\textit{introspection block} (or \textit{iblock}) to enforce its security policy
+and perform operations on behalf of a suspended transaction.
+
+\myparagraph{Transaction objects} 
+\label{section:motivation:txobj}
+%
+A transaction object records the state of a suspended or completed transaction.
+It stores the read and write sets of the transaction and the list of activation
+records on the call stack of the transaction when it was suspended.  It
+provides builtin methods, such as \code{getReadSet} and \code{getWriteSet}
+shown in \figref{figure:iblock}, that the host can invoke to access read and
+write sets, observe the actions of the guest, and make policy decisions. 
+
+When a guest tries to perform an external operation and thus suspends, the
+resulting transaction object contains arguments passed to the operation. For
+example, a transaction that suspends due to an attempt to modify the DOM\@, such
+as the call \code{document.write} on line~\lnobig{9}, will contain the DOM
+object referenced in the operation (\code{document}), the name of the method
+that caused the suspension (\code{write}), and the arguments passed to the
+method.  (Recall that \txjs's DOM subsystem ensures that \code{document}
+referenced within the transaction will point to the cloned DOM\@.)  The host can
+access these arguments using builtin methods of the transaction object, such as
+\code{getArgs}, \code{getObject} and \code{getCause}. 
+\remove{These arguments are
+analogous to system-call arguments passed from a user-space program to the
+operating system.}
+Depending on its policy, the host can either perform
+the operation on behalf of the guest, simulate the effect of performing it,
+defer the operation for later, or not perform it at all.
+
+The host can resume a suspended transaction using the transaction object's
+builtin \code{resume} method. \txjs\ then uses the activation records stored in
+the transaction object to restore the call stack, and resumes control at the
+program point following the instruction that caused the transaction to suspend
+(akin to resumption of program execution following a system call).
+Transactions can suspend an arbitrary number of times until they complete
+execution. The builtin \code{isSuspended} method determines whether the
+transaction is suspended or has completed. 
+
+A completed transaction can be committed using the builtin \code{commit}
+method.  This method copies the contents of the write set to the corresponding
+objects on the host's heap, thereby publishing the changes made by the guest.
+It also synchronizes the host's DOM with the cloned version that contains any
+DOM modifications made by the guest. A completed transaction's call stack is
+empty, so attempts to resume a completed transaction will have no effect. Note
+that \txjs\ does not define an explicit \code{abort} operation.  This is
+because the host can simply discard changes made by a transaction by choosing
+not to commit them. If the transaction object is not referenced anymore, it
+will be garbage-collected.
+
+\myparagraph{Introspection blocks} 
+\label{section:motivation:iblock}
+%
+When a transaction suspends or completes, \txjs\ passes control to the
+instruction that syntactically follows the transaction in the code of the host.
+At this point, the host can check the guest's actions by encoding its security
+policies in an \textit{iblock}. The iblock in \figref{figure:iblock}
+%spans lines~\lnobig{11}--\lnobig{27} and 
+has two logical parts: a
+\textit{host-specific part} that encodes host's policies
+(lines~\lnobig{D}--\lnobig{H}), and a \textit{mandatory part} that performs
+operations on behalf of suspended guests (lines~\lnobig{I}--\lnobig{O}). The
+iblock in \figref{figure:iblock} illustrates two policies:
+%
+\begin{mylist}
+%
+\item Lines~\lnobig{D}--\lnobig{E} detect prototype hijacking attempts on the
+\code{Editor} object. To do so, they check the transaction's write set for
+attempted redefinitions of builtin methods and fields of the \code{Editor}
+object.
+%
+\item Line \lnobig{G} detects clickjacking-style attempts by checking the DOM
+for the presence of any transparent HTML elements introduced by the guest. (The
+body of \code{IsClickJacked}, which implements the check, is omitted for
+brevity).
+%
+\end{mylist}
+
+\begin{comment}
+%==============================================================================
+% Workflow figure moved here for correct placement!
+%==============================================================================
+\begin{figure*}[t!]
+\vspace*{-3.5ex}
+\centering
+%\includegraphics[keepaspectratio=true,width=0.8\textwidth]{
+figures/transcript.png}
+\begin{tabular}{cc}
+%\hline
+\begin{minipage}{0.37\textwidth}
+\centering
+\includegraphics[keepaspectratio=true,width=0.85\textwidth]{
+figures/workflow-1.pdf}\\
+\textbf{\scriptsize (a)~Locations of traps/returns to/from \txjs.}
+\end{minipage} &
+\begin{minipage}{0.6\textwidth}
+\centering
+\includegraphics[keepaspectratio=true,width=0.91\textwidth]{
+figures/workflow-2.pdf}\\
+\textbf{\scriptsize(b)~Corresponding actions within the \txjs\ runtime system
+for a trap/return.}
+\end{minipage}\\
+\hline
+\end{tabular}
+\mycaptionsquish{Workflow of a \txjs-enhanced host.
+\describecaption{Part~(a) of the figure shows a host enclosing a guest within a
+transaction and an inlined introspection block, while part~(b) shows the \js\
+runtime and the DOM subsystem. The labels \ding{172}-\ding{177} in the figure
+show: 
+%
+\ding{172}~the host's DOM being cloned at the start of the transaction,
+%
+\ding{173}~the host's call stack before a call that suspends the transaction,
+%
+\ding{174}~the call stack after suspension,
+%
+\ding{175}~the host's call stack when the transaction is about to resume; the
+speculative DOM has been updated with the requested changes,
+%
+\ding{176}~the host's call stack just after resumption,
+%
+\ding{177}~shows the transaction committing, which copies all speculative
+changes to the host's DOM and \js\ heap.
+%
+The thick lines on the call stacks denote transaction delimiters.  Arrows show
+control transfer from the transaction to the iblock and back.}}
+{\label{figure:workflow}} 
+\vspace*{-3.0ex}
+\end{figure*}
+%==============================================================================
+\end{comment}
+
+The body of the \code{switch} statement encodes the mandatory part of the
+iblock and implements two key functionalities, which are further explained in
+\sectref{section:design:iblock}:
+%
+\begin{mylist}
+%
+\item Lines~\lnobig{J}--\lnobig{L} in \figref{figure:iblock} create and attach
+an event handler to the cloned DOM when the guest suspends on line~\lnobig{8} in
+\figref{figure:motivate}. The \code{MakeTxHandler} function creates a new
+\textit{wrapped} handler, by enclosing the guest's event handler
+(\code{displayAds}) within a \code{transaction} construct. Doing so ensures that
+the execution of any event handlers registered by the guest is also speculative,
+and mediated by the host's security policies. The iblock then attaches the event
+handler to the corresponding element (\code{elem}) in the cloned DOM.
+%
+\item Line~\lnobig{M} in \figref{figure:iblock} speculatively executes the
+DOM modifications requested when the guest suspends on line~\lnobig{9} in
+\figref{figure:motivate}. The \code{WriteToTxDOM} function invokes the
+\code{write} call on \code{obj}, which points to the \code{document} object in
+the cloned DOM.
+%
+\end{mylist}
+
+If a transaction does not commit because of a policy violation, the host's DOM
+and \js\ objects will remain unaffected by the guest's modifications. For
+instance, when the host
+% in \figref{figure:motivate} 
+aborts the guest after it
+detects the clickjacking attempt, the host's DOM will not contain any remnants
+of the guest's actions (such as event handlers registered by the guest).  The
+host's \js\ objects, such as \code{Editor}, are also unaffected. Speculatively
+executing guests therefore allows hosts to cleanly recover from attack
+attempts.
+
+Iblocks offer hosts the option to postpone external operations. For example, a
+host may wish to defer all network requests from an untrusted advertisement
+until the end of the transaction. It can do so using an iblock that buffers
+these requests when they suspend, and thereafter resume the transaction; the
+buffered requests can be processed after the transaction has completed. Such
+postponement will not affect the guest if the buffered requests are
+asynchronous, \eg~\code{XMLHttpRequest}.
+
+Because a transaction may suspend several times, the iblock is structured as a
+loop, whose body executes each time the transaction suspends and once when the
+transaction completes. This way, the same policy checks apply whether the
+transaction suspended or completed.

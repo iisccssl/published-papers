@@ -1,0 +1,10 @@
+DECLARE
+file_system_type::: \
+proc_fs_type->next
+name hashcode
+fs_flags int
+read_super hashcode
+owner hashcode
+next hashcode
+fs_supers0_next hashcode
+fs_supers0_prev hashcode

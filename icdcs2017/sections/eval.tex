@@ -1,0 +1,314 @@
+\section{Evaluation}
+\label{section:evaluation}
+
+In evaluating \tool, our main goals were to demonstrate the flexibility of
+\tool\ by showing that it can check compliance against a variety of policies,
+and understand the performance costs of various components of \tool.
+
+Our setup consisted of running OpenSGX atop of Ubuntu 14.04 on a physical
+machine  equipped with an Intel Core i5 CPU and 16GB of memory. We use clang
+and llvm version-3.6 to compile and instrument many real world applications to
+run within enclaves: Nginx (an HTTP server), Memcached (a popular key-value
+store), Netperf (a networking benchmark), otp-gen (a password generator),
+graph-500 (a graph data benchmark) and two SPEC benchmarks (401.bzip2 and
+429.mcf). In all experiments, all the applications are compiled as position
+independent executables and are statically linked. To keep the size of the
+executables small all applications are linked against musl-libc~\cite{musllibc}
+instead of GNU libc~\cite{gnulibc}. \figref{table:tcb} shows the lines of code
+of all the components of \tool's implementation. In the following sections, we
+describe the performance costs of three policy modules that we implemented in
+\tool. For each benchmark, we assume that the benchmark executes within the
+enclave, and we evaluate the cost of \tool\ as it loads the benchmark within
+the enclave for execution, and checks for policy compliance.
+
+\begin{figure}[t!]
+\centering
+\footnotesize{
+\begin{tabular}{|p{0.35\textwidth}|r|}
+\hline
+ \bf Components                    & \bf LOC \\
+\hline
+Code Provisioning & 270\\
+\hline
+Loading and Relocating & 188\\
+\hline
+Checking Executables linked against musl-libc & 1,949\\
+\hline
+Checking Executables Compiled with Stack Protection & 109\\
+\hline
+Checking Executables Containing Indirect Function-Call Checks & 129\\
+\hline
+Client's side program & 349\\
+\hline
+Musl-libc & 90,728\\
+\hline
+Lib crypto (openssl) & 287,985\\
+\hline
+Lib ssl (openssl) & 63,566\\
+\hline
+Total & 453,349\\
+\hline
+\end{tabular}}
+\mycaption{Sizes of various components of \tool. Some of these components
+(\eg~the cryptographic libraries) are part of the default loader in all enclave
+implementations.}
+{\label{table:tcb}}
+\indent\vspace{-0.5cm}
+\end{figure}
+
+\myparagraph{Compliance for Library Linking.}
+%
+When a cloud provider allows a client to run code on its platform, it often
+expects the client to run a particular version of the code. For example, the
+cloud provider may require that the client execute a version of the code that
+has been patched with the latest security updates. As a special case of this,
+the cloud provider may wish to check whether the client's code has been linked
+against specific versions of certain libraries. For example, the cloud provider
+may wish to ensure that if the client's code uses OpenSSL, then the version of
+OpenSSL that is used is free of the vulnerability that caused the HeartBleed
+exploit. As another example, consider
+\code{/CONFIDENTIAL}~\cite{moatplus:pldi16}, a library that ensures that
+enclave code satisfies certain information-flow confinement properties,
+\ie~enclave code that is linked against this library will not accidentally leak
+sensitive information. To prevent liability issues arising from any accidental
+data leaks in the client's code, the cloud provider may wish to ensure that the
+client's code is linked with the \code{/CONFIDENTIAL} library. 
+
+To illustrate the power of \tool\ at enforcing such library-linking policies,
+we implemented a policy module that verifies whether an executable is linked
+against musl-libc~\cite{musllibc} version 1.0.5. To perform this check, we
+first generate the SHA-256 hashes of all the functions of musl-libc v1.0.5.
+For enforcement, the policy module iterates through the instruction buffer of
+the code to be loaded in the enclave, and looks for all direct function calls.
+For each direct function call, the policy check computes the target of the call
+and then looks up the symbol hash table to get the function name of the target.
+If the target does not exist in the symbol hash table the check will mark the
+function call as invalid; otherwise, it will compute the SHA-256 hash of all
+the instructions of the function. Specifically, the policy module sequentially reads instructions starting from 
+the computed target address and stops when it comes across an instruction that 
+is at the beginning of another function. The policy module relies on the symbol hash
+table to identify whether an instruction address is at the beginning of a function. The policy check next compares the hash of the
+function in the executable with its hash in musl-libc. If the two hashes do not
+match, the client has not provided the required musl-libc; otherwise, the
+policy check continues with the next iteration until it reaches the end of the
+instruction buffer.
+
+\begin{figure}[t]
+\centering
+\scriptsize{
+\begin{tabular}{|l|r|r|r|p{0.1\linewidth}|}
+\hline
+ \bf Benchmark & 
+     \bf \#Inst. & 
+    \bf Disassembly & 
+    \bf Policy Checking & 
+    \bf Loading and Relocation\\
+\hline
+Nginx & 262,228 & 694,405,019 & 1,307,411,662 & 128,696\\
+\hline
+401.bzip2 & 24,112 & 34,071,240 & 148,922,245 & 4,239\\
+\hline
+Graph-500 & 100,411 & 140,307,017 & 246,669,796 & 4,582\\
+\hline
+429.mcf & 12,903 & 18,242,127 & 123,895,553 & 4,363\\
+\hline
+Memcached & 71,437 & 137,372,517 & 489,914,732 & 8,115\\
+\hline
+Netperf & 51,403 & 90,616,563 & 367,356,878 & 18,090\\
+\hline
+Otp-gen & 28,125 & 42,823,024 & 198,587,525 & 5,388\\
+\hline
+\end{tabular}}
+\mycaption{Performance of \tool\ to check the \textit{Library-linking} policy.
+Here \tool\ checks whether each benchmark has been linked against musl-libc.
+The figure shows the size of each benchmark, measured as the number of
+instructions in the code to be loaded in the enclave, and the time taken to
+execute each step of \tool, reported as CPU cycles. Wall-clock time can be
+obtained by multiplying CPU clock cycles with the clock cycle time. A CPU with
+a clock rate of 3.5GHz as used in our experiments has 1/3.5 nanoseconds cycle
+time. Therefore, the 694,405,019 cycles it takes to disassemble Nginx, for
+example, consumes 198.4 milliseconds.}
+{\label{table:checkinglinkedlib}}
+\indent\vspace{-0.5cm}
+\end{figure}
+
+To compute the performance cost, we adopt the approach suggested in the OpenSGX
+paper~\cite{opensgx:ndss16} and assume that each SGX instruction takes 10K CPU
+cycles and non-SGX instructions run at native speed within the enclave.  We
+leverage OpenSGX's performance counter and QEMU's instruction count~\cite{qemu}
+to count SGX and non-SGX instructions. We calculate the CPU cycles of non-SGX
+instructions by measuring the instructions per cycle by executing the loader
+natively without OpenSGX.  \figref{table:checkinglinkedlib} presents the
+results of our experiments when running this policy check against different
+benchmarks.  
+
+\renewcommand{\baselinestretch}{0.9}
+\myparagraph{Compliance for Stack Protection.}
+%
+Given the prevalence of buffer overflow vulnerabilities in low-level code, a
+number of modern compilers now give the option of emitting extra code to
+protect loads and stores to memory locations. Clang's \code{-fstack-protector}
+flag lets the LLVM compiler add a guard variable when a function starts and
+checks the variable when a function exits. For instance, when compiled with the
+flag, the following extra code is emitted:
+
+\begin{center}
+\footnotesize{
+\begin{tabular}{ll}
+\code{19311:} & \code{mov    \%fs:0x28, \%rax}\\
+\code{1931a:} & \code{mov    \%rax, (\%rsp)}\\
+\code{193fe:} & \code{mov    \%fs:0x28, \%rax}\\
+\code{19407:} & \code{cmp    (\%rsp), \%rax}\\
+\code{1940b:} & \code{jne    1941f}\\
+\code{1941f:} & \code{callq  8d5bf <\_\_stack\_chk\_fail>}\\
+\end{tabular}}
+\end{center}
+
+The two instructions at addresses \code{193fe} and \code{19407} check if the
+variable at the top of the stack is the same as the variable at
+\code{\%fs:0x28}. If the values do not match, control will be transfered to the
+\code{\_\_stack\_chk\_fail} function.
+
+Clang also provides the \code{-fstack-protector-all} option which is similar to
+\code{-fstack-protector} except that \textit{all} functions are protected. To
+check whether an executable is compiled with this flag, the policy module
+iterates through the instruction buffer and identifies the start of a function
+using the symbol hash table. Within each function, the policy check looks for
+instructions that affect the stack's variables (\eg~\code{mov \%rax,(\%rsp)} in
+the above example). It then identifies the source operand of the instruction
+(\code{\%rax}) and figures out the value of the source operand (\code{mov
+\%fs:0x28,\%rax}).  As a next step, it checks if the function contains a
+\code{cmp} instruction with the source and destination are the stack's variable
+and the previous source operand, respectively. It also has to check that just
+preceding the \code{cmp} instruction, there is an instruction that computes the
+original value of the source operand (\code{mov \%fs:0x28,\%rax}). Finally, the
+policy looks for the \code{jne} and \code{callq} instructions. It computes the
+target of the \code{callq} instruction and checks the symbol hash table to
+verify that the target corresponds to the the \code{\_\_stack\_chk\_fail}
+function.
+
+\begin{figure}[t]
+\centering
+\scriptsize{
+\begin{tabular}{|l|r|r|r|p{0.1\linewidth}|}
+\hline
+ \bf Benchmark         & 
+     \bf \#Inst. & 
+    \bf Disassembly & 
+    \bf Policy Checking & 
+    \bf Loading and Relocation\\
+\hline
+Nginx & 271,106 & 719,360,640 & 713,772,098 & 128,662\\
+\hline
+401.bzip2 & 24,226 & 34,292,136 & 862,023,613 & 4,206\\
+\hline
+Graph-500 & 100,488 & 140,588,361 & 195,218,892 & 4,548\\
+\hline
+429.mcf & 12,985 & 18,288,921 & 31,459,881 & 4,330\\
+\hline
+Memcached & 71,677 & 137,877,497 & 325,442,403 & 8,081\\
+\hline
+Netperf & 51,868 & 91,577,335 & 183,274,713 & 18,057\\
+\hline
+Otp-gen & 28,217 & 43,053,386 & 217,302,816 & 5,355\\
+\hline
+\end{tabular}}
+\mycaption{Performance of \tool\ to check the \textit{Stack protection}
+policy.  As before, for performance numbers, we report the CPU cycles.}
+{\label{table:checkingstackprotection}}
+\indent\vspace{-0.5cm}
+\end{figure}
+
+Of course, our implementation of \tool's policy module is customized for
+Clang's stack protection instrumentation as emitted by the
+\code{-fstack-protector} flag. It can easily be customized to check stack
+protection instrumentation inserted by other tools, such as Google's
+AddressSanitizer~\cite{google:asan:usenix:2012}, LLVM
+SoftBound~\cite{softbound:pldi09}, etc.  \figref{table:checkingstackprotection}
+presents the results of our experiments when running this policy check against
+different benchmarks executing in enclaves.
+
+\myparagraph{Restricting Indirect Function Calls.}
+%
+Protecting applications against control-flow hijacking attacks is one of the
+emerging concern due to the fact that attackers have recently focused on taking
+advantage of heap-based corruptions to overwrite function pointers to change
+the flow of a program. Control-flow Integrity (CFI)is a measure that guards
+against these attacks by restricting the targets of indirect control transfers
+to a set of precomputed locations.
+
+We implemented a policy check to verify that executables are compiled with
+indirect function-call checks as proposed in recent work by Google
+(IFCC)~\cite{edgecfi:sec14}. IFCC protects indirect calls by generating
+instrumentation for the targets of indirect calls. It adds code at indirect
+call sites to ensure that function pointers point to a jump table entry. For
+example, the LLVM implementation of IFCC emits the following code for an
+indirect function call:
+
+\begin{center}
+\footnotesize{
+\begin{tabular}{ll}
+\code{1b459:} & \code{lea  0x85c70(\%rip), \%rax} \\
+              & \code{\#<\_\_llvm\_\#jump\_instr\_table\_0\_1>}\\
+\code{1b460:} & \code{sub  \%eax, \%ecx}\\
+\code{1b462:} & \code{and  \$0x1ff8, \%rcx}\\
+\code{1b469:} & \code{add  \%rax, \%rcx}\\
+\code{1b475:} & \code{callq *\%rcx}\\
+\end{tabular}}
+\end{center}
+
+To instrument executables with these checks, we use the LLVM/clang
+toolchain enhanced with the IFCC patch~\cite{llvmforwardedgecfi}. To check
+whether an executable is compiled with IFCC checks, \tool's policy module first
+figures out the range of the jump table by relying on the fact that all jump
+table entries have the following format:
+
+\begin{center}
+\footnotesize{
+\begin{tabular}{ll}
+\multicolumn{2}{l}{\code{a19d0 <\_\_llvm\_jump\_instr\_table\_0\_289>:}}\\
+\code{a19d0:} & \code{~~~~jmpq   41090 <ngx\_execute\_proc>}\\
+\code{a19d5:} & \code{~~~~nopl   (\%rax)}\\
+\end{tabular}}
+\end{center}
+
+\begin{figure}[t]
+\centering
+\scriptsize{
+\begin{tabular}{|l|r|r|r|p{0.1\linewidth}|}
+\hline
+ \bf Benchmark         & 
+    \bf \#Inst. & 
+    \bf Disassembly & 
+    \bf Policy Checking & 
+    \bf Loading and Relocation\\
+\hline
+Nginx & 267,669 & 821,734,999 & 20,843,253 & 128,668\\
+\hline
+401.bzip2 & 24,201 & 34,235,817 & 1,751,276 & 4,206\\
+\hline
+Graph-500 & 100,424 & 140,429,738 & 7,014,913 & 4,548\\
+\hline
+429.mcf & 12,903 & 18,242,127 & 1,177,429 & 4,330\\
+\hline
+Memcached & 71,508 & 138,231,446 & 5,301,168 & 8,081\\
+\hline
+Netperf & 51,431 & 91,161,601 & 3,775,318 & 18,057\\
+\hline
+Otp-gen & 28,132 & 42,829,680 & 2,334,847 & 5,355\\
+\hline
+\end{tabular}}
+\mycaption{Performance of \tool\ to check the \textit{Indirect Function-Call}
+policy.  As before, for performance numbers, we report the CPU cycles.}
+{\label{table:checkingindirectfunccall}}
+\indent\vspace{-0.4cm}
+\end{figure}
+
+\tool's policy module for this check iterates through the instruction buffer
+and looking for indirect function calls. It then verifies that before the
+indirect function calls, there is a sequence of instructions \code{lea},
+\code{sub}, \code{and} and \code{add}, with data dependence between registers
+as shown in the code snippet above. It then computes the target of the indirect
+call and verifies that the target is within the range of the jump table.
+\figref{table:checkingindirectfunccall} presents the results of our experiments
+when running this policy check against different benchmarks.

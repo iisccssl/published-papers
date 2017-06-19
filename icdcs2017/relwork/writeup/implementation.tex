@@ -1,0 +1,33 @@
+\section{Implementation}
+
+We implemented a proof-of-concept of the system on top of OpenSGX ~\cite{OpenSGX}, an open source Intel SGX emulator. The system supports x86-64 ELF executables which are compiled as position independent executables (PIEs) and are statically linked.  
+In this section, we first describe the modification we made to OpenSGX. We next discuss the implementation of the bootstrap, the decoder and the loader. 
+
+\subsection{OpenSGX}
+OpenSGX ~\cite{OpenSGX} is implemented atop of QEMU's user mode emulation. It also provides an emulated operating system layer that implements services such as executing privileged SGX instructions, an enclave program loader, a user library that helps minimizing the attack surface between the enclave and the host program via the use of trampoline and stub. The framework also offers debugging support and performance monitoring.
+
+\subsection{Modifications to OpenSGX}
+The client enclave holds the client executable as well as its decoded instructions. As a result, the number of EPC pages should 
+be large enough to meet the memory requirements of the client enclave. Therefore we change the default number of EPC pages from 
+2000 to 32000 which translates to 128 MB for the physical protected memory region. On OpenSGX, this size can be extended 
+to meet further memory requirements). We also change the number of initial page frames for the heap region from 300 to 5000.
+
+\subsection{Code Provisioning}
+The loader first generates a 2048-bit RSA key pair and then establishes a socket connection to the client machine. As a next step, 
+the loader sends its newly generated public key to the client machine so that it can encrypt its 256-bit AES key and sends the encrypted 
+AES key back to the loader. The loader then receives encrypted chunks of the executable the client wants to run inside an enclave. It then
+decrypts and assembles the chunks to form a complete in-memory representation of the executable. 
+
+\subsection{Binary Disassembly}
+One common challenge in disassembling a binary is mixing of code and data within the code section. We assume that the client's executable is compiled with separated code and data sections. Before disassembling the code sections of the executable, the loader checks its header to verify that the executable is correctly formatted. The checks include checking the signature as well as the ELF class of the executable. The loader next reads the program header of the executable to extract all text sections. We implement the disassembler based on the 64-bit binary disassembler of the Google Native Client~\cite{Native Client}, 
+an open source sandbox for native code. Using prefix and opcode tables for x86-64 bit instruction set, the disassembler parses the byte sequence of the text sections into instructions which are represented byte a structure including the sequence of bytes defining the instruction and various metadata information such as the number of prefix bytes, number of opcode bytes, number of displacement bytes ~\cite{Intel Instruction set manual}.
+
+The disassembler of the Google Native Client does not keep track of all disassembled instructions. Instead, during the disassembling process it uses a buffer that stores the most recently disassembled instructions ~\footnote{The current version of the Google Native Client's disassembler stores four instructions}. This stems from the fact that the Google Native Client validates each instruction right after it is disassembled. We instead use a dynamically allocated buffer that can hold all the instructions and use that buffer as the input to policy checks. Since dynamic memory allocation involves exiting the enclave mode and invoking a trampoline, we reduce the involved overhead by restricting the calls to malloc() by allocating a memory page at a time instead of just a memory region for an instruction structure.
+
+Along with disassembling the executable, the loader also reads the symbol tables to keep track of the address and
+name of all the functions in the executable. It constructs a symbol hash table whose key is the address of a function
+and value is the name of the function. This symbol hash table could be used by the policy checking component when it
+perform policy checks.
+\subsection{Loading}
+After the executable has been checked and confirmed to follow certain policies the loader next loads the executable. In particular, it maps the text segments, data segments and bss segments to the enclave memory, making the text segment be executable but readonly, the data segment and bss segment be writable but non-executable. It then
+locates the sections that require relocations and the locations at which the relocations should be applied. The loader finally sets up a call stack and transfer control to the executable.

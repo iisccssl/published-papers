@@ -1,0 +1,154 @@
+\mysection{Guest Device Analysis and Control}
+\label{section:policy}
+
+The ability to remotely inspect and configure guest devices gives hosts the
+power to enforce a wide array of policies. In this section, we present a number
+of applications of such remote device analysis and control.
+
+\subsection{Kernel Analysis}
+\label{section:policy:analysis}
+
+The host can perform a variety of analyses on the guest device by remotely
+reading its memory contents.
+
+\myparagraph{Kernel-malware Detection} The host can analyze memory pages to
+identify malicious software in the end-user's work environment. Such
+\textit{kernel-level rootkits} allow attackers to retain long-term control over
+infected devices, and are a realistic threat for mobile
+devices~\cite{hotmobile10,mobisys11}. It is well-accepted by the security
+community that rootkits cannot reliably be detected by user-space anti-malware
+tools on the infected device because these tools rely on the services provided
+by the operating system, which is itself infected. Rootkits can reliably be
+detected only using external methods, which inspect the infected kernel without
+relying on its services.
+
+There are a number of ways to detect kernel-level malware by analyzing
+raw-memory pages. In the past, simple kernel-level rootkits operated by
+maliciously modifying code pages of the kernel. The host can easily detect such
+rootkits by checking that all executable code pages of the kernel belong to a
+whitelist of known-good pages.  Modern rootkits work by injecting malicious
+code into the kernel, and modifying key kernel data structures to force their
+execution~\cite{sbcfi:ccs07}. For example, a rootkit could inject a device
+driver, and modify function pointers within the kernel to invoke functions from
+this driver. More generally, a rootkit can modify an arbitrary kernel data
+structure to implement its malicious functionality. Such data structure
+modifications can be used to hide malicious user processes by modifying process
+lists, disable firewalls by modifying kernel hooks, and weaken cryptographic
+functions by modifying entropy pools~\cite{shadows:oakland07}.
+
+Prior work~\cite{sbcfi:ccs07,gib:tdsc11,kop:ccs09,kop:sec12,strider:tr14}
+has developed a generic approach to detect malicious data modifications by
+analyzing raw memory pages. The main idea is for the host to externally
+reconstruct the kernel's data structures, and use this view to reason about the
+integrity of kernel data. We assume that the host has access to the type
+declarations of the data structures used by the kernel being analyzed, \eg~the
+sizes, layouts, and fields of every data structure.  The host starts the
+reconstruction process from some well-known entrypoints into the system's
+memory, \eg~the addresses of the entities in \texttt{System.map}, and
+recursively traversing kernel data structures. When the traversal process
+encounters a pointer, it must fetch the data member referenced by the pointer.
+The host therefore iteratively requests virtual pages from the guest device
+based upon the needs of this recursive traversal. Having reconstructed data
+structures, the host can then determine whether they have been maliciously
+modified. For example, it could check that function pointers in the kernel
+point to pre-determined addresses in the kernel's code
+space~\cite{sbcfi:ccs07}. Similarly, the host can check that the kernel's data
+structures satisfy invariants that must typically hold in an uncompromised
+kernel~\cite{gib:tdsc11}.
+
+\myparagraph{Reverse-engineering Configurations} The host can use the memory
+pages obtained from the guest to identify the version of the kernel, and to
+determine if security patches have been applied. The host can also use it to
+check whether the configuration of the kernel disallows certain well-known
+attack surfaces (\eg~that access to \texttt{/dev/kmem} and dynamic module
+loading are disabled).  The recursive traversal method described above can also
+be used to reconstruct kernel configurations.  For example, it can be used to
+identify addresses at which the functions of a peripheral's driver are loaded,
+where they are hooked into the kernel, and the addresses that store
+memory-mapped peripheral configurations. The host uses this information to
+create remote write requests that can uninstall peripherals from the device. 
+
+\myparagraph{Check Running Processes and Apps} Once the host has ensured that
+the kernel is not infected by rootkits, it can use the clean kernel to
+bootstrap security at the user level. For example, it can require the
+end-user's work environment to execute an anti-malware app that relies on the
+clean kernel to detect sources of infection at user-space, \eg~infected apps
+that reside on the file system. The host can ensure that this anti-malware app
+is executing on the guest device during check-in by traversing the kernel's
+list of running processes. At check-out, it can ensure that the same app is
+still executing by comparing its process identifier to the value obtained
+at check-in.
+
+
+\subsection{Control over Peripherals}
+\label{section:policy:control}
+
+The host can remotely configure peripherals on the guest device by writing to
+suitable memory locations. We consider various peripherals and describe
+scenarios where control over them would be useful.
+ 
+\myparagraph{Camera} The use of the camera is perhaps the most obvious way for
+guests to violate privacy and confidentiality
+(\eg~\cite{placeraider:ndss13,placeavoider:ndss14}). In the federal and
+enterprise settings, employees may photograph or videotape sensitive documents
+and meetings, while in social settings, the camera can be used to record
+conversations. In such settings, the camera can be disabled at check-in.
+
+\myparagraph{Microphone} Much like the camera, the microphone can also be used
+to violate privacy and confidentiality. However, disabling the microphone on
+devices such as smartphones may not be acceptable to guests because it also
+prevents them from having phone conversations. It may be possible for the host
+to configure the microphone's driver so that the microphone is activated only
+when a call is placed, and is de-activated otherwise. However, this facility
+can potentially be misused by malicious guests to record meetings by simply
+placing a call during the meeting. Therefore, it may be desirable to simply
+disable the microphone except when the guest places an outgoing call to an
+emergency number, and require guests to check-out if they wish to place other
+phone calls.
+
+\myparagraph{Networking} Enterprises (and federal institutions) today often
+disallow employees and visitors from connecting their personal devices to the
+corporate network. This is typically to avoid exfiltrating information outside
+the enterprise. With our approach, enterprises can allow employees to use the
+network after inspecting their devices to ensure that they are free from
+malicious software. To prevent exfiltration, the enterprise can disable the use
+of 3G/4G, and restrict the device to only WiFi. Because the enterprise controls
+the WiFi network, it can therefore regulate what data is accessible to the
+device and the external hosts to which the device can connect. In an
+examination setting, for example, the proctor/university can similarly restrict
+networking interfaces when students check-in their devices.
+
+\myparagraph{Detachable Storage} USB dongles and flash drives are extensively
+used to copy files across devices. However, they have also served as the
+vehicle for malware infections (\eg~the Conficker worm~\cite{conficker:tifs12})
+and can be used by malicious guests to exfiltrate sensitive data from the host.
+Many enterprises only have informal guidelines discouraging their employees
+from using dongles and flash drives to copy files. With our approach, the host
+can simply disable the drivers for USB and flash drives at check-in, thereby
+preventing the use of detachable storage media within the restricted space.
+
+\myparagraph{Bluetooth} Smart glasses and smart watches rely on Bluetooth to
+pair with a more powerful hub, such as a smart phone, via which they connect to
+the external world. While it is generally possible to control their connection
+to the outside world by constraining the networking interfaces on the hub
+device, in some scenarios it may be necessary to prevent the device from
+pairing with the hub. For example, a student wearing a prescription smart glass
+may pair the device with his smart phone and use it to access class notes
+stored on the phone. Disabling Bluetooth prevents this channel, but allows the
+student to use the glass for vision correction.
+
+% \myparagraph{Fine-grained Control over Apps} While our approach gives hosts
+% the power to control peripherals on the guest device, it cannot offer hosts
+% fine-grained control over apps within the restricted space. Control over apps
+% may be desirable in certain settings. For example, an enterprise may wish to
+% constrain the set of apps visible on employees' devices when they are at
+% work.  Our approach works by directly modifying device memory, and therefore
+% operates at a lower level than is necessary to exercise control over apps. To
+% enforce such control, it is generally necessary to work higher in the
+% software stack.  For example, the Android Security Modules (ASM) framework
+% enforces app-level controls by leveraging modifications to the Android
+% runtime~\cite{asm:sec14}.  Our approach can be used in tandem with ASM to
+% provide a layered approach to policy enforcement. Hosts can leverage remote
+% memory operations to ensure that the guest device executes the ASM framework,
+% and then rely on the framework to enforce app-level controls.
+

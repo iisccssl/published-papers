@@ -1,0 +1,13 @@
+\section{Conclusion}
+\label{section:conclusion}
+This paper presents the design and implementation of EnGarde, an enclave inspection library 
+that preserves the security benefits offered by the SGX and allows the cloud provider to 
+verify the client's SGX-based enclave against a set of policies mutually agreed by the 
+cloud provider and the client. In EnGarde, the cloud provider and the client mutually trust 
+the inspection library with policy enforcement. EnGarde achieves its goal by using SGX's 
+hardware attestation and having an encrypted channel set up between the cloud provider 
+and the client. EnGarde only allows the client content to execute if the content follows
+mutually agreed policies. We have evaluated the effectiveness of EnGarde by using it to
+enforce three popular security policies for various real world applications.
+
+

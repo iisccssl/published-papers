@@ -1,0 +1,149 @@
+\relax 
+\@cb@firstcolumntrue
+\@cb@firstcolumnfalse
+\citation{Allan05}
+\citation{Meredith12}
+\citation{Lan92}
+\citation{Che04}
+\citation{Sch00}
+\citation{Erl04}
+\citation{Erl00}
+\@cb@firstcolumntrue
+\@cb@firstcolumnfalse
+\@writefile{toc}{\contentsline {section}{\numberline {1}INTRODUCTION}{2}}
+\newlabel{Se:Introduction}{{1}{2}}
+\citation{transcript}
+\citation{tmi}
+\citation{access}
+\citation{txbox}
+\citation{toy}
+\citation{stem}
+\citation{access}
+\citation{taejs}
+\citation{txbox}
+\citation{access}
+\citation{Yu07}
+\citation{Allan05}
+\citation{Meredith12}
+\citation{Falcone13}
+\citation{Bodden12}
+\citation{Hussein12}
+\citation{conscript}
+\citation{Washizaki09}
+\citation{Toledo10}
+\citation{jam}
+\citation{transcript}
+\citation{tmi}
+\citation{access}
+\citation{txbox}
+\citation{Yu07}
+\citation{conscript}
+\citation{transcript}
+\citation{access}
+\@cb@firstcolumntrue
+\@cb@firstcolumnfalse
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces  Policy automaton (and its textual representation) that specifies a set of disallowed traces, namely, ones that ``set the ${\tt  private}$ property of any object to ${\tt  false}$'' (the bottom path in the automaton) or ``read any property of an object whose ${\tt  private}$ property is ${\tt  true}$ and subsequently make a network request'' (the top path). ${\tt  set}$, ${\tt  get}$ and ${\tt  call}$ are special event predicates that unify their arguments with values. ${\tt  \_o}$ is a variable constrained to be the same value at each occurrence, and underscore (${\tt  \_}$) matches any value. ${\tt  httpRequest}$ references a specific function, and other values are literals. In the textual representation, self-loops with the predicate ${\tt  true}$ are implicit. }}{3}}
+\newlabel{Fi:walkthroughpolicy}{{1}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}TECHNICAL OVERVIEW}{3}}
+\newlabel{Se:technical}{{2}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Enforcement Primitives}{3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces (a) A program that may violate the policy depicted in Figure\nobreakspace  {}1\hbox {}, and (b) a secured version.}}{4}}
+\newlabel{Fi:walkthroughprogram}{{2}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces  Implementation of the functions used to enforce the policy at runtime. The ${\tt  policy*}$ functions examine actions that occur within an ${\tt  introspect}$ block to potentially (i) update the policy state (maintained in the global ${\tt  policyStates}$ list) or (ii) throw an exception to prevent a violation. The parameter ${\tt  tx}$ provides access to sequences of actions recorded during speculative execution. ${\tt  policyFull}$ implements introspection for the entire policy, while the other ${\tt  policy*}$ functions are specialized to examine a subset of policy transitions. Each action is passed to ${\tt  commitAction}$, which (i) recognizes higher-order scripts, (ii) applies introspection to generated code, and (iii) applies the effects of the action to the program state. The ${\tt  indirect}$ function (lines 1--14) dynamically determines the level of introspection to apply to a statement. If a higher-order script is detected (such as ${\tt  eval}$), the ${\tt  policyFull}$ introspector is used. Otherwise, the input parameter ${\tt  ispect}$, if non-null, is applied when the original statement needs specialized introspection (as with line 6 of Figure\nobreakspace  {}\G@refundefinedtrue \text  {\normalfont  \bfseries  ??}\GenericWarning  {               }{LaTeX Warning: Reference `Fi:walkthroughprogram' on page 4 undefined}(b)). }}{4}}
+\newlabel{Fi:walkthroughinstrumentation}{{3}{4}}
+\@cb@firstcolumntrue
+\@cb@firstcolumnfalse
+\citation{jam}
+\@cb@firstcolumntrue
+\@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces  \relax \fontsize  {8pt}{9pt}\selectfont  \abovedisplayskip 4pt plus 1pt minus 1pt\relax \belowdisplayskip \abovedisplayskip \relax \abovedisplayshortskip 2pt plus 1pt\relax \belowdisplayshortskip \abovedisplayshortskip \relax \textbf  { {\sf  RewriteIntrospect} specifies the static-rewriting step of a policy-weaving algorithm that applies direct transactional introspection or calls {\sf  RewriteIndirect} (see Algorithm\nobreakspace  {}3\hbox {}) for statements that may invoke higher-order scripts. Each element $(s,\tau )$ of the witness $\Psi _\Phi $ consists of a program statement $s$ and a policy transition $\tau $. $\tau $ is either ${\tt  null}$ (indicating that the statement does not directly induce a transition in this witness, but may invoke a higher-order script that does) or a triple $(\varphi _{pre}, \varphi , \varphi _{post})$ consisting of a policy state $\varphi _{pre}$, a policy state $\varphi _{post}$, and a predicate $\varphi $ that induces the transition. }}}{5}}
+\newlabel{Alg:algtransforce}{{1}{5}}
+\@cb@firstcolumnfalse
+\@writefile{loa}{\contentsline {algocf}{\numberline {2}{\ignorespaces  \relax \fontsize  {8pt}{9pt}\selectfont  \abovedisplayskip 4pt plus 1pt minus 1pt\relax \belowdisplayskip \abovedisplayskip \relax \abovedisplayshortskip 2pt plus 1pt\relax \belowdisplayshortskip \abovedisplayshortskip \relax \textbf  { {\sf  Introspect} examines an action sequence at runtime and either commits or suppresses the effects. The condition $a \models  \varphi $ is true if action $a$ satisfies $\varphi $. This algorithm also identifies higher-order scripts and encloses the generated code within a transaction block. }}}{5}}
+\newlabel{Alg:algintrospect}{{2}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}A Formalization of Rewriting}{5}}
+\citation{jam}
+\citation{jam}
+\citation{transcript}
+\@cb@firstcolumntrue
+\@writefile{loa}{\contentsline {algocf}{\numberline {3}{\ignorespaces \relax \fontsize  {8pt}{9pt}\selectfont  \abovedisplayskip 4pt plus 1pt minus 1pt\relax \belowdisplayskip \abovedisplayskip \relax \abovedisplayshortskip 2pt plus 1pt\relax \belowdisplayshortskip \abovedisplayshortskip \relax \textbf  { {\sf  RewriteIndirect} specifies the transformation that applies indirection to statements that potentially invoke higher-order scripts. Each subexpression that potentially causes a policy transition (as determined by the static analysis) is replaced by a runtime call to ${\tt  Indirect}$, which is defined in Algorithm\nobreakspace  {}\G@refundefinedtrue \text  {\normalfont  \bfseries  ??}\GenericWarning  {               }{LaTeX Warning: Reference `Alg:algindirect' on page 6 undefined}. }}}{6}}
+\newlabel{Alg:algindorce}{{3}{6}}
+\@cb@firstcolumnfalse
+\@writefile{loa}{\contentsline {algocf}{\numberline {4}{\ignorespaces \relax \fontsize  {8pt}{9pt}\selectfont  \abovedisplayskip 4pt plus 1pt minus 1pt\relax \belowdisplayskip \abovedisplayskip \relax \abovedisplayshortskip 2pt plus 1pt\relax \belowdisplayshortskip \abovedisplayshortskip \relax \textbf  { {\sf  Indirect} is the runtime target of expressions rewritten by Algorithm\nobreakspace  {}3\hbox {}. It examines ${\tt  type}_e$ and ${\tt  parts}_e$ to recognize higher-order scripts, and determines the function ${\tt  ispect_{effective}}$ to use for introspection. By construction, ${\tt  ispect_{all}}$ subsumes ${\tt  ispect}_s$, so the detection of a higher-order script effectively results in a security upgrade.}}}{6}}
+\newlabel{Alg:algindirect}{{4}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Transaction Suspension}{6}}
+\newlabel{Se:suspension}{{2.3}{6}}
+\citation{Yu07}
+\citation{Yu07}
+\@cb@firstcolumntrue
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Correctness}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}IMPLEMENTATION}{7}}
+\newlabel{Se:implementation}{{3}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}A Strawman Approach}{7}}
+\newlabel{Se:strawman}{{3.1}{7}}
+\@cb@firstcolumnfalse
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Description of JAMScript}{7}}
+\citation{Bie13}
+\citation{Ric10}
+\@cb@firstcolumntrue
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Initialization of the ${\tt  JAM}$ library and definition of the ${\tt  call}$ and ${\tt  commitAction}$ methods that implement statement indirection and instrumentation of code generated by expressions that invoke ${\tt  eval}$, ${\tt  HTMLDocument.prototype.write}$, and ${\tt  Function.prototype.call}$. (Cases for other higher-order scripts, error cases, and additional library methods are elided to conserve space.) Lines 2--5 define private references to native objects. The ${\tt  policy}$ object (defined in Figure\nobreakspace  {}4\hbox {}) is incorporated (line 8), and the ${\tt  JAM}$ library object is frozen (line 44) so that its properties cannot be overwritten. }}{8}}
+\newlabel{Fi:calltransform}{{4}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Protecting the Instrumentation}{8}}
+\@cb@firstcolumnfalse
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Definition of a single-transition ${\tt  policy}$ object preventing writes to the ${\tt  src}$ property of ${\tt  HTMLImageElement}$ objects. ${\tt  \_HTMLImageElement}$ on line 2 is a private reference needed for consistent evaluation at line 10. If no violation is detected, ${\tt  JAM.commit}$ is called (line 13, definition not shown) to commit the effects of write actions and instrument higher-order scripts with the ${\tt  JAM.commitAction}$ method (defined in Figure\nobreakspace  {}\G@refundefinedtrue \text  {\normalfont  \bfseries  ??}\GenericWarning  {               }{LaTeX Warning: Reference `Fi:calltransform' on page 8 undefined}). }}{8}}
+\newlabel{Fi:policy}{{5}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Statement Indirection in JAMScript}{8}}
+\citation{transcript}
+\citation{access}
+\citation{jam}
+\@cb@firstcolumntrue
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Example of statement indirection to extend the policy to dynamically generated code. If ${\tt  obj.meth}$ references a function that can generate code dynamically, such as ${\tt  eval}$, the ${\tt  JAM.call}$ method (lines 26--40 in Figure\nobreakspace  {}\G@refundefinedtrue \text  {\normalfont  \bfseries  ??}\GenericWarning  {               }{LaTeX Warning: Reference `Fi:calltransform' on page 9 undefined}) applies the security policy at runtime.}}{9}}
+\newlabel{Fi:transform}{{6}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}EXPERIMENTAL RESULTS}{9}}
+\newlabel{Se:experiments}{{4}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Setup and Methodology}{9}}
+\@cb@firstcolumnfalse
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Catalog of the applications and policies provided as input to the analysis, and counts of the different types of instrumentation inserted. The ``sms2-*'' item represents the average over a set of 51 applications from the Sequence Manipulation Suite for DNA analysis.}}{9}}
+\newlabel{Fi:applications}{{7}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Runtime Performance}{9}}
+\@cb@firstcolumntrue
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Log-log plot of the execution times of programs with fine-grained transactional enforcement applied through weaving compared to coarse-grained whole-program transactions. The ratio of the two approaches is plotted against the execution time of the original unprotected program. Most points are below the line ${\tt  y = 1}$ when the original execution time is non-trivial, which indicates an overall performance benefit from policy weaving, compared to the coarse-grained approach.}}{10}}
+\newlabel{Fi:overheadRatioByOriginal}{{8}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Policy Complexity}{10}}
+\@cb@firstcolumnfalse
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Log-log plot of the ratio of the execution times of programs with fine-grained transactional enforcement applied through weaving compared to unprotected execution, plotted as a function of the execution time of the original unprotected program. Page-load actions include the time to initialize the policy object and JAMScript library, which becomes less of a factor as the overall page-load time increases. The overall trend decreasing to the right indicates that the percentage overhead of security-policy enforcement is less dramatic for more computationally-intensive applications.}}{10}}
+\newlabel{Fi:wovenByOriginal}{{9}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Size of the input policy versus the automatically generated enforcement code, given by abstract-syntax-tree nodes. ``Input policy'' refers to the automaton provided to the static analysis (see Figure\nobreakspace  {}1\hbox {}). The ``baseline policy'' is a single introspector that checks all policy transitions (e.g., ${\tt  policyFull}$ in Figure\nobreakspace  {}\G@refundefinedtrue \text  {\normalfont  \bfseries  ??}\GenericWarning  {               }{LaTeX Warning: Reference `Fi:walkthroughinstrumentation' on page 10 undefined}) needed for coarse-grained protection of the full program. The ``specialized policy'' represents introspection code produced for fine-grained protection of the woven program (e.g., all of the ${\tt  policy*}$ functions in Figure\nobreakspace  {}\G@refundefinedtrue \text  {\normalfont  \bfseries  ??}\GenericWarning  {               }{LaTeX Warning: Reference `Fi:walkthroughinstrumentation' on page 10 undefined}), and is generally larger because multiple introspector functions are needed to evaluate different combinations of policy predicates.}}{10}}
+\newlabel{Fi:complexity}{{10}{10}}
+\citation{Allan05}
+\citation{Meredith12}
+\citation{Bodden12}
+\citation{Bauer12}
+\citation{Falcone13}
+\citation{Hussein12}
+\citation{jam}
+\citation{Yu07}
+\citation{Mil08}
+\citation{adsafe}
+\citation{conscript}
+\citation{Maf09a}
+\citation{Sch00}
+\citation{Erl00}
+\citation{Erl04}
+\citation{transcript}
+\citation{transcript}
+\citation{access}
+\citation{access}
+\citation{tmi}
+\citation{txbox}
+\bibstyle{abbrvnat}
+\bibdata{biblio}
+\@cb@firstcolumntrue
+\@writefile{toc}{\contentsline {section}{\numberline {5}RELATED WORK}{11}}
+\newlabel{Se:related}{{5}{11}}
+\@writefile{toc}{\contentsline {paragraph}{Aspect Weaving and Runtime Verification.}{11}}
+\@writefile{toc}{\contentsline {paragraph}{Runtime Enforcement for JavaScript.}{11}}
+\@cb@firstcolumnfalse
+\@writefile{toc}{\contentsline {paragraph}{Transaction-Based Policy Enforcement.}{11}}
+\@cb@firstcolumntrue
+\newlabel{sigplanconf@finalpage}{{5}{12}}
+\@cb@firstcolumnfalse

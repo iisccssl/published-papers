@@ -1,0 +1,24 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Related Work}{}
+\BOOKMARK [2][-]{subsection.2.1}{Reputation systems}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Fraud in electronic transactions}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Anomaly detection}{section.2}
+\BOOKMARK [1][-]{section.3}{Reputation via Anomaly \040Detection}{}
+\BOOKMARK [2][-]{subsection.3.1}{Models of Bidding Behavior}{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Using Anomaly Detection to Identify Price Inflation}{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{From Bidding Behavior to Reputation}{section.3}
+\BOOKMARK [1][-]{section.4}{Formalizing Reputation}{}
+\BOOKMARK [2][-]{subsection.4.1}{eBay Data}{section.4}
+\BOOKMARK [2][-]{subsection.4.2}{Average Number of Bids Model \(N\)}{section.4}
+\BOOKMARK [2][-]{subsection.4.3}{Average Minimum Starting Bid Model \(M\)}{section.4}
+\BOOKMARK [2][-]{subsection.4.4}{Bidders' Profile Mode \(P\)}{section.4}
+\BOOKMARK [2][-]{subsection.4.5}{Auctioning Reputation Score}{section.4}
+\BOOKMARK [1][-]{section.5}{Case Studies}{}
+\BOOKMARK [1][-]{section.6}{Threat Analysis}{}
+\BOOKMARK [2][-]{subsection.6.1}{Normalizing an N Score}{section.6}
+\BOOKMARK [2][-]{subsection.6.2}{Normalizing an M Score}{section.6}
+\BOOKMARK [2][-]{subsection.6.3}{Normalizing a P Score}{section.6}
+\BOOKMARK [1][-]{section.7}{Conclusions}{}
+\BOOKMARK [1][-]{section.8}{Acknowledgments}{}
+\BOOKMARK [1][-]{section.9}{Additional Authors}{}
+\BOOKMARK [1][-]{section.10}{References}{}

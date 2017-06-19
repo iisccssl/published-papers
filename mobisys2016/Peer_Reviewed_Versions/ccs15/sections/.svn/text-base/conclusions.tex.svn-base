@@ -1,0 +1,50 @@
+\mysection{Concluding Remarks}
+\label{section:conclusions}
+
+The increasing ubiquity and capability of smart devices has driven society to
+create restricted spaces. We presented a mechanism for hosts to remotely
+inspect and control devices within restricted spaces. Our mechanism achieves
+this goal via a narrow interface that permits remote memory operations. Our
+prototype implements the mechanism for TrustZone-enabled devices.
+
+While technically feasible, our approach must overcome certain hurdles before
+it can be practically adopted. The foremost among these is end-user willingness
+to subject their devices to regulation in restricted spaces. It is possible
+that many users would simply choose not to use their devices within the
+restricted space rather than give the host control over their devices (assuming
+they do not resort to using the devices covertly). However, given our
+increasing reliance on smart devices and the ways in which they are becoming
+integral parts of our daily lives, it is unclear going forward whether such
+simple ``opt-out'' solutions would even be a possibility. For example,
+opting-out would not be a practical solution for smart devices integrated with
+health monitoring and assistive functionality. Even if end-users were willing
+to subject their devices to regulation, it is unclear to what extent they will
+trust the host's control over their device. Solutions such as our vetting
+service could ameliorate these concerns. We plan to explore these
+user-interaction and user-perception issues in future work.
+
+
+% We see this paper as making two main conceptual advances. The first is the
+% notion of restricted spaces. As argued in the paper, the increasing ubiquity
+% and capability of smart devices has driven society to create such restricted
+% spaces. To promote the regulated use of smart devices in such spaces, we need
+% systematic ways to enforce host-defined policies on guest devices.
+% 
+% The second conceptual contribution of this paper is the design of a mechanism
+% for hosts to remotely inspect and control guest devices.  We showed that this
+% can be achieved via a narrow interface that permits two simple operations,
+% remote memory reads and writes. These operations provide an effective way for
+% hosts to analyze and configure guest devices in accordance with their
+% policies.  We also showed that with hardware support from the ARM TrustZone,
+% we can bootstrap the security of remote memory operations.
+%
+% Again, we feel that this is largely a matter of user-perception. For example,
+% users already place implicit trust in app writers and market vendors when they
+% download apps on their smart devices, even though it is well-known that apps
+% routinely violate this implicit trust and compromise user privacy by sending
+% sensitive user data to unauthorized third parties.  
+%
+% Thus, a practical deployment of our solution would also likely require
+% supporting trust infrastructure, \eg~analysis tools that can vet the host's
+% operations or present them to the end-user in a human-readable format for
+% approval.

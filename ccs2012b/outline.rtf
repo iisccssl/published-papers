@@ -1,0 +1,61 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww25100\viewh13020\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\i\fs24 \cf0 Outline: \
+\
+Section 1: Intro \
+	a) Area: \
+		Hook Placement history. User space hooks. Manual effort undertaken. \
+			\
+		Automated hook placement background. What problems remain unsolved. \
+			Automatically identifying security sensitive objects. Typically done manually. Some automated techniques like Merlin. \
+\
+		Insight. User intent guides what the program does. How to capture user intent. \
+\
+		What did we build? What does it 	do? \
+\
+		** Results ** \
+\
+Section 2: Problem Definition\
+		\
+			\
+\
+Section 3: Design\
+		Automated hook placement: \
+			Three stages: \
+				1. Label security sensitive data structures. \
+				2. Identify operations on data structures. \
+				3. Classify/group operations. \
+				4. Place hooks consistently. \
+\
+		Diagram: Showing all stages\
+\
+		Stage 1: Identify security sensitive data structures.\
+				 \
+		  	Sub Stage 1: Identify Global object pools:	\
+				Define pools. \
+			Sub Stage 2: Identify potentially security sensitive data structures: \
+				Data structures whose instances are affected by pools and user input. \
+		\
+		Stage 2: Identify the security sensitive operations	\
+			Sub Stage 3: Identify security sensitive operations:\
+				Define slices. \
+				Weed out operations common to all the branches in a slice. \
+		\
+		Stage 3: Generate a base policy and and infer relationships to guide policy development\
+			Sub Stage 4: Infer data flow relationships between security sensitive data structures\
+			Sub stage 5: Classify the operations based on concept analysis fingerprints. \
+			Allow user to modify base policy if necessary.\
+		\
+		Stage 4: Place hooks based on the policy \
+	\
+\
+\
+Section 4: Implementation\
+\
+Section 5:Evaluation \
+\
+Section 6:Conclusion }

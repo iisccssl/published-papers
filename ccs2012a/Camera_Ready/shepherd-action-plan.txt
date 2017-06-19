@@ -1,0 +1,24 @@
+Here is a draft of the paper that addresses reviewer concerns. It follows 
+the shepherding plan that we laid out in our prior email. To make changes
+easy to locate, we have highlighted revised text in red font (with the 
+exception of Section 5, which contains new text).
+
+The main changes to the paper are as follows:
+
+* We fixed the protocol in Figure 3(a) using reviewer#5's suggestion, and
+  appropriately modified the text of the paper that describes this protocol.
+
+* We eliminated section 2 of the paper, moving some of its key points to the
+  end of the introduction section, and to the new discussion section (see
+  below)
+
+* We introduced a new discussion section (Section 5) specifically to address 
+  the concerns raised by reviewer#6. This section covers details of the 
+  TPM/vTPM, including:
+  * a description of how clients could obtain the necessary vTPM AIK keys;
+  * a discussion of the implications of key distribution to revealing details
+    of the cloud platform to competitors;
+  * a discussion of the implications of revealing measurements of the software
+    stack.
+  This section also covers VM migration and hosting issues (again raised by 
+  reviewer#6) and issues regarding client technical knowhow.

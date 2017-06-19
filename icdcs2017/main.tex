@@ -1,0 +1,151 @@
+\documentclass[conference,compsoc]{IEEEtran}
+%\documentclass[letterpaper]{sig-alternate-05-2015}
+
+%------------------------------------------------------------------------------
+%                                  Preamble.
+%------------------------------------------------------------------------------
+%
+\usepackage{url}
+% \usepackage{color}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{hyphenat}
+\usepackage{xspace}
+\usepackage{txfonts}
+\usepackage[sort&compress]{natbib}
+\newcommand{\subparagraph}{}
+\usepackage[small,compact]{titlesec}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage[pdftex,unicode=true,%
+                   pdfstartview={FitH},%
+                   colorlinks=true,%
+                   citecolor=black,%
+                   filecolor=black,%
+                   linkcolor=black,%
+                   urlcolor=black]{hyperref}
+
+% Use a smaller font size for URLs:
+\makeatletter
+\def\url@myurlstyle{%
+   \@ifundefined{selectfont}{\def\UrlFont{\tt}}{\def\UrlFont{\tt}}}
+   \makeatother
+\urlstyle{myurl}
+
+% Section names, figure names and algorithm names.
+\renewcommand{\tableautorefname}{Table}
+\renewcommand{\figureautorefname}{Figure}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\newcommand{\figref}[1]{\autoref{#1}}
+\newcommand{\tabref}[1]{\autoref{#1}}
+\newcommand{\sectref}[1]{\autoref{#1}}
+\newcommand{\mycaption}[2]{\caption{#1}#2}
+\newcommand{\myparagraphsquish}[1]{\noindent\textbf{\textit{#1}}}
+\newcommand{\myparagraph}[1]{\parskip -4pt \indent\par\noindent\textbf{\textit{#1}} \parskip 0pt}
+\newcommand{\myfootnote}[1]{\footnote{\scriptsize #1}}
+
+%------------------------------------------------------------------------------
+%                                Space savers.
+%------------------------------------------------------------------------------
+% This mylist environment indents items, and saves less space than the above.
+\newcounter{myctr}
+\newenvironment{mylist}{\begin{list}{(\textbf{\arabic{myctr}})}
+{\usecounter{myctr}
+\setlength{\topsep}{1mm}\setlength{\itemsep}{0.5mm}
+\setlength{\parsep}{0.5mm}
+\setlength{\listparindent}{\parindent} % Indentation of paras.
+\setlength{\itemindent}{0mm}\setlength{\partopsep}{0mm}
+\setlength{\labelwidth}{-2mm}
+\setlength{\leftmargin}{0mm}}}{\end{list}}
+
+% Space saving List environment for itemizing.
+\newenvironment{mybullet}{\begin{list}{$\bullet$}
+{\setlength{\topsep}{1mm}\setlength{\itemsep}{0.5mm}
+\setlength{\parsep}{0.5mm}
+\setlength{\listparindent}{\parindent} % Indentation of paras.
+\setlength{\itemindent}{0mm}\setlength{\partopsep}{0mm}
+\setlength{\labelwidth}{-2mm}
+\setlength{\leftmargin}{0mm}}}{\end{list}}
+
+%------------------------------------------------------------------------------
+%                  Useful commands and acronymns used in the paper.
+%------------------------------------------------------------------------------
+% Commands
+\newcommand{\mycomment}[1]{}
+\newcommand{\todo}[1]{\textcolor{red}{\textit{\textbf{!!!#1!!!}}}}
+\newcommand{\CT}{\todo{\cite{TODO}}}
+
+% Acronymns
+\newcommand{\code}[1]{{\tt \footnotesize #1}}
+\newcommand{\tab}{~~~~~}
+\newcommand{\apriori}{\textit{a priori}}
+\newcommand{\etal}{\textit{et al.}\xspace}
+\newcommand{\eg}{\textit{e.g.,}\xspace}
+\newcommand{\ie}{\textit{i.e.,}\xspace}
+\newcommand{\adhoc}{ad hoc}
+
+% Paper-specific acronyms
+\newcommand{\tool}{EnGarde\xspace} % Client enclave code inspection library.
+\newcommand{\TOOL}{EnGarde\xspace} % Client enclave code inspection library.
+
+% Paper setup
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+%------------------------------------------------------------------------------
+%                               Fancy header setup.
+%------------------------------------------------------------------------------
+%
+% \pagestyle{fancyplain}
+% \lhead{}
+% \lfoot{}
+% \chead{}
+% \rhead{}
+% \cfoot{\thepage}
+% \rfoot{}
+% \renewcommand{\headrulewidth}{0pt}
+
+%------------------------------------------------------------------------------
+%                              Title and Authors.
+%------------------------------------------------------------------------------
+\begin{document}
+
+\title{\tool: Mutually-Trusted Inspection of SGX Enclaves}
+\author{Hai Nguyen and Vinod Ganapathy\\
+Department of Computer Science, Rutgers University\\
+\{hdn11, vinodg\}@cs.rutgers.edu}
+
+\maketitle
+%------------------------------------------------------------------------------
+%                                  Abstract.
+%------------------------------------------------------------------------------
+\begin{abstract}
+%
+\input{sections/abstract}
+%
+\end{abstract}
+
+%------------------------------------------------------------------------------
+%                                Main Contents.
+%------------------------------------------------------------------------------
+
+\input{sections/introduction}
+\input{sections/background}
+\input{sections/design}
+\input{sections/implementation}
+\input{sections/eval}
+\input{sections/related}
+\input{sections/summary}
+
+\myparagraph{Acknowledgments.} Funded in part by NSF CNS-1420815 and a 
+gift from Microsoft Research India.
+
+%------------------------------------------------------------------------------
+%                                  References.
+%------------------------------------------------------------------------------
+\scriptsize
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

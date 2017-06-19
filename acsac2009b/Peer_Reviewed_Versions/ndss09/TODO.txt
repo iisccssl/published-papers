@@ -1,0 +1,24 @@
+Weaknesses in NDSS'09 Submission, that we should address in a revision:
+
+* Control Checker should work on sequences of ioctl calls, not sets of ioctl
+  calls. We need to evaluate this using metrics developed for syscall based
+  intrusion detection.
+
+* We need to talk about how the k-driver can be secured.
+
+* We need to make clear why removing code from the TCB makes the system
+  any more secure. That is, what do our techniques buy over SafeDrive?
+  We argue that the k-driver can possibly be secured using SafeDrive but
+  don't say why this is easier than securing the entire device driver
+  using SafeDrive. 
+
+  Action item: Possibly implement an attack that SafeDrive cannot prevent.
+  Download SafeDrive and show that the attack is STILL possible after
+  securing the driver with it.
+
+* We need to better analyze the false positive rate of our work. That
+  is, what if the invariants result in false positives during enforcement?
+  What workloads do we use for training and what for testing?
+
+* We need to do a better job of talking about the methodology used to mine
+  invariants.

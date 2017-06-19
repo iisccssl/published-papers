@@ -1,0 +1,47 @@
+\mysection{The Vetting Service}
+\label{section:vetting}
+
+We built a vetting service trusted by guests to determine the safety of a
+host's request. We built it as a cloud-based server, to which the guest device
+forwards the host's memory updates together with a copy of its normal world
+memory image (via the UI app). We assume that the device and the vetting
+service have authenticated each other as in \figref{figure:authentication} or
+use SSL/TLS to obtain a communication channel with end-to-end confidentiality
+and integrity guarantees. It may also be possible to implement vetting within
+the secure world itself. However, we chose not to do so to avoid bloating the
+secure world.
+
+The vetting server checks the host's requests against its safety policies and
+returns a \textsc{Safe} or \textsc{Unsafe} response to the device. The response
+is bound with a random nonce and an HMAC to the original request in the
+standard way to prevent replay attacks. The secure world performs the
+operations only if the response is \textsc{Safe}. Guests can configure the
+vetting server with domain-specific policies to determine safety.  Our
+prototype vetting service, which we built as a plugin to the Hex-Rays IDA
+toolkit~\cite{ida-pro}, analyzes memory images and checks for the following
+safety policies. Although simple and based on conservative whitelisting, in our
+experiments, the policies could prove safety without raising false positives.
+
+\myparagraph{Read-safety} For each request to read from address
+\textit{vaddr}$_i$, we return \textsc{Safe} only if \textit{vaddr}$_i$ falls in
+a pre-determined range of virtual addresses. In our prototype, acceptable
+address ranges only include pages that contain kernel code and kernel data
+structures.  The vetting server returns \textsc{Unsafe} if the read request
+attempts to fetch any addresses from kernel buffers that store user app data,
+or virtual address ranges that lie in app user-space memory.
+
+\myparagraph{Write-safety} Our prototype currently only allows write requests
+to \textsc{null}ify peripheral interfaces or install dummy drivers that disable
+peripherals. We use the following safety policy for dummy drivers.  For each
+function $f$ implemented in the dummy driver, consider its counterpart $f_{\it
+orig}$ from the original driver, which the vetting service obtains from the
+device's memory image. We return \textsc{Safe} only if the function $f$ is
+identical to $f_{\it orig}$, or $f$'s body consists of a single return
+statement that returns a \textit{valid} error code (\eg~\textsc{-enomem}). We
+define an error code as being valid for $f$ if and only if the same error code
+is returned along at least one path in $f_{\it orig}$. The intuition behind
+this safety check is that $f$ does not modify the memory state of the device or
+introduce new and possibly buggy code, but returns an error code that is
+acceptable to the kernel and client user apps.  For more complex dummy drivers
+that introduce new code, the vetting service could employ a traditional malware
+detector or more complex program analyses to scan this code for safety.

@@ -1,0 +1,27 @@
+OP:
+--
+What does OP buy us?
+- Plugin isolation, both for malicious and untrusted plugins.
+- Communication monitoring across browser components.
+
+What are its shortcomings?
+- JS still within each Web page domain (so JS interactions with web pages are
+	not monitored)
+
+Browser-wide information flow? What is the need to do this?
+
+Problem: Extension isoaltion. XPCOM Layer tracking
+
+
+Chrome features:
+---------------
+* Multiple processes in the browser.
+* Separate plugin processes to allow for better isolation (as in OP).
+  Plugin crashes -> rest of browser does not crash.
+* Javascript runs as a separate process? (Separate Javascript threads).
+* What does V8 offer over SeaMonkey? It is a Javascript VIRTUAL MACHINE.
+  Uses runtime code generation.
+* Speculative JS execution in the presence of run time code generation.
+* "Sandboxing"? To prevent malware downloads? To restrict the privileges
+  of each process (each executes in a jail).
+* What does Chrome offer for extension isolation? (not plugin isolation?)

@@ -1,0 +1,67 @@
+MOTIVATION: 
+
+In light of reviewer concerns with our motivation, we clarify our position. We
+are NOT proposing LLM as a hypervisor replacement. Indeed, hypervisors enable
+several services beyond integrity monitoring that LLM cannot support.
+  
+Rather, our point is that the vast diversity of mobile/embedded hardware means
+that the manpower needed to port/verify a hypervisor to these domains is
+non-trivial. Given current technology trends, we will soon see multiple cores
+on mobile/embedded systems. If hardware vendors adopt the minor changes
+required for LLM, it can be used to implement integrity monitors without
+requiring hypervisors. The appeal of our solution is in its economy of
+mechanism compared to the hypervisor-based approach.
+
+We used Intel's SCC only to illustrate that LLM is realistic. While the SCC
+targets large systems, Hitachi-RP1 targets the mobile/embedded market.
+Dedicating a core for security may not be a wastage of cores in
+mobile/embedded devices, as cores on these devices will not be continuously
+utilized anyway because of energy concerns.
+
+While our paper has an ASPLOS-y flavor, hardware-support for security is
+in-scope for CCS too.
+
+
+EVALUATION:
+
+We compared performance of Linux 4-core LLM versus a 3-core SMP to study the
+overhead induced by the integrity monitor. We did this because we assume a
+dedicated security-monitoring core and Linux ran on 3 cores in the LLM.  We
+are aware of the need to compare performance with hypervisor-based protection,
+and are currently porting Xen to execute within our QEMU-based testbed. While
+we do not expect to include these results in the paper, we believe the current
+evaluation demonstrates that LLM-induced overheads are minimal.
+
+We do have raw data to report standard deviations and will include this in our
+revised draft.
+
+
+OTHERS:
+
+* We will include specifics of hardware modifications necessary to implement
+  LLM in our revision. 
+
+* Disabling local memory for coreUs prevents local-memory-resident rootkits.
+  While this may hurt performance, disabling local  memory for coreUs offers
+  in return a new functionality of the local memory (other than the one that
+  it was designed for in SCC and Hitachi-RP1). Other solutions that do not
+  disable local memory access may possibly exist to prevent
+  local-memory-resident rootkits.
+
+* [Section 3.4.1] The reviewer is correct in that there is no need to touch
+  that portion of memory. However, it is still accessible to and can be
+  modified by a malicious target. This motivates the need for secure paging.
+
+* Indeed, the working set has to fit in local memory to avoid poor monitor
+  performance because of "swapping". The paper shows that about 500KB of local
+  memory suffices for the monitor.
+
+* It is possible for the target to hide malware directly on device memory
+  (e.g., GPU, smart NIC), and LLM (as proposed) cannot detect such malware
+  hosted outside main memory unless IOMMU is used to map device memory to main
+  memory.
+
+* We can indeed use encryption to preserve confidentiality of the monitor.
+
+To conclude, we believe that using LLM in conjunction with secure paging to
+provide isolation is novel, and may trigger future research.
